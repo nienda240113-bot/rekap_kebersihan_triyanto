@@ -1,92 +1,289 @@
-httpsctype html>
+<!doctype html>
 <html lang="id">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#1677ff">
+
 <title>Rekap Kebersihan Area Triyanto</title>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6fa;color:#172033}
-header{background:#1677ff;color:#fff;padding:18px 16px;position:sticky;top:0;z-index:5}
-h1{font-size:20px;margin:0 0 5px}
-.sub{font-size:13px;opacity:.9}
-.wrap{max-width:720px;margin:auto;padding:12px}
-.card{background:#fff;border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 2px 10px #0001}
-.row{display:flex;gap:8px;align-items:center}
-.grow{flex:1}
-.store-title{font-weight:700;font-size:16px}
-.badge{font-size:11px;padding:5px 8px;border-radius:20px;background:#eef2f7}
-.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
-.photo{aspect-ratio:1/1;border:1px dashed #9aa8b8;border-radius:9px;overflow:hidden;position:relative;background:#f7f9fb;display:flex;align-items:center;justify-content:center;font-size:11px;color:#718096;text-align:center}
-.photo img{width:100%;height:100%;object-fit:cover}
-.photo button{position:absolute;right:3px;top:3px;border:0;border-radius:50%;background:#d22;color:#fff;width:23px;height:23px}
-button{border:0;border-radius:9px;padding:10px 12px;font-weight:700;cursor:pointer}
-.add{background:#e9f1ff;color:#1677ff;padding:10px 12px;border-radius:9px;font-weight:700}
-.ok{background:#18a558;color:#fff}
-.secondary{background:#edf1f5}
-.save{background:#1677ff;color:#fff;width:100%;font-size:16px;margin-top:10px}
-.status{font-size:12px;margin-top:6px}
-.good{color:#128548}
-.bad{color:#d33}
-#preview{white-space:pre-wrap;background:#f6f7f8;border-radius:10px;padding:12px;font-size:13px;line-height:1.45}
-.small{font-size:12px;color:#64748b}
-.top-actions{display:flex;gap:8px;flex-wrap:wrap}
-.top-actions button{flex:1}
-input[type=file]{display:none}
-.loading{display:none;text-align:center;padding:10px;color:#1677ff;font-weight:bold}
+
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f3f6fa;
+ color:#172033;
+}
+
+header{
+ background:#1677ff;
+ color:white;
+ padding:18px 16px;
+ position:sticky;
+ top:0;
+ z-index:5;
+}
+
+h1{
+ font-size:20px;
+ margin:0 0 5px;
+}
+
+.sub{
+ font-size:13px;
+ opacity:.9;
+}
+
+.wrap{
+ max-width:720px;
+ margin:auto;
+ padding:12px;
+}
+
+.card{
+ background:white;
+ border-radius:14px;
+ padding:14px;
+ margin:10px 0;
+ box-shadow:0 2px 10px #0001;
+}
+
+.row{
+ display:flex;
+ gap:8px;
+ align-items:center;
+}
+
+.grow{
+ flex:1;
+}
+
+.store-title{
+ font-weight:700;
+ font-size:16px;
+}
+
+.badge{
+ font-size:11px;
+ padding:5px 8px;
+ border-radius:20px;
+ background:#eef2f7;
+}
+
+.photos{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:6px;
+ margin:10px 0;
+}
+
+.photo{
+ aspect-ratio:1/1;
+ border:1px dashed #9aa8b8;
+ border-radius:9px;
+ overflow:hidden;
+ position:relative;
+ background:#f7f9fb;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:11px;
+ color:#718096;
+ text-align:center;
+}
+
+.photo img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+.photo button{
+ position:absolute;
+ right:3px;
+ top:3px;
+ border:0;
+ border-radius:50%;
+ background:#d22;
+ color:white;
+ width:23px;
+ height:23px;
+}
+
+button{
+ border:0;
+ border-radius:9px;
+ padding:10px 12px;
+ font-weight:700;
+ cursor:pointer;
+}
+
+.add{
+ background:#e9f1ff;
+ color:#1677ff;
+ padding:10px 12px;
+ border-radius:9px;
+ font-weight:700;
+}
+
+.ok{
+ background:#18a558;
+ color:white;
+}
+
+.secondary{
+ background:#edf1f5;
+}
+
+.save{
+ background:#1677ff;
+ color:white;
+ width:100%;
+ font-size:16px;
+ margin-top:10px;
+}
+
+.status{
+ font-size:12px;
+ margin-top:6px;
+}
+
+.good{
+ color:#128548;
+}
+
+.bad{
+ color:#d33;
+}
+
+.small{
+ font-size:12px;
+ color:#64748b;
+}
+
+.top-actions{
+ display:flex;
+ gap:8px;
+ flex-wrap:wrap;
+}
+
+.top-actions button{
+ flex:1;
+}
+
+input[type=file]{
+ display:none;
+}
+
+.loading{
+ display:none;
+ text-align:center;
+ padding:10px;
+ color:#1677ff;
+ font-weight:bold;
+}
+
+#preview{
+ white-space:pre-wrap;
+ background:#f6f7f8;
+ border-radius:10px;
+ padding:12px;
+ font-size:13px;
+ line-height:1.45;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO</h1>
-<div class="sub">AREA: TRIYANTO • TOKO PIC: KUTN • 17 AGUSTUS 2026</div>
+
+<h1>
+REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO
+</h1>
+
+<div class="sub">
+AREA: TRIYANTO • TOKO PIC: KUTN • 17 AGUSTUS 2026
+</div>
+
 </header>
 
 <div class="wrap">
 
 <div class="card">
+
 <div class="top-actions">
-<button class="ok" onclick="checkAll()">✓ Semua Sesuai</button>
-<button class="secondary" onclick="loadData()">🔄 Ambil Data Online</button>
+
+<button class="ok" onclick="checkAll()">
+✓ Semua Sesuai
+</button>
+
+<button class="secondary" onclick="loadData()">
+🔄 Ambil Data Online
+</button>
+
 </div>
 
 <p class="small">
-Setiap toko wajib mengunggah <b>minimal 3</b> dan maksimal <b>6 foto</b>.
-Data yang sudah disimpan akan tetap ada walaupun toko lain mengisi.
+Setiap toko wajib mengunggah
+<b>minimal 3</b> dan maksimal
+<b>6 foto</b>.
 </p>
 
 <div id="onlineStatus" class="small">
-⏳ Mengambil data online...
+🔄 Menghubungkan database...
 </div>
+
 </div>
 
 <div id="stores"></div>
 
 <div class="card">
-<h3>Preview WhatsApp</h3>
-<div id="preview">Belum ada data.</div>
 
-<button class="save" onclick="saveAll()">
+<h3>
+Preview WhatsApp
+</h3>
+
+<div id="preview">
+Belum ada data.
+</div>
+
+<button
+class="save"
+onclick="saveAll()">
+
 💾 SIMPAN SEMUA DATA ONLINE
+
 </button>
 
 <div id="loading" class="loading">
+
 ⏳ Menyimpan data ke database...
+
 </div>
+
 </div>
 
 </div>
 
 <script>
 
+/* =========================
+   DATABASE ONLINE
+========================= */
+
 const API_URL =
-const API_URL =
-const API_URL =
-"https://script.google.com/macros/s/AKfycbyYF4F3V97_Ii65ptNfyhpD4WpGZ9QhWbOSGfTsUbJP6VCRMWNaMysbTZzpX5kQRyyA/exec";constt stores=[
+"https://script.google.com/macros/s/AKfycbyYF4F3V97_Ii65ptNfyhpD4WpGZ9QhWbOSGfTsUbJP6VCRMWNaMysbTZzpX5kQRyyA/exec";
+
+
+/* =========================
+   DAFTAR 20 TOKO
+========================= */
+
+const stores=[
+
 ["C624","RWBT"],
 ["C560","RAJ"],
 ["CH81","CDKS"],
@@ -107,95 +304,115 @@ const API_URL =
 ["CF50","DNIA"],
 ["CC21","KUTN"],
 ["CI84","TLKW"]
+
 ];
 
+
+/* =========================
+   DATA LOKAL
+========================= */
+
 const data=stores.map(()=>({
-photos:[const stores=[
-["C624","RWBT"],
-["C560","RAJ"],
-["CH81","CDKS"],
-["CG76","SPMM"],
-["C573","GMM"],
-["CE47","MKRI"],
-["CI30","STTD"],
-["CH41","KPMRK"],
-["CG54","MM2100"],
-["C935","TLJ2"],
-["CA71","WSGN"],
-["C965","CBNU"],
-["CG86","JKST"],
-["CA94","KPTI"],
-["C574","SKU"],
-["CI15","RPSU"],
-["CI54","RJLB"],
-["CF50","DNIA"],
-["CC21","KUTN"],
-["CI84","TLKW"]
-];],
+
+photos:[],
 ok:false,
 saved:false
+
 }));
+
+
+/* =========================
+   TAMPILKAN TOKO
+========================= */
 
 function render(){
 
 const el=document.getElementById("stores");
+
 el.innerHTML="";
 
 stores.forEach((s,i)=>{
 
 const c=document.createElement("div");
+
 c.className="card";
 
 c.innerHTML=`
 
 <div class="row">
+
 <div class="grow store-title">
+
 ${i+1}. ${s[0]} / ${s[1]}
+
 </div>
 
-<span id="badge${i}" class="badge">
+<span
+id="badge${i}"
+class="badge">
+
 0/6 foto
+
 </span>
+
 </div>
 
-<div class="photos" id="photos${i}"></div>
+
+<div
+class="photos"
+id="photos${i}">
+</div>
+
 
 <div class="row">
 
 <label class="add">
+
 ＋ Tambah Foto
+
 <input
 type="file"
 accept="image/*"
 multiple
 onchange="addPhotos(${i},this.files)">
+
 </label>
+
 
 <button
 class="secondary"
 onclick="clearPhotos(${i})">
+
 Hapus Foto
+
 </button>
 
 </div>
 
+
 <div
-class="status"
-id="status${i}">
+id="status${i}"
+class="status">
 </div>
 
+
 <label style="display:block;margin-top:10px">
+
 <input
 type="checkbox"
 id="ok${i}"
 onchange="toggleOK(${i},this.checked)">
+
 Saya sudah memastikan foto sesuai permintaan
+
 </label>
+
 
 <div
 id="saved${i}"
 class="small"
 style="margin-top:6px">
+
 </div>
 
 `;
@@ -210,21 +427,33 @@ updatePreview();
 
 }
 
+
+/* =========================
+   TAMBAH FOTO
+========================= */
+
 function addPhotos(i,files){
 
-const remain=6-data[i].photos.length;
+const remain =
+6-data[i].photos.length;
 
-[...files].slice(0,remain).forEach(file=>{
+[...files]
+.slice(0,remain)
+.forEach(file=>{
 
-const reader=new FileReader();
+const reader =
+new FileReader();
 
 reader.onload=e=>{
 
-data[i].photos.push(e.target.result);
+data[i].photos.push(
+e.target.result
+);
 
 data[i].saved=false;
 
 drawPhotos(i);
+
 updatePreview();
 
 };
@@ -235,59 +464,106 @@ reader.readAsDataURL(file);
 
 }
 
+
+/* =========================
+   TAMPIL FOTO
+========================= */
+
 function drawPhotos(i){
 
-const p=document.getElementById("photos"+i);
+const p =
+document.getElementById(
+"photos"+i
+);
 
 if(!p)return;
 
 p.innerHTML="";
 
-data[i].photos.forEach((src,j)=>{
 
-const d=document.createElement("div");
+data[i].photos.forEach(
+(src,j)=>{
+
+const d =
+document.createElement("div");
 
 d.className="photo";
 
 d.innerHTML=`
+
 <img src="${src}">
-<button onclick="removePhoto(${i},${j})">×</button>
+
+<button
+onclick="removePhoto(${i},${j})">
+
+×
+</button>
+
 `;
 
 p.appendChild(d);
 
 });
 
-for(let k=data[i].photos.length;k<6;k++){
 
-const d=document.createElement("div");
+for(
+let k=data[i].photos.length;
+k<6;
+k++
+){
+
+const d =
+document.createElement("div");
 
 d.className="photo";
 
-d.textContent=
+d.textContent =
 k<3
-?"Foto "+(k+1)+" wajib"
-:"Foto "+(k+1)+" opsional";
+?
+"Foto "+(k+1)+" wajib"
+:
+"Foto "+(k+1)+" opsional";
 
 p.appendChild(d);
 
 }
 
-document.getElementById("badge"+i).textContent=
-data[i].photos.length+"/6 foto";
 
-const st=document.getElementById("status"+i);
+document.getElementById(
+"badge"+i
+).textContent =
+data[i].photos.length+
+"/6 foto";
 
-st.className=
+
+const st =
+document.getElementById(
+"status"+i
+);
+
+st.className =
 "status "+
-(data[i].photos.length>=3?"good":"bad");
-
-st.textContent=
+(
 data[i].photos.length>=3
-?"✓ Minimal foto terpenuhi"
-:"⚠ Minimal 3 foto belum terpenuhi";
+?
+"good"
+:
+"bad"
+);
+
+st.textContent =
+data[i].photos.length>=3
+?
+"✓ Minimal foto terpenuhi"
+:
+"⚠ Minimal 3 foto belum terpenuhi";
 
 }
+
+
+/* =========================
+   HAPUS FOTO
+========================= */
 
 function removePhoto(i,j){
 
@@ -296,46 +572,86 @@ data[i].photos.splice(j,1);
 data[i].saved=false;
 
 drawPhotos(i);
+
 updatePreview();
 
 }
+
+
+/* =========================
+   HAPUS SEMUA FOTO TOKO
+========================= */
 
 function clearPhotos(i){
 
 data[i].photos=[];
 
 data[i].ok=false;
+
 data[i].saved=false;
 
-document.getElementById("ok"+i).checked=false;
+document.getElementById(
+"ok"+i
+).checked=false;
 
 drawPhotos(i);
+
 updatePreview();
 
 }
+
+
+/* =========================
+   CHECKBOX
+========================= */
 
 function toggleOK(i,v){
 
 data[i].ok=v;
+
 data[i].saved=false;
 
 updatePreview();
 
 }
+
+
+/* =========================
+   SEMUA SESUAI
+========================= */
 
 function checkAll(){
 
 data.forEach((x,i)=>{
 
-x.ok=x.photos.length>=3;
+x.ok =
+x.photos.length>=3;
 
-document.getElementById("ok"+i).checked=x.ok;
+document.getElementById(
+"ok"+i
+).checked=x.ok;
 
 });
 
 updatePreview();
 
 }
+
+
+/* =========================
+   TANGGAL
+========================= */
+
+function today(){
+
+return "17-08-2026";
+
+}
+
+
+/* =========================
+   PREVIEW WHATSAPP
+========================= */
 
 function makeText(){
 
@@ -345,149 +661,300 @@ let out=
 "*PER TGL : 17 AGUSTUS 2026*\n"+
 "*TOKO PIC : KUTN*\n\n";
 
+
 stores.forEach((s,i)=>{
 
 const x=data[i];
 
 out+=
-`${i+1}.${s[0]}/${s[1]}/`+
+`${i+1}. ${s[0]} / ${s[1]} `+
 `${x.ok?"✅":"❌"} `+
 `(${x.photos.length} foto)\n`;
 
 });
 
-const done=data.filter(x=>x.ok).length;
+
+const done =
+data.filter(
+x=>x.ok
+).length;
+
 
 out+=
 `\n*REKAP:* ${done}/20 toko sudah sesuai.\n`+
 "*Ketentuan foto:* minimal 3, maksimal 6 foto per toko.";
 
+
 return out;
 
 }
 
+
 function updatePreview(){
 
-document.getElementById("preview").textContent=
+document.getElementById(
+"preview"
+).textContent =
 makeText();
 
 }
 
+
+/* =========================
+   SIMPAN ONLINE
+========================= */
+
 async function saveAll(){
 
-const loading=document.getElementById("loading");
+const loading =
+document.getElementById(
+"loading"
+);
 
-loading.style.display="block";
+loading.style.display =
+"block";
+
 
 let berhasil=0;
 
-for(let i=0;i<stores.length;i++){
+let gagal=0;
+
+
+for(
+let i=0;
+i<stores.length;
+i++
+){
 
 const x=data[i];
 
-if(x.photos.length===0 && !x.ok)continue;
+
+if(
+x.photos.length===0 &&
+!x.ok
+){
+
+continue;
+
+}
+
 
 try{
 
-await fetch(API_URL,{
+const response =
+await fetch(
+API_URL,
+{
 
 method:"POST",
 
-body:JSON.stringify({
+headers:{
+"Content-Type":
+"text/plain;charset=utf-8"
+},
 
-id:stores[i][0]+"_"+today(),
+body:
+JSON.stringify({
 
-kode:stores[i][0],
+id:
+stores[i][0]+"_"+today(),
 
-nama:stores[i][1],
+kode:
+stores[i][0],
 
-tanggal:today(),
+nama:
+stores[i][1],
 
-jumlahFoto:x.photos.length,
+tanggal:
+today(),
 
-status:x.ok?"SESUAI":"BELUM SESUAI"
+jumlahFoto:
+x.photos.length,
+
+status:
+x.ok
+?
+"SESUAI"
+:
+"BELUM SESUAI"
 
 })
 
 });
 
-data[i].saved=true;
 
-document.getElementById("saved"+i).textContent=
-"☁️ Tersimpan online";
+const result =
+await response.json();
 
-berhasil++;
 
-}catch(error){
+if(
+result.success!==true
+){
 
-document.getElementById("saved"+i).textContent=
-"❌ Gagal menyimpan";
-
-}
-
-}
-
-loading.style.display="none";
-
-alert(
-berhasil+
-" data toko berhasil dikirim ke database."
+throw new Error(
+result.error ||
+"Gagal menyimpan"
 );
 
 }
 
-function today(){
 
-return "17-08-2026";
+data[i].saved=true;
 
-}
 
-async function loadData(){
+document.getElementById(
+"saved"+i
+).textContent =
+"☁️ Tersimpan online";
 
-try{
 
-const response=await fetch(API_URL);
+berhasil++;
 
-const result=await response.json();
-
-result.forEach(item=>{
-
-const index=
-stores.findIndex(s=>s[0]===item.toko);
-
-if(index<0)return;
-
-data[index].ok=
-item.sesuai==="YA" ||
-item.sesuai==="SESUAI" ||
-item.sesuai===true;
-
-data[index].saved=true;
-
-const saved=
-document.getElementById("saved"+index);
-
-if(saved)
-saved.textContent=
-"☁️ Sudah tersimpan online";
-
-});
-
-render();
-
-document.getElementById("onlineStatus").textContent=
-"✅ Data online berhasil dimuat";
 
 }catch(error){
 
-document.getElementById("onlineStatus").textContent=
-"❌ Gagal mengambil data online";
+console.error(error);
+
+document.getElementById(
+"saved"+i
+).textContent =
+"❌ Gagal menyimpan";
+
+gagal++;
 
 }
 
 }
+
+
+loading.style.display =
+"none";
+
+
+alert(
+"SELESAI\n\n"+
+"✅ Berhasil: "+
+berhasil+
+" toko\n"+
+"❌ Gagal: "+
+gagal+
+" toko"
+);
+
+}
+
+
+/* =========================
+   AMBIL DATA ONLINE
+========================= */
+
+async function loadData(){
+
+const status =
+document.getElementById(
+"onlineStatus"
+);
+
+status.textContent =
+"🔄 Mengambil data online...";
+
+
+try{
+
+const response =
+await fetch(
+API_URL+
+"?t="+
+Date.now()
+);
+
+
+if(!response.ok){
+
+throw new Error(
+"Server tidak merespons"
+);
+
+}
+
+
+const result =
+await response.json();
+
+
+if(!Array.isArray(result)){
+
+throw new Error(
+"Format database tidak sesuai"
+);
+
+}
+
+
+result.forEach(item=>{
+
+const index =
+stores.findIndex(
+s=>
+s[0]===item.toko
+);
+
+
+if(index===-1)return;
+
+
+data[index].saved=true;
+
+data[index].ok =
+item.status==="SESUAI";
+
+
+const saved =
+document.getElementById(
+"saved"+index
+);
+
+
+if(saved){
+
+saved.textContent =
+"☁️ Sudah tersimpan online";
+
+}
+
+});
+
+
+status.textContent =
+"✅ Database online terhubung";
+
+
+status.className =
+"small good";
+
+
+}catch(error){
+
+console.error(error);
+
+status.textContent =
+"❌ Database online belum dapat dibaca";
+
+
+status.className =
+"small bad";
+
+}
+
+}
+
+
+/* =========================
+   START
+========================= */
 
 render();
+
 loadData();
 
 </script>

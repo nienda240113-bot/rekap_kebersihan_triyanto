@@ -5,245 +5,471 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#1677ff">
 <title>Rekap Kebersihan Area Triyanto</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6fa;color:#172033}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fa;color:#172033}
 header{background:#1677ff;color:#fff;padding:18px 16px;position:sticky;top:0;z-index:5}
-h1{font-size:20px;margin:0 0 5px}.sub{font-size:13px;opacity:.9}
+h1{font-size:20px;margin:0 0 5px}
+.sub{font-size:13px;opacity:.9}
 .wrap{max-width:720px;margin:auto;padding:12px}
 .card{background:#fff;border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 2px 10px #0001}
-.row{display:flex;gap:8px;align-items:center}.grow{flex:1}
-input[type=text],input[type=date],select{width:100%;padding:11px;border:1px solid #ccd5e0;border-radius:9px;font-size:14px}
-.store-title{font-weight:700;font-size:16px}.badge{font-size:11px;padding:5px 8px;border-radius:20px;background:#eef2f7}
+.row{display:flex;gap:8px;align-items:center}
+.grow{flex:1}
+.store-title{font-weight:700;font-size:16px}
+.badge{font-size:11px;padding:5px 8px;border-radius:20px;background:#eef2f7}
 .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
 .photo{aspect-ratio:1/1;border:1px dashed #9aa8b8;border-radius:9px;overflow:hidden;position:relative;background:#f7f9fb;display:flex;align-items:center;justify-content:center;font-size:11px;color:#718096;text-align:center}
-.photo img{width:100%;height:100%;object-fit:cover}.photo button{position:absolute;right:3px;top:3px;border:0;border-radius:50%;background:#d22;color:#fff;width:23px;height:23px}
-button{border:0;border-radius:9px;padding:10px 12px;font-weight:700;cursor:pointer}.add{background:#e9f1ff;color:#1677ff}.ok{background:#18a558;color:#fff}.wa{background:#25d366;color:#fff;width:100%;font-size:16px}.secondary{background:#edf1f5}
-input[type=file]{display:none}.status{font-size:12px;margin-top:6px}.good{color:#128548}.bad{color:#d33}
+.photo img{width:100%;height:100%;object-fit:cover}
+.photo button{position:absolute;right:3px;top:3px;border:0;border-radius:50%;background:#d22;color:#fff;width:23px;height:23px}
+button{border:0;border-radius:9px;padding:10px 12px;font-weight:700;cursor:pointer}
+.add{background:#e9f1ff;color:#1677ff;padding:10px 12px;border-radius:9px;font-weight:700}
+.ok{background:#18a558;color:#fff}
+.secondary{background:#edf1f5}
+.save{background:#1677ff;color:#fff;width:100%;font-size:16px;margin-top:10px}
+.status{font-size:12px;margin-top:6px}
+.good{color:#128548}
+.bad{color:#d33}
 #preview{white-space:pre-wrap;background:#f6f7f8;border-radius:10px;padding:12px;font-size:13px;line-height:1.45}
-.small{font-size:12px;color:#64748b}.top-actions{display:flex;gap:8px;flex-wrap:wrap}.top-actions button{flex:1}
+.small{font-size:12px;color:#64748b}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+.top-actions button{flex:1}
+input[type=file]{display:none}
+.loading{display:none;text-align:center;padding:10px;color:#1677ff;font-weight:bold}
 </style>
 </head>
+
 <body>
+
 <header>
- <h1>REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO</h1>
- <div class="sub">AREA: TRIYANTO • TOKO PIC: KUTN • 17 AGUSTUS 2026</div>
+<h1>REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO</h1>
+<div class="sub">AREA: TRIYANTO • TOKO PIC: KUTN • 17 AGUSTUS 2026</div>
 </header>
+
 <div class="wrap">
- <div class="card">
-  <div class="top-actions">
-   <button class="ok" onclick="checkAll()">✓ Semua Sesuai</button>
-   <button class="secondary" onclick="clearAll()">Reset</button>
-  </div>
-  <p class="small">Setiap toko wajib mengunggah <b>minimal 3</b> dan maksimal <b>6 foto</b> dalam 1 frame. Centang setelah foto sesuai permintaan.</p>
- </div>
- <div id="stores"></div>
- <div class="card">
-  <h3>Preview WhatsApp</h3>
-  <div id="preview">Belum ada data.</div>
-  <h4 style="margin:14px 0 8px">Frame Foto 20 Toko</h4>
-  <canvas id="photoFrame" style="width:100%;border-radius:10px;background:#eef2f7"></canvas>
-  <p class="small">Frame otomatis membuat <b>20 kotak toko</b>. Setiap kotak berisi seluruh foto toko tersebut. Jika semua toko mengirim 3 foto, otomatis menjadi <b>20 kotak × 3 foto = 60 foto</b>.</p>
-  <button class="secondary" style="width:100%;margin-bottom:8px" onclick="downloadFrame()">💾 Simpan Frame 20 Toko</button>
-  <button class="wa" style="margin-bottom:8px" onclick="shareFrame()">📤 Kirim Frame ke WhatsApp</button>
-  <button class="wa" onclick="sendWA()">📲 Kirim / Bagikan ke WhatsApp</button>
- </div>
+
+<div class="card">
+<div class="top-actions">
+<button class="ok" onclick="checkAll()">✓ Semua Sesuai</button>
+<button class="secondary" onclick="loadData()">🔄 Ambil Data Online</button>
 </div>
+
+<p class="small">
+Setiap toko wajib mengunggah <b>minimal 3</b> dan maksimal <b>6 foto</b>.
+Data yang sudah disimpan akan tetap ada walaupun toko lain mengisi.
+</p>
+
+<div id="onlineStatus" class="small">
+⏳ Mengambil data online...
+</div>
+</div>
+
+<div id="stores"></div>
+
+<div class="card">
+<h3>Preview WhatsApp</h3>
+<div id="preview">Belum ada data.</div>
+
+<button class="save" onclick="saveAll()">
+💾 SIMPAN SEMUA DATA ONLINE
+</button>
+
+<div id="loading" class="loading">
+⏳ Menyimpan data ke database...
+</div>
+</div>
+
+</div>
+
 <script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzjMjxN_HYErEm7hvPCLD5Oq2blJJjAVeyPPSCeeU6Co-kPMhmwziTZmNkW4bdMshsv/exec";
+
 const stores=[
-["C624","RWBT"],["C560","RAJ"],["CH81","CDKS"],["CG76","SPMM"],["C573","GMM"],
-["CE47","MKRI"],["CI30","STTD"],["CH41","KPMRK"],["CG54","MM2100"],["C935","TLJ2"],
-["CA71","WSGN"],["C965","CBNU"],["CG86","JKST"],["CA94","KPTI"],["C574","SKU"],
-["CI15","RPSU"],["CI54","RJLB"],["CF50","DNIA"],["CC21","KUTN"],["CI84","TLKW"]
+["C624","RWBT"],
+["C560","RAJ"],
+["CH81","CDKS"],
+["CG76","SPMM"],
+["C573","GMM"],
+["CE47","MKRI"],
+["CI30","STTD"],
+["CH41","KPMRK"],
+["CG54","MM2100"],
+["C935","TLJ2"],
+["CA71","WSGN"],
+["C965","CBNU"],
+["CG86","JKST"],
+["CA94","KPTI"],
+["C574","SKU"],
+["CI15","RPSU"],
+["CI54","RJLB"],
+["CF50","DNIA"],
+["CC21","KUTN"],
+["CI84","TLKW"]
 ];
-const data=stores.map(()=>({photos:[],ok:false}));
+
+const data=stores.map(()=>({
+photos:[],
+ok:false,
+saved:false
+}));
+
 function render(){
- const el=document.getElementById('stores'); el.innerHTML='';
- stores.forEach((s,i)=>{
-  const c=document.createElement('div'); c.className='card';
-  c.innerHTML=`<div class="row"><div class="grow store-title">${i+1}. ${s[0]} / ${s[1]}</div><span id="badge${i}" class="badge">0/6 foto</span></div>
-  <div class="photos" id="photos${i}"></div>
-  <div class="row"><label class="add">＋ Tambah Foto <input type="file" accept="image/*" multiple onchange="addPhotos(${i},this.files)"></label><button class="secondary" onclick="clearPhotos(${i})">Hapus Foto</button></div>
-  <div class="status" id="status${i}"></div>
-  <label style="display:block;margin-top:10px"><input type="checkbox" id="ok${i}" onchange="toggleOK(${i},this.checked)"> Saya sudah memastikan foto sesuai permintaan</label>`;
-  el.appendChild(c); drawPhotos(i);
- });
- updatePreview();
+
+const el=document.getElementById("stores");
+el.innerHTML="";
+
+stores.forEach((s,i)=>{
+
+const c=document.createElement("div");
+c.className="card";
+
+c.innerHTML=`
+
+<div class="row">
+<div class="grow store-title">
+${i+1}. ${s[0]} / ${s[1]}
+</div>
+
+<span id="badge${i}" class="badge">
+0/6 foto
+</span>
+</div>
+
+<div class="photos" id="photos${i}"></div>
+
+<div class="row">
+
+<label class="add">
+＋ Tambah Foto
+<input
+type="file"
+accept="image/*"
+multiple
+onchange="addPhotos(${i},this.files)">
+</label>
+
+<button
+class="secondary"
+onclick="clearPhotos(${i})">
+Hapus Foto
+</button>
+
+</div>
+
+<div
+class="status"
+id="status${i}">
+</div>
+
+<label style="display:block;margin-top:10px">
+<input
+type="checkbox"
+id="ok${i}"
+onchange="toggleOK(${i},this.checked)">
+Saya sudah memastikan foto sesuai permintaan
+</label>
+
+<div
+id="saved${i}"
+class="small"
+style="margin-top:6px">
+</div>
+
+`;
+
+el.appendChild(c);
+
+drawPhotos(i);
+
+});
+
+updatePreview();
+
 }
+
 function addPhotos(i,files){
- const remain=6-data[i].photos.length;
- [...files].slice(0,remain).forEach(f=>{
-  const r=new FileReader();r.onload=e=>{data[i].photos.push(e.target.result);drawPhotos(i);updatePreview()};r.readAsDataURL(f);
- });
+
+const remain=6-data[i].photos.length;
+
+[...files].slice(0,remain).forEach(file=>{
+
+const reader=new FileReader();
+
+reader.onload=e=>{
+
+data[i].photos.push(e.target.result);
+
+data[i].saved=false;
+
+drawPhotos(i);
+updatePreview();
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
 }
+
 function drawPhotos(i){
- const p=document.getElementById('photos'+i); if(!p)return;
- p.innerHTML='';
- data[i].photos.forEach((src,j)=>{
-  const d=document.createElement('div');d.className='photo';
-  d.innerHTML=`<img src="${src}"><button onclick="removePhoto(${i},${j})">×</button>`;p.appendChild(d);
- });
- for(let k=data[i].photos.length;k<6;k++){const d=document.createElement('div');d.className='photo';d.textContent=k<3?'Foto '+(k+1)+' wajib':'Foto '+(k+1)+' opsional';p.appendChild(d)}
- document.getElementById('badge'+i).textContent=data[i].photos.length+'/6 foto';
- const st=document.getElementById('status'+i);
- st.className='status '+(data[i].photos.length>=3?'good':'bad');
- st.textContent=data[i].photos.length>=3?'✓ Minimal foto terpenuhi':'⚠ Minimal 3 foto belum terpenuhi';
+
+const p=document.getElementById("photos"+i);
+
+if(!p)return;
+
+p.innerHTML="";
+
+data[i].photos.forEach((src,j)=>{
+
+const d=document.createElement("div");
+
+d.className="photo";
+
+d.innerHTML=`
+<img src="${src}">
+<button onclick="removePhoto(${i},${j})">×</button>
+`;
+
+p.appendChild(d);
+
+});
+
+for(let k=data[i].photos.length;k<6;k++){
+
+const d=document.createElement("div");
+
+d.className="photo";
+
+d.textContent=
+k<3
+?"Foto "+(k+1)+" wajib"
+:"Foto "+(k+1)+" opsional";
+
+p.appendChild(d);
+
 }
-function removePhoto(i,j){data[i].photos.splice(j,1);drawPhotos(i);updatePreview()}
-function clearPhotos(i){data[i].photos=[];data[i].ok=false;document.getElementById('ok'+i).checked=false;drawPhotos(i);updatePreview()}
-function toggleOK(i,v){data[i].ok=v;updatePreview()}
-function checkAll(){data.forEach((x,i)=>{x.ok=x.photos.length>=3;document.getElementById('ok'+i).checked=x.ok});updatePreview()}
-function clearAll(){location.reload()}
+
+document.getElementById("badge"+i).textContent=
+data[i].photos.length+"/6 foto";
+
+const st=document.getElementById("status"+i);
+
+st.className=
+"status "+
+(data[i].photos.length>=3?"good":"bad");
+
+st.textContent=
+data[i].photos.length>=3
+?"✓ Minimal foto terpenuhi"
+:"⚠ Minimal 3 foto belum terpenuhi";
+
+}
+
+function removePhoto(i,j){
+
+data[i].photos.splice(j,1);
+
+data[i].saved=false;
+
+drawPhotos(i);
+updatePreview();
+
+}
+
+function clearPhotos(i){
+
+data[i].photos=[];
+
+data[i].ok=false;
+data[i].saved=false;
+
+document.getElementById("ok"+i).checked=false;
+
+drawPhotos(i);
+updatePreview();
+
+}
+
+function toggleOK(i,v){
+
+data[i].ok=v;
+data[i].saved=false;
+
+updatePreview();
+
+}
+
+function checkAll(){
+
+data.forEach((x,i)=>{
+
+x.ok=x.photos.length>=3;
+
+document.getElementById("ok"+i).checked=x.ok;
+
+});
+
+updatePreview();
+
+}
+
 function makeText(){
- let out=`*REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO*\n*AREA : TRIYANTO*\n*PER TGL : 17 AGUSTUS 2026*\n*TOKO PIC : KUTN*\n\n`;
- stores.forEach((s,i)=>{const x=data[i];out+=`${i+1}.${s[0]}/${s[1]}/${x.ok?'✅':'❌'} (${x.photos.length} foto)\n`});
- const done=data.filter(x=>x.ok).length;
- out+=`\n*REKAP:* ${done}/20 toko sudah sesuai.\n*Ketentuan foto:* minimal 3, maksimal 6 foto per toko.`;
- return out;
+
+let out=
+"*REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO*\n"+
+"*AREA : TRIYANTO*\n"+
+"*PER TGL : 17 AGUSTUS 2026*\n"+
+"*TOKO PIC : KUTN*\n\n";
+
+stores.forEach((s,i)=>{
+
+const x=data[i];
+
+out+=
+`${i+1}.${s[0]}/${s[1]}/`+
+`${x.ok?"✅":"❌"} `+
+`(${x.photos.length} foto)\n`;
+
+});
+
+const done=data.filter(x=>x.ok).length;
+
+out+=
+`\n*REKAP:* ${done}/20 toko sudah sesuai.\n`+
+"*Ketentuan foto:* minimal 3, maksimal 6 foto per toko.";
+
+return out;
+
 }
+
 function updatePreview(){
- document.getElementById('preview').textContent=makeText();
- buildPhotoFrame();
-}
-function buildPhotoFrame(){
- const canvas=document.getElementById('photoFrame'); if(!canvas)return;
- const ctx=canvas.getContext('2d');
 
- // 1 kotak besar = 1 toko.
- // Di dalam kotak toko, semua 3-6 foto toko tersebut dibuat grid otomatis.
- const cols=4;
- const cellW=300;
- const cellH=260;
- const headerH=64;
- const rows=5;
+document.getElementById("preview").textContent=
+makeText();
 
- canvas.width=cols*cellW;
- canvas.height=headerH+rows*cellH;
-
- ctx.fillStyle='#eef2f6';
- ctx.fillRect(0,0,canvas.width,canvas.height);
-
- ctx.fillStyle='#1677ff';
- ctx.fillRect(0,0,canvas.width,headerH);
- ctx.fillStyle='#fff';
- ctx.textAlign='center';
- ctx.font='bold 22px Arial';
- ctx.fillText('REKAP FOTO 20 TOKO',canvas.width/2,27);
- ctx.font='14px Arial';
- const total=data.reduce((n,x)=>n+x.photos.length,0);
- ctx.fillText('AREA TRIYANTO • 17 AGUSTUS 2026 • '+total+' FOTO',canvas.width/2,50);
-
- stores.forEach((s,i)=>{
-   const x=(i%cols)*cellW;
-   const y=headerH+Math.floor(i/cols)*cellH;
-   const photos=data[i].photos;
-
-   // Border kartu toko
-   ctx.fillStyle='#ffffff';
-   ctx.fillRect(x+3,y+3,cellW-6,cellH-6);
-   ctx.strokeStyle='#cbd5e1';
-   ctx.lineWidth=2;
-   ctx.strokeRect(x+3,y+3,cellW-6,cellH-6);
-
-   // Header toko
-   ctx.fillStyle='#172033';
-   ctx.fillRect(x+4,y+4,cellW-8,30);
-   ctx.fillStyle='#fff';
-   ctx.textAlign='left';
-   ctx.font='bold 14px Arial';
-   ctx.fillText((i+1)+'. '+s[0]+' / '+s[1],x+12,y+24);
-
-   if(!photos.length){
-     ctx.fillStyle='#e5e7eb';
-     ctx.fillRect(x+8,y+40,cellW-16,cellH-48);
-     ctx.fillStyle='#6b7280';
-     ctx.textAlign='center';
-     ctx.font='bold 15px Arial';
-     ctx.fillText('BELUM ADA FOTO',x+cellW/2,y+cellH/2+8);
-     return;
-   }
-
-   // Layout otomatis di dalam masing-masing toko:
-   // 3 foto = 3 kolom, 4 = 2x2, 5-6 = 3x2.
-   const n=photos.length;
-   const miniCols = n<=3 ? n : 3;
-   const miniRows = Math.ceil(n/miniCols);
-   const areaX=x+8, areaY=y+40;
-   const areaW=cellW-16, areaH=cellH-48;
-   const gap=3;
-   const mw=(areaW-gap*(miniCols-1))/miniCols;
-   const mh=(areaH-gap*(miniRows-1))/miniRows;
-
-   photos.forEach((src,j)=>{
-     const cx=areaX+(j%miniCols)*(mw+gap);
-     const cy=areaY+Math.floor(j/miniCols)*(mh+gap);
-     const img=new Image();
-
-     img.onload=()=>{
-       ctx.save();
-       ctx.beginPath();
-       ctx.rect(cx,cy,mw,mh);
-       ctx.clip();
-       const scale=Math.max(mw/img.width,mh/img.height);
-       const iw=img.width*scale, ih=img.height*scale;
-       ctx.drawImage(img,cx+(mw-iw)/2,cy+(mh-ih)/2,iw,ih);
-
-       ctx.fillStyle='rgba(0,0,0,.60)';
-       ctx.fillRect(cx,cy+mh-18,mw,18);
-       ctx.fillStyle='#fff';
-       ctx.textAlign='left';
-       ctx.font='10px Arial';
-       ctx.fillText('Foto '+(j+1),cx+4,cy+mh-5);
-       ctx.restore();
-     };
-     img.src=src;
-   });
- });
 }
 
-function downloadFrame(){
- const canvas=document.getElementById('photoFrame');
- canvas.toBlob(blob=>{
-   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-   a.download='Rekap_Foto_20_Toko_Triyanto_17-08-2026.jpg';a.click();
- },'image/jpeg',0.92);
-}
-async function shareFrame(){
- const canvas=document.getElementById('photoFrame');
- if(!canvas){alert('Frame belum tersedia');return;}
- const blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',0.92));
- const file=new File([blob],'Rekap_Foto_20_Toko_Triyanto_17-08-2026.jpg',{type:'image/jpeg'});
- const text=makeText();
+async function saveAll(){
 
- if(navigator.share){
-   try{
-     if(navigator.canShare && navigator.canShare({files:[file]})){
-       await navigator.share({title:'Rekap Kebersihan Area Triyanto',text:text,files:[file]});
-       return;
-     }
-     await navigator.share({title:'Rekap Kebersihan Area Triyanto',text:text});
-     return;
-   }catch(e){}
- }
- alert('Browser ini belum mendukung kirim gambar langsung. Tekan "Simpan Frame 20 Toko", lalu pilih WhatsApp dan kirim gambarnya ke grup.');
+const loading=document.getElementById("loading");
+
+loading.style.display="block";
+
+let berhasil=0;
+
+for(let i=0;i<stores.length;i++){
+
+const x=data[i];
+
+if(x.photos.length===0 && !x.ok)continue;
+
+try{
+
+await fetch(API_URL,{
+
+method:"POST",
+
+body:JSON.stringify({
+
+id:stores[i][0]+"_"+today(),
+
+kode:stores[i][0],
+
+nama:stores[i][1],
+
+tanggal:today(),
+
+jumlahFoto:x.photos.length,
+
+status:x.ok?"SESUAI":"BELUM SESUAI"
+
+})
+
+});
+
+data[i].saved=true;
+
+document.getElementById("saved"+i).textContent=
+"☁️ Tersimpan online";
+
+berhasil++;
+
+}catch(error){
+
+document.getElementById("saved"+i).textContent=
+"❌ Gagal menyimpan";
+
 }
 
-async function sendWA(){
- const text=makeText();
- const canvas=document.getElementById('photoFrame');
-if(navigator.share && canvas && navigator.canShare){
- try{
-   const blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',0.92));
-   const file=new File([blob],'Rekap_Foto_20_Toko_Triyanto.jpg',{type:'image/jpeg'});
-   if(navigator.canShare({files:[file]})){
-     await navigator.share({title:'Rekap Kebersihan Area Triyanto',text,files:[file]});
-     return;
-   }
- }catch(e){}
 }
-if(navigator.share){try{await navigator.share({title:'Rekap Kebersihan Area Triyanto',text});return}catch(e){}}
-window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+
+loading.style.display="none";
+
+alert(
+berhasil+
+" data toko berhasil dikirim ke database."
+);
+
 }
+
+function today(){
+
+return "17-08-2026";
+
+}
+
+async function loadData(){
+
+try{
+
+const response=await fetch(API_URL);
+
+const result=await response.json();
+
+result.forEach(item=>{
+
+const index=
+stores.findIndex(s=>s[0]===item.toko);
+
+if(index<0)return;
+
+data[index].ok=
+item.sesuai==="YA" ||
+item.sesuai==="SESUAI" ||
+item.sesuai===true;
+
+data[index].saved=true;
+
+const saved=
+document.getElementById("saved"+index);
+
+if(saved)
+saved.textContent=
+"☁️ Sudah tersimpan online";
+
+});
+
 render();
+
+document.getElementById("onlineStatus").textContent=
+"✅ Data online berhasil dimuat";
+
+}catch(error){
+
+document.getElementById("onlineStatus").textContent=
+"❌ Gagal mengambil data online";
+
+}
+
+}
+
+render();
+loadData();
+
 </script>
+
 </body>
-</html>
+ </html>

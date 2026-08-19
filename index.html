@@ -50,8 +50,8 @@ header p{
 }
 
 .info b{
-  display:inline-block;
-  margin-bottom:5px;
+  display:block;
+  margin-bottom:7px;
 }
 
 .store{
@@ -78,9 +78,36 @@ header p{
   font-size:22px;
 }
 
-input[type=file]{
-  width:100%;
-  margin:8px 0;
+.photo-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.photo-buttons button{
+  border:0;
+  border-radius:10px;
+  padding:13px 5px;
+  font-size:14px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.camera-btn{
+  background:#2563eb;
+  color:white;
+}
+
+.gallery-btn{
+  background:#7c3aed;
+  color:white;
+}
+
+.count{
+  font-size:13px;
+  margin-top:10px;
+  font-weight:bold;
 }
 
 .preview{
@@ -88,6 +115,10 @@ input[type=file]{
   grid-template-columns:repeat(3,1fr);
   gap:7px;
   margin-top:10px;
+}
+
+.preview-item{
+  position:relative;
 }
 
 .preview img{
@@ -98,13 +129,22 @@ input[type=file]{
   background:#ddd;
 }
 
-.count{
-  font-size:13px;
-  margin-top:6px;
+.remove-photo{
+  position:absolute;
+  top:4px;
+  right:4px;
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  border:0;
+  background:#dc2626;
+  color:white;
+  font-size:14px;
   font-weight:bold;
+  padding:0;
 }
 
-button{
+.save{
   width:100%;
   border:0;
   border-radius:10px;
@@ -112,12 +152,9 @@ button{
   font-size:15px;
   font-weight:bold;
   cursor:pointer;
-}
-
-.save{
   background:#0f766e;
   color:white;
-  margin-top:10px;
+  margin-top:12px;
 }
 
 .save:disabled{
@@ -125,9 +162,39 @@ button{
 }
 
 .whatsapp{
+  width:100%;
+  border:0;
+  border-radius:10px;
+  padding:13px;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
   background:#16a34a;
   color:white;
-  margin-top:10px;
+  margin-top:8px;
+}
+
+.top{
+  background:white;
+  padding:12px;
+  border-radius:12px;
+  margin-bottom:12px;
+  box-shadow:0 2px 8px #0001;
+}
+
+.progress{
+  height:12px;
+  background:#e5e7eb;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:8px;
+}
+
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#0f766e;
+  transition:.3s;
 }
 
 .result{
@@ -156,26 +223,12 @@ button{
   background:#2563eb;
 }
 
-.top{
-  background:white;
-  padding:12px;
-  border-radius:12px;
-  margin-bottom:12px;
-}
-
-.progress{
-  height:12px;
-  background:#e5e7eb;
-  border-radius:20px;
-  overflow:hidden;
-  margin-top:8px;
-}
-
-.progress-bar{
-  height:100%;
-  width:0%;
-  background:#0f766e;
-  transition:.3s;
+input[type=date]{
+  width:100%;
+  padding:11px;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  font-size:15px;
 }
 </style>
 </head>
@@ -183,38 +236,80 @@ button{
 <body>
 
 <header>
-<h1>REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO</h1>
+
+<h1>
+REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO
+</h1>
+
 <p>AREA : TRIYANTO</p>
 <p>TOKO PIC : KUTN</p>
+
 </header>
+
 
 <div class="container">
 
+
 <div class="info">
-  <b>Tanggal</b>
-  <input id="tanggal" type="date">
+
+<b>Tanggal</b>
+
+<input
+  id="tanggal"
+  type="date">
+
 </div>
 
+
 <div class="top">
-  <b>Progress Penyimpanan</b>
-  <div id="progressText">0 / 20 toko tersimpan</div>
-  <div class="progress">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
+
+<b>Progress Penyimpanan</b>
+
+<div id="progressText">
+0 / 20 toko tersimpan
 </div>
+
+<div class="progress">
+
+<div
+  class="progress-bar"
+  id="progressBar">
+</div>
+
+</div>
+
+</div>
+
 
 <div id="stores"></div>
 
+
 </div>
 
-<div id="result" class="result"></div>
+
+<div
+  id="result"
+  class="result">
+</div>
+
 
 <script>
+
+
+/* =========================================
+   URL DATABASE GOOGLE APPS SCRIPT
+========================================= */
 
 const API_URL =
 "https://script.google.com/macros/s/AKfycbzyrkzoISeGTCSffRNOAtn8Dt_xfEJVxH6qdi49grTXhf9Fyge5groxSk07cZ8zV4rN/exec";
 
+
+/* =========================================
+   DAFTAR 20 TOKO
+========================================= */
+
 const TOKO = [
+
 ["C624","RWBT"],
 ["C560","RAJ"],
 ["CH81","CDKS"],
@@ -235,256 +330,492 @@ const TOKO = [
 ["CF50","DNIA"],
 ["CC21","KUTN"],
 ["CI84","TLKW"]
+
 ];
 
-let savedCount = 0;
+
+/* =========================================
+   PENYIMPANAN FOTO SETIAP TOKO
+========================================= */
+
+const FOTO_TOKO = {};
+
+
+/* =========================================
+   TANGGAL OTOMATIS
+========================================= */
 
 const today = new Date();
 
 document.getElementById("tanggal").value =
-  today.getFullYear() + "-" +
-  String(today.getMonth()+1).padStart(2,"0") + "-" +
-  String(today.getDate()).padStart(2,"0");
+today.getFullYear() +
+"-" +
+String(today.getMonth()+1).padStart(2,"0") +
+"-" +
+String(today.getDate()).padStart(2,"0");
 
+
+/* =========================================
+   PESAN
+========================================= */
 
 function showMessage(text,type){
 
   const el =
-    document.getElementById("result");
+  document.getElementById("result");
 
-  el.textContent = text;
+  el.textContent=text;
 
-  el.className =
-    "result " + type;
+  el.className=
+  "result "+type;
 
-  el.style.display = "block";
+  el.style.display="block";
 
-  if(type !== "loading"){
-    setTimeout(()=>{
+  if(type!=="loading"){
+
+    setTimeout(function(){
+
       el.style.display="none";
+
     },4000);
+
   }
+
 }
 
+
+/* =========================================
+   BUAT 20 TOKO
+========================================= */
 
 function renderStores(){
 
   const container =
-    document.getElementById("stores");
+  document.getElementById("stores");
 
-  container.innerHTML = "";
+  container.innerHTML="";
 
-  TOKO.forEach((toko,index)=>{
 
-    const kode = toko[0];
-    const nama = toko[1];
+  TOKO.forEach(function(toko,index){
 
-    const div =
-      document.createElement("div");
+    const kode=toko[0];
+
+    const nama=toko[1];
+
+
+    FOTO_TOKO[kode]=[];
+
+
+    const div=
+    document.createElement("div");
 
     div.className="store";
 
-    div.innerHTML = `
+
+    div.innerHTML=`
 
       <div class="store-title">
 
         <h3>
-          ${index+1}. ${kode}/${nama}
+        ${index+1}. ${kode}/${nama}
         </h3>
 
         <span
-          class="status"
-          id="status-${kode}">
-          ⏳
+        class="status"
+        id="status-${kode}">
+        ⏳
         </span>
 
       </div>
 
+
+      <div class="photo-buttons">
+
+        <button
+        type="button"
+        class="camera-btn"
+        onclick="bukaKamera('${kode}')">
+
+        📷 Ambil Foto
+
+        </button>
+
+
+        <button
+        type="button"
+        class="gallery-btn"
+        onclick="bukaGaleri('${kode}')">
+
+        🖼️ Pilih dari Galeri
+
+        </button>
+
+      </div>
+
+
       <input
-        type="file"
-        id="foto-${kode}"
-        accept="image/*"
-        capture="environment"
-        multiple>
+      type="file"
+      id="kamera-${kode}"
+      accept="image/*"
+      capture="environment"
+      hidden>
+
+
+      <input
+      type="file"
+      id="galeri-${kode}"
+      accept="image/*"
+      multiple
+      hidden>
+
 
       <div
-        class="count"
-        id="count-${kode}">
-        Pilih 3–6 foto
+      class="count"
+      id="count-${kode}">
+
+      Belum ada foto — wajib 3–6 foto
+
       </div>
 
+
       <div
-        class="preview"
-        id="preview-${kode}">
+      class="preview"
+      id="preview-${kode}">
       </div>
+
 
       <button
-        class="save"
-        id="save-${kode}"
-        onclick="simpanToko('${kode}','${nama}')">
+      class="save"
+      id="save-${kode}"
+      onclick="simpanToko('${kode}','${nama}')">
 
-        💾 SIMPAN ONLINE
+      💾 SIMPAN ONLINE
 
       </button>
 
-      <button
-        class="whatsapp"
-        onclick="shareWhatsApp('${kode}','${nama}')">
 
-        📲 KIRIM WHATSAPP
+      <button
+      class="whatsapp"
+      onclick="shareWhatsApp('${kode}','${nama}')">
+
+      📲 KIRIM WHATSAPP
 
       </button>
 
     `;
 
+
     container.appendChild(div);
 
+
     document
-      .getElementById(`foto-${kode}`)
-      .addEventListener(
-        "change",
-        function(){
+    .getElementById(`kamera-${kode}`)
+    .addEventListener(
+      "change",
+      function(){
 
-          previewFoto(
-            kode,
-            this.files
-          );
+        tambahFoto(
+          kode,
+          this.files
+        );
 
-        }
-      );
+        this.value="";
+
+      }
+    );
+
+
+    document
+    .getElementById(`galeri-${kode}`)
+    .addEventListener(
+      "change",
+      function(){
+
+        tambahFoto(
+          kode,
+          this.files
+        );
+
+        this.value="";
+
+      }
+    );
 
   });
 
 }
 
 
-function previewFoto(kode,files){
+/* =========================================
+   BUKA KAMERA
+========================================= */
 
-  const preview =
-    document.getElementById(
-      `preview-${kode}`
-    );
+function bukaKamera(kode){
 
-  const count =
-    document.getElementById(
-      `count-${kode}`
-    );
+  const input =
+  document.getElementById(
+    `kamera-${kode}`
+  );
+
+  input.click();
+
+}
+
+
+/* =========================================
+   BUKA GALERI
+========================================= */
+
+function bukaGaleri(kode){
+
+  const input =
+  document.getElementById(
+    `galeri-${kode}`
+  );
+
+  input.click();
+
+}
+
+
+/* =========================================
+   TAMBAH FOTO
+========================================= */
+
+function tambahFoto(kode,files){
+
+  const daftar=
+  FOTO_TOKO[kode];
+
+
+  for(let i=0;i<files.length;i++){
+
+    if(daftar.length>=6){
+
+      showMessage(
+        "Maksimal 6 foto",
+        "error"
+      );
+
+      break;
+
+    }
+
+    const file=files[i];
+
+
+    if(!file.type.startsWith("image/")){
+
+      continue;
+
+    }
+
+
+    daftar.push(file);
+
+  }
+
+
+  renderPreview(kode);
+
+}
+
+
+/* =========================================
+   PREVIEW FOTO
+========================================= */
+
+function renderPreview(kode){
+
+  const daftar=
+  FOTO_TOKO[kode];
+
+
+  const preview=
+  document.getElementById(
+    `preview-${kode}`
+  );
+
+
+  const count=
+  document.getElementById(
+    `count-${kode}`
+  );
+
 
   preview.innerHTML="";
 
-  if(files.length < 3){
 
-    count.textContent =
-      `⚠️ ${files.length} foto — minimal 3`;
+  if(daftar.length===0){
 
-    count.style.color="#dc2626";
-
-  }else if(files.length > 6){
-
-    count.textContent =
-      `⚠️ ${files.length} foto — maksimal 6`;
+    count.textContent=
+    "Belum ada foto — wajib 3–6 foto";
 
     count.style.color="#dc2626";
 
-  }else{
+    return;
 
-    count.textContent =
-      `✅ ${files.length} foto siap disimpan`;
+  }
+
+
+  if(daftar.length<3){
+
+    count.textContent=
+    `⚠️ ${daftar.length} foto — minimal 3`;
+
+    count.style.color="#dc2626";
+
+  }
+
+  else{
+
+    count.textContent=
+    `✅ ${daftar.length} foto siap disimpan`;
 
     count.style.color="#16a34a";
 
   }
 
-  const jumlah =
-    Math.min(files.length,6);
 
-  for(let i=0;i<jumlah;i++){
+  daftar.forEach(function(file,index){
 
-    const reader =
-      new FileReader();
+    const item=
+    document.createElement("div");
 
-    reader.onload =
-      function(e){
+    item.className=
+    "preview-item";
 
-        const img =
-          document.createElement("img");
 
-        img.src=e.target.result;
+    const img=
+    document.createElement("img");
 
-        preview.appendChild(img);
 
-      };
+    const reader=
+    new FileReader();
 
-    reader.readAsDataURL(files[i]);
 
-  }
+    reader.onload=
+    function(e){
+
+      img.src=e.target.result;
+
+    };
+
+
+    reader.readAsDataURL(file);
+
+
+    const remove=
+    document.createElement("button");
+
+    remove.className=
+    "remove-photo";
+
+    remove.textContent="×";
+
+
+    remove.onclick=
+    function(){
+
+      FOTO_TOKO[kode].splice(
+        index,
+        1
+      );
+
+      renderPreview(kode);
+
+    };
+
+
+    item.appendChild(img);
+
+    item.appendChild(remove);
+
+    preview.appendChild(item);
+
+  });
 
 }
 
 
+/* =========================================
+   KOMPRES FOTO
+========================================= */
+
 function resizeImage(file){
 
-  return new Promise((resolve,reject)=>{
+  return new Promise(function(resolve,reject){
 
-    const reader =
-      new FileReader();
+    const reader=
+    new FileReader();
 
-    reader.onload =
-      function(e){
 
-        const img =
-          new Image();
+    reader.onload=
+    function(e){
 
-        img.onload =
-          function(){
+      const img=
+      new Image();
 
-            const maxWidth=1200;
 
-            let width=img.width;
-            let height=img.height;
+      img.onload=
+      function(){
 
-            if(width>maxWidth){
+        const maxWidth=1200;
 
-              height =
-                height *
-                maxWidth /
-                width;
 
-              width=maxWidth;
+        let width=img.width;
 
-            }
+        let height=img.height;
 
-            const canvas =
-              document.createElement("canvas");
 
-            canvas.width=width;
-            canvas.height=height;
+        if(width>maxWidth){
 
-            const ctx =
-              canvas.getContext("2d");
+          height=
+          height*maxWidth/width;
 
-            ctx.drawImage(
-              img,
-              0,
-              0,
-              width,
-              height
-            );
+          width=maxWidth;
 
-            resolve(
-              canvas.toDataURL(
-                "image/jpeg",
-                0.75
-              )
-            );
+        }
 
-          };
 
-        img.onerror=reject;
+        const canvas=
+        document.createElement("canvas");
 
-        img.src=e.target.result;
+
+        canvas.width=width;
+
+        canvas.height=height;
+
+
+        const ctx=
+        canvas.getContext("2d");
+
+
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          width,
+          height
+        );
+
+
+        resolve(
+          canvas.toDataURL(
+            "image/jpeg",
+            0.70
+          )
+        );
 
       };
+
+
+      img.onerror=reject;
+
+      img.src=e.target.result;
+
+    };
+
 
     reader.onerror=reject;
 
@@ -495,27 +826,29 @@ function resizeImage(file){
 }
 
 
+/* =========================================
+   SIMPAN TOKO
+========================================= */
+
 async function simpanToko(kode,nama){
 
-  const input =
-    document.getElementById(
-      `foto-${kode}`
-    );
+  const files=
+  FOTO_TOKO[kode];
 
-  const button =
-    document.getElementById(
-      `save-${kode}`
-    );
 
-  const status =
-    document.getElementById(
-      `status-${kode}`
-    );
+  const button=
+  document.getElementById(
+    `save-${kode}`
+  );
 
-  const files =
-    Array.from(input.files);
 
-  if(files.length < 3){
+  const status=
+  document.getElementById(
+    `status-${kode}`
+  );
+
+
+  if(files.length<3){
 
     showMessage(
       `${kode}/${nama}: minimal 3 foto`,
@@ -526,7 +859,8 @@ async function simpanToko(kode,nama){
 
   }
 
-  if(files.length > 6){
+
+  if(files.length>6){
 
     showMessage(
       `${kode}/${nama}: maksimal 6 foto`,
@@ -537,10 +871,12 @@ async function simpanToko(kode,nama){
 
   }
 
-  const tanggal =
-    document.getElementById(
-      "tanggal"
-    ).value;
+
+  const tanggal=
+  document.getElementById(
+    "tanggal"
+  ).value;
+
 
   if(!tanggal){
 
@@ -553,29 +889,42 @@ async function simpanToko(kode,nama){
 
   }
 
+
   button.disabled=true;
 
-  button.textContent =
-    "⏳ MENYIMPAN...";
+  button.textContent=
+  "⏳ MENYIMPAN...";
+
 
   status.textContent="⏳";
 
+
   showMessage(
-    `Menyimpan ${kode}/${nama}...`,
+    `Mengirim ${kode}/${nama}...`,
     "loading"
   );
+
 
   try{
 
     const foto=[];
 
-    for(let i=0;i<files.length;i++){
 
-      foto.push(
-        await resizeImage(files[i])
+    for(
+      let i=0;
+      i<files.length;
+      i++
+    ){
+
+      const compressed=
+      await resizeImage(
+        files[i]
       );
 
+      foto.push(compressed);
+
     }
+
 
     const data={
 
@@ -595,21 +944,27 @@ async function simpanToko(kode,nama){
 
     };
 
-    const response =
-      await fetch(
-        API_URL,
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":
-              "text/plain;charset=utf-8"
-          },
-          body:JSON.stringify(data)
-        }
-      );
 
-    const result =
-      await response.json();
+    const response=
+    await fetch(
+      API_URL,
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":
+          "text/plain;charset=utf-8"
+        },
+
+        body:
+        JSON.stringify(data)
+      }
+    );
+
+
+    const result=
+    await response.json();
+
 
     if(!result.success){
 
@@ -620,33 +975,41 @@ async function simpanToko(kode,nama){
 
     }
 
+
     status.textContent="✅";
 
-    button.textContent =
-      "✅ SUDAH TERSIMPAN";
 
-    button.style.background =
-      "#16a34a";
+    button.textContent=
+    "✅ SUDAH TERSIMPAN";
 
-    savedCount++;
 
-    updateProgress();
+    button.style.background=
+    "#16a34a";
+
 
     showMessage(
       `${kode}/${nama} berhasil disimpan online`,
       "success"
     );
 
+
+    updateProgress();
+
+
   }catch(error){
 
     console.error(error);
 
+
     status.textContent="❌";
+
 
     button.disabled=false;
 
-    button.textContent =
-      "💾 COBA SIMPAN LAGI";
+
+    button.textContent=
+    "💾 COBA SIMPAN LAGI";
+
 
     showMessage(
       `${kode}/${nama}: ${error.message}`,
@@ -658,50 +1021,112 @@ async function simpanToko(kode,nama){
 }
 
 
+/* =========================================
+   PROGRESS
+========================================= */
+
+let savedStores=new Set();
+
+
 function updateProgress(){
+
+  TOKO.forEach(function(toko){
+
+    const kode=toko[0];
+
+    const status=
+    document.getElementById(
+      `status-${kode}`
+    );
+
+    const button=
+    document.getElementById(
+      `save-${kode}`
+    );
+
+
+    if(
+      status &&
+      status.textContent==="✅" &&
+      button &&
+      button.textContent.includes(
+        "SUDAH TERSIMPAN"
+      )
+    ){
+
+      savedStores.add(kode);
+
+    }
+
+  });
+
+
+  const jumlah=
+  savedStores.size;
+
 
   document.getElementById(
     "progressText"
-  ).textContent =
-    `${savedCount} / 20 toko tersimpan`;
+  ).textContent=
+  `${jumlah} / 20 toko tersimpan`;
+
 
   document.getElementById(
     "progressBar"
-  ).style.width =
-    (savedCount/20*100)+"%";
+  ).style.width=
+  `${jumlah/20*100}%`;
 
 }
 
 
+/* =========================================
+   WHATSAPP
+========================================= */
+
 function shareWhatsApp(kode,nama){
 
-  const tanggal =
-    document.getElementById(
-      "tanggal"
-    ).value;
+  const tanggal=
+  document.getElementById(
+    "tanggal"
+  ).value;
 
-  const text =
+
+  const jumlah=
+  FOTO_TOKO[kode].length;
+
+
+  const text=
 `*REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO*
+
 *AREA : TRIYANTO*
 *PER TGL : ${tanggal}*
 *TOKO PIC : KUTN*
 
 ${kode}/${nama}/✅
 
-Foto: 3–6 foto telah disiapkan melalui aplikasi.`;
+Jumlah foto: ${jumlah} foto`;
 
-  const url =
-    "https://wa.me/?text=" +
-    encodeURIComponent(text);
 
-  window.open(url,"_blank");
+  const url=
+  "https://wa.me/?text="+
+  encodeURIComponent(text);
+
+
+  window.open(
+    url,
+    "_blank"
+  );
 
 }
 
+
+/* =========================================
+   JALANKAN
+========================================= */
 
 renderStores();
 
 </script>
 
 </body>
- </html>
+  </html>

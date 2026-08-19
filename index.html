@@ -2,218 +2,233 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Rekap Kebersihan Triyanto</title>
 
 <style>
+
 *{
-  box-sizing:border-box;
+box-sizing:border-box;
 }
 
 body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f1f5f9;
-  color:#111827;
+margin:0;
+font-family:Arial,sans-serif;
+background:#f1f5f9;
+color:#111827;
 }
 
 header{
-  background:#0f766e;
-  color:white;
-  padding:18px 14px;
-  text-align:center;
+background:#0f766e;
+color:white;
+padding:18px 12px;
+text-align:center;
 }
 
 header h1{
-  margin:0;
-  font-size:20px;
+font-size:20px;
+margin:0 0 7px;
 }
 
 header p{
-  margin:5px 0;
-  font-size:14px;
+margin:3px 0;
+font-size:14px;
 }
 
 .container{
-  max-width:700px;
-  margin:auto;
-  padding:12px;
+max-width:720px;
+margin:auto;
+padding:12px;
 }
 
-.info,
-.progress-box,
-.store{
-  background:white;
-  border-radius:14px;
-  padding:15px;
-  margin-bottom:12px;
-  box-shadow:0 2px 8px #0001;
+.card{
+background:white;
+border-radius:14px;
+padding:15px;
+margin-bottom:14px;
+box-shadow:0 2px 8px #0001;
 }
 
-.info b{
-  display:block;
-  margin-bottom:7px;
+label{
+font-weight:bold;
+display:block;
+margin-bottom:6px;
 }
 
 input[type=date]{
-  width:100%;
-  padding:11px;
-  border:1px solid #cbd5e1;
-  border-radius:8px;
-  font-size:15px;
+width:100%;
+padding:12px;
+border:1px solid #cbd5e1;
+border-radius:9px;
+font-size:15px;
 }
 
-.store-title{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-
-.store-title h3{
-  margin:0;
-  font-size:17px;
-}
-
-.status{
-  font-size:22px;
-}
-
-.photo-buttons{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-
-.photo-buttons button{
-  border:0;
-  border-radius:10px;
-  padding:13px 5px;
-  font-size:14px;
-  font-weight:bold;
-  color:white;
-}
-
-.camera-btn{
-  background:#2563eb;
-}
-
-.gallery-btn{
-  background:#7c3aed;
-}
-
-.count{
-  margin-top:10px;
-  font-size:13px;
-  font-weight:bold;
-}
-
-.preview{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:7px;
-  margin-top:10px;
-}
-
-.preview-item{
-  position:relative;
-}
-
-.preview-item img{
-  width:100%;
-  height:100px;
-  object-fit:cover;
-  border-radius:8px;
-}
-
-.remove-photo{
-  position:absolute;
-  right:4px;
-  top:4px;
-  width:26px;
-  height:26px;
-  border:0;
-  border-radius:50%;
-  background:#dc2626;
-  color:white;
-  font-weight:bold;
-  font-size:18px;
-  padding:0;
-}
-
-.save{
-  width:100%;
-  border:0;
-  border-radius:10px;
-  padding:13px;
-  margin-top:12px;
-  background:#0f766e;
-  color:white;
-  font-size:15px;
-  font-weight:bold;
-}
-
-.save:disabled{
-  background:#94a3b8;
-}
-
-.whatsapp{
-  width:100%;
-  border:0;
-  border-radius:10px;
-  padding:13px;
-  margin-top:8px;
-  background:#16a34a;
-  color:white;
-  font-size:15px;
-  font-weight:bold;
+.progress-text{
+font-weight:bold;
+margin-bottom:8px;
 }
 
 .progress{
-  height:12px;
-  background:#e5e7eb;
-  border-radius:20px;
-  overflow:hidden;
-  margin-top:8px;
+height:13px;
+background:#e5e7eb;
+border-radius:20px;
+overflow:hidden;
 }
 
 .progress-bar{
-  height:100%;
-  width:0%;
-  background:#0f766e;
-  transition:.3s;
+height:100%;
+width:0%;
+background:#0f766e;
+transition:.3s;
 }
 
-.result{
-  position:fixed;
-  left:10px;
-  right:10px;
-  bottom:10px;
-  padding:14px;
-  border-radius:10px;
-  color:white;
-  text-align:center;
-  font-weight:bold;
-  display:none;
-  z-index:9999;
+.store{
+background:white;
+border-radius:14px;
+padding:15px;
+margin-bottom:14px;
+box-shadow:0 2px 8px #0001;
 }
 
-.success{
-  background:#16a34a;
+.store-header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:12px;
 }
 
-.error{
-  background:#dc2626;
+.store-name{
+font-size:17px;
+font-weight:bold;
 }
 
-.loading{
-  background:#2563eb;
+.status{
+font-size:22px;
 }
+
+.photo-buttons{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+}
+
+.photo-buttons button{
+border:0;
+border-radius:10px;
+padding:13px 5px;
+font-size:14px;
+font-weight:bold;
+color:white;
+}
+
+.camera{
+background:#2563eb;
+}
+
+.gallery{
+background:#7c3aed;
+}
+
+.photo-info{
+font-size:13px;
+font-weight:bold;
+margin-top:10px;
+}
+
+.preview{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:7px;
+margin-top:10px;
+}
+
+.preview-box{
+position:relative;
+}
+
+.preview-box img{
+width:100%;
+height:100px;
+object-fit:cover;
+border-radius:8px;
+}
+
+.delete-photo{
+position:absolute;
+right:4px;
+top:4px;
+width:25px;
+height:25px;
+border:0;
+border-radius:50%;
+background:#dc2626;
+color:white;
+font-weight:bold;
+font-size:17px;
+padding:0;
+}
+
+.save{
+width:100%;
+border:0;
+border-radius:10px;
+padding:14px;
+margin-top:12px;
+background:#0f766e;
+color:white;
+font-weight:bold;
+font-size:15px;
+}
+
+.save:disabled{
+background:#94a3b8;
+}
+
+.whatsapp{
+width:100%;
+border:0;
+border-radius:10px;
+padding:14px;
+margin-top:8px;
+background:#16a34a;
+color:white;
+font-weight:bold;
+font-size:15px;
+}
+
+.message{
+position:fixed;
+left:10px;
+right:10px;
+bottom:10px;
+padding:14px;
+border-radius:10px;
+color:white;
+font-weight:bold;
+text-align:center;
+display:none;
+z-index:9999;
+}
+
+.message.success{
+background:#16a34a;
+}
+
+.message.error{
+background:#dc2626;
+}
+
+.message.loading{
+background:#2563eb;
+}
+
 </style>
 </head>
 
+
 <body>
+
 
 <header>
 
@@ -222,6 +237,7 @@ REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO
 </h1>
 
 <p>AREA : TRIYANTO</p>
+
 <p>TOKO PIC : KUTN</p>
 
 </header>
@@ -230,9 +246,11 @@ REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO
 <div class="container">
 
 
-<div class="info">
+<!-- TANGGAL -->
 
-<b>Tanggal</b>
+<div class="card">
+
+<label>Tanggal Laporan</label>
 
 <input
 id="tanggal"
@@ -241,12 +259,16 @@ type="date">
 </div>
 
 
-<div class="progress-box">
+<!-- PROGRESS -->
 
-<b>Progress Penyimpanan</b>
+<div class="card">
 
-<div id="progressText">
+<div
+class="progress-text"
+id="progressText">
+
 0 / 20 toko tersimpan
+
 </div>
 
 <div class="progress">
@@ -261,31 +283,34 @@ class="progress-bar">
 </div>
 
 
-<div id="stores"></div>
+<!-- DAFTAR TOKO -->
+
+<div id="daftarToko"></div>
 
 
 </div>
 
 
 <div
-id="result"
-class="result">
+id="message"
+class="message">
 </div>
 
 
 <script>
 
-/* =========================================
-   DATABASE GOOGLE APPS SCRIPT
-========================================= */
+
+/* =====================================================
+   URL DATABASE GOOGLE APPS SCRIPT
+===================================================== */
 
 const API_URL =
 "https://script.google.com/macros/s/AKfycbzLr5lu9lj-w9r0n9FTGLhtID30fnEAQhMwjhiKePpSrhfVP1OLKyFh3P5-y3BHmSSR/exec";
 
 
-/* =========================================
-   DAFTAR TOKO
-========================================= */
+/* =====================================================
+   20 TOKO AREA TRIYANTO
+===================================================== */
 
 const TOKO = [
 
@@ -313,750 +338,722 @@ const TOKO = [
 ];
 
 
-/* =========================================
+/* =====================================================
    PENYIMPANAN FOTO
-========================================= */
+===================================================== */
 
-const FOTO_TOKO = {};
+const FOTO = {};
 
-const savedStores = new Set();
+const SUDAH_SIMPAN = new Set();
 
 
-/* =========================================
+/* =====================================================
    TANGGAL OTOMATIS
-========================================= */
+===================================================== */
 
-const now = new Date();
+const d = new Date();
 
 document.getElementById("tanggal").value =
-now.getFullYear() +
+d.getFullYear() +
 "-" +
-String(now.getMonth()+1).padStart(2,"0") +
+String(d.getMonth()+1).padStart(2,"0") +
 "-" +
-String(now.getDate()).padStart(2,"0");
+String(d.getDate()).padStart(2,"0");
 
 
-/* =========================================
+/* =====================================================
    PESAN
-========================================= */
+===================================================== */
 
-function showMessage(text,type){
+function pesan(text,type){
 
-  const el =
-  document.getElementById("result");
+const el =
+document.getElementById("message");
 
-  el.textContent = text;
+el.textContent=text;
 
-  el.className =
-  "result " + type;
+el.className =
+"message " + type;
 
-  el.style.display = "block";
+el.style.display="block";
 
-  if(type !== "loading"){
+if(type !== "loading"){
 
-    setTimeout(function(){
+setTimeout(function(){
 
-      el.style.display = "none";
+el.style.display="none";
 
-    },4000);
+},4000);
 
-  }
 }
-
-
-/* =========================================
-   MEMBUAT DAFTAR TOKO
-========================================= */
-
-function renderStores(){
-
-  const container =
-  document.getElementById("stores");
-
-  container.innerHTML = "";
-
-
-  TOKO.forEach(function(toko,index){
-
-    const kode = toko[0];
-
-    const nama = toko[1];
-
-    FOTO_TOKO[kode] = [];
-
-
-    const div =
-    document.createElement("div");
-
-    div.className = "store";
-
-
-    div.innerHTML = `
-
-      <div class="store-title">
-
-        <h3>
-          ${index+1}. ${kode}/${nama}
-        </h3>
-
-        <span
-        class="status"
-        id="status-${kode}">
-          ⏳
-        </span>
-
-      </div>
-
-
-      <div class="photo-buttons">
-
-        <button
-        type="button"
-        class="camera-btn"
-        onclick="bukaKamera('${kode}')">
-
-          📷 Ambil Foto
-
-        </button>
-
-
-        <button
-        type="button"
-        class="gallery-btn"
-        onclick="bukaGaleri('${kode}')">
-
-          🖼️ Pilih dari Galeri
-
-        </button>
-
-      </div>
-
-
-      <input
-      type="file"
-      id="kamera-${kode}"
-      accept="image/*"
-      capture="environment"
-      hidden>
-
-
-      <input
-      type="file"
-      id="galeri-${kode}"
-      accept="image/*"
-      multiple
-      hidden>
-
-
-      <div
-      class="count"
-      id="count-${kode}">
-
-        Belum ada foto — wajib 3–6 foto
-
-      </div>
-
-
-      <div
-      class="preview"
-      id="preview-${kode}">
-      </div>
-
-
-      <button
-      class="save"
-      id="save-${kode}"
-      onclick="simpanToko('${kode}','${nama}')">
-
-        💾 SIMPAN ONLINE
-
-      </button>
-
-
-      <button
-      class="whatsapp"
-      onclick="shareWhatsApp('${kode}','${nama}')">
-
-        📲 KIRIM WHATSAPP
-
-      </button>
-
-    `;
-
-
-    container.appendChild(div);
-
-
-    document
-    .getElementById(`kamera-${kode}`)
-    .addEventListener(
-      "change",
-      function(){
-
-        tambahFoto(
-          kode,
-          this.files
-        );
-
-        this.value = "";
-
-      }
-    );
-
-
-    document
-    .getElementById(`galeri-${kode}`)
-    .addEventListener(
-      "change",
-      function(){
-
-        tambahFoto(
-          kode,
-          this.files
-        );
-
-        this.value = "";
-
-      }
-    );
-
-  });
 
 }
 
 
-/* =========================================
-   KAMERA
-========================================= */
+/* =====================================================
+   MEMBUAT 20 TOKO
+===================================================== */
 
-function bukaKamera(kode){
+function tampilkanToko(){
 
-  document
-  .getElementById(`kamera-${kode}`)
-  .click();
+const area =
+document.getElementById("daftarToko");
+
+area.innerHTML="";
+
+
+TOKO.forEach(function(toko,index){
+
+const kode=toko[0];
+
+const nama=toko[1];
+
+FOTO[kode]=[];
+
+
+const box =
+document.createElement("div");
+
+box.className="store";
+
+
+box.innerHTML=`
+
+<div class="store-header">
+
+<div class="store-name">
+
+${index+1}. ${kode} / ${nama}
+
+</div>
+
+<div
+class="status"
+id="status-${kode}">
+
+⏳
+
+</div>
+
+</div>
+
+
+<div class="photo-buttons">
+
+
+<button
+class="camera"
+onclick="kamera('${kode}')">
+
+📷 Ambil Foto
+
+</button>
+
+
+<button
+class="gallery"
+onclick="galeri('${kode}')">
+
+🖼️ Pilih dari Galeri
+
+</button>
+
+
+</div>
+
+
+<input
+type="file"
+id="camera-${kode}"
+accept="image/*"
+capture="environment"
+hidden>
+
+
+<input
+type="file"
+id="gallery-${kode}"
+accept="image/*"
+multiple
+hidden>
+
+
+<div
+class="photo-info"
+id="info-${kode}">
+
+Belum ada foto — wajib 3 sampai 6 foto
+
+</div>
+
+
+<div
+class="preview"
+id="preview-${kode}">
+</div>
+
+
+<button
+class="save"
+id="save-${kode}"
+onclick="simpan('${kode}','${nama}')">
+
+💾 SIMPAN ONLINE
+
+</button>
+
+
+<button
+class="whatsapp"
+onclick="whatsapp('${kode}','${nama}')">
+
+📲 KIRIM WHATSAPP
+
+</button>
+
+`;
+
+
+area.appendChild(box);
+
+
+/* KAMERA */
+
+document
+.getElementById(`camera-${kode}`)
+.addEventListener(
+"change",
+function(){
+
+tambahFoto(
+kode,
+this.files
+);
+
+this.value="";
+
+}
+);
+
+
+/* GALERI */
+
+document
+.getElementById(`gallery-${kode}`)
+.addEventListener(
+"change",
+function(){
+
+tambahFoto(
+kode,
+this.files
+);
+
+this.value="";
+
+}
+);
+
+});
 
 }
 
 
-/* =========================================
-   GALERI
-========================================= */
+/* =====================================================
+   BUKA KAMERA
+===================================================== */
 
-function bukaGaleri(kode){
+function kamera(kode){
 
-  document
-  .getElementById(`galeri-${kode}`)
-  .click();
+document
+.getElementById(`camera-${kode}`)
+.click();
 
 }
 
 
-/* =========================================
+/* =====================================================
+   BUKA GALERI
+===================================================== */
+
+function galeri(kode){
+
+document
+.getElementById(`gallery-${kode}`)
+.click();
+
+}
+
+
+/* =====================================================
    TAMBAH FOTO
-========================================= */
+===================================================== */
 
 function tambahFoto(kode,files){
 
-  const daftar =
-  FOTO_TOKO[kode];
+const daftar =
+FOTO[kode];
 
 
-  for(
-    let i=0;
-    i<files.length;
-    i++
-  ){
+for(
+let i=0;
+i<files.length;
+i++
+){
 
-    if(daftar.length >= 6){
+if(
+daftar.length >= 6
+){
 
-      showMessage(
-        "Maksimal 6 foto",
-        "error"
-      );
+pesan(
+"Maksimal 6 foto per toko",
+"error"
+);
 
-      break;
-
-    }
-
-
-    if(
-      files[i].type.startsWith("image/")
-    ){
-
-      daftar.push(files[i]);
-
-    }
-
-  }
-
-
-  renderPreview(kode);
+break;
 
 }
 
 
-/* =========================================
+if(
+files[i].type.startsWith("image/")
+){
+
+daftar.push(
+files[i]
+);
+
+}
+
+}
+
+
+preview(kode);
+
+}
+
+
+/* =====================================================
    PREVIEW
-========================================= */
+===================================================== */
 
-function renderPreview(kode){
+function preview(kode){
 
-  const daftar =
-  FOTO_TOKO[kode];
-
-
-  const preview =
-  document.getElementById(
-    `preview-${kode}`
-  );
+const daftar =
+FOTO[kode];
 
 
-  const count =
-  document.getElementById(
-    `count-${kode}`
-  );
+const tempat =
+document.getElementById(
+`preview-${kode}`
+);
 
 
-  preview.innerHTML = "";
+const info =
+document.getElementById(
+`info-${kode}`
+);
 
 
-  if(daftar.length === 0){
-
-    count.textContent =
-    "Belum ada foto — wajib 3–6 foto";
-
-    count.style.color =
-    "#dc2626";
-
-    return;
-
-  }
+tempat.innerHTML="";
 
 
-  if(daftar.length < 3){
+if(
+daftar.length < 3
+){
 
-    count.textContent =
-    `⚠️ ${daftar.length} foto — minimal 3`;
+info.textContent =
+`⚠️ ${daftar.length} foto — minimal 3 foto`;
 
-    count.style.color =
-    "#dc2626";
+info.style.color="#dc2626";
 
-  }else{
+}
+else{
 
-    count.textContent =
-    `✅ ${daftar.length} foto siap disimpan`;
+info.textContent =
+`✅ ${daftar.length} foto siap disimpan`;
 
-    count.style.color =
-    "#16a34a";
-
-  }
-
-
-  daftar.forEach(
-    function(file,index){
-
-      const item =
-      document.createElement("div");
-
-      item.className =
-      "preview-item";
-
-
-      const img =
-      document.createElement("img");
-
-
-      const reader =
-      new FileReader();
-
-
-      reader.onload =
-      function(e){
-
-        img.src =
-        e.target.result;
-
-      };
-
-
-      reader.readAsDataURL(file);
-
-
-      const remove =
-      document.createElement("button");
-
-      remove.className =
-      "remove-photo";
-
-      remove.textContent =
-      "×";
-
-
-      remove.onclick =
-      function(){
-
-        FOTO_TOKO[kode].splice(
-          index,
-          1
-        );
-
-        renderPreview(kode);
-
-      };
-
-
-      item.appendChild(img);
-
-      item.appendChild(remove);
-
-      preview.appendChild(item);
-
-    }
-  );
+info.style.color="#16a34a";
 
 }
 
 
-/* =========================================
+daftar.forEach(
+function(file,index){
+
+const box =
+document.createElement("div");
+
+box.className="preview-box";
+
+
+const img =
+document.createElement("img");
+
+
+const reader =
+new FileReader();
+
+
+reader.onload =
+function(e){
+
+img.src=e.target.result;
+
+};
+
+
+reader.readAsDataURL(file);
+
+
+const hapus =
+document.createElement("button");
+
+hapus.className=
+"delete-photo";
+
+hapus.textContent="×";
+
+
+hapus.onclick =
+function(){
+
+FOTO[kode].splice(
+index,
+1
+);
+
+preview(kode);
+
+};
+
+
+box.appendChild(img);
+
+box.appendChild(hapus);
+
+tempat.appendChild(box);
+
+}
+);
+
+}
+
+
+/* =====================================================
    KOMPRES FOTO
-========================================= */
+===================================================== */
 
-function resizeImage(file){
+function kompres(file){
 
-  return new Promise(
-    function(resolve,reject){
+return new Promise(
+function(resolve,reject){
 
-      const reader =
-      new FileReader();
-
-
-      reader.onload =
-      function(e){
-
-        const img =
-        new Image();
+const reader =
+new FileReader();
 
 
-        img.onload =
-        function(){
+reader.onload =
+function(e){
 
-          const maxWidth = 1200;
-
-          let width =
-          img.width;
-
-          let height =
-          img.height;
+const img =
+new Image();
 
 
-          if(width > maxWidth){
+img.onload =
+function(){
 
-            height =
-            height *
-            maxWidth /
-            width;
+const max=1200;
 
-            width =
-            maxWidth;
+let w=img.width;
 
-          }
+let h=img.height;
 
 
-          const canvas =
-          document.createElement(
-            "canvas"
-          );
+if(w>max){
 
+h =
+h*max/w;
 
-          canvas.width =
-          width;
-
-          canvas.height =
-          height;
-
-
-          const ctx =
-          canvas.getContext("2d");
-
-
-          ctx.drawImage(
-            img,
-            0,
-            0,
-            width,
-            height
-          );
-
-
-          resolve(
-            canvas.toDataURL(
-              "image/jpeg",
-              0.70
-            )
-          );
-
-        };
-
-
-        img.onerror = reject;
-
-        img.src =
-        e.target.result;
-
-      };
-
-
-      reader.onerror = reject;
-
-      reader.readAsDataURL(file);
-
-    }
-  );
+w=max;
 
 }
 
 
-/* =========================================
+const canvas =
+document.createElement(
+"canvas"
+);
+
+canvas.width=w;
+
+canvas.height=h;
+
+
+const ctx =
+canvas.getContext("2d");
+
+
+ctx.drawImage(
+img,
+0,
+0,
+w,
+h
+);
+
+
+resolve(
+canvas.toDataURL(
+"image/jpeg",
+0.70
+)
+);
+
+};
+
+
+img.onerror=reject;
+
+img.src=e.target.result;
+
+};
+
+
+reader.onerror=reject;
+
+reader.readAsDataURL(file);
+
+}
+);
+
+}
+
+
+/* =====================================================
    SIMPAN ONLINE
-========================================= */
+===================================================== */
 
-async function simpanToko(kode,nama){
+async function simpan(kode,nama){
 
-  const files =
-  FOTO_TOKO[kode];
+const daftar =
+FOTO[kode];
 
 
-  const button =
-  document.getElementById(
-    `save-${kode}`
-  );
+const tombol =
+document.getElementById(
+`save-${kode}`
+);
 
 
-  const status =
-  document.getElementById(
-    `status-${kode}`
-  );
+const status =
+document.getElementById(
+`status-${kode}`
+);
 
 
-  if(!files || files.length < 3){
+if(
+daftar.length < 3
+){
 
-    showMessage(
-      `${kode}/${nama}: minimal 3 foto`,
-      "error"
-    );
+pesan(
+`${kode}/${nama}: minimal 3 foto`,
+"error"
+);
 
-    return;
-
-  }
-
-
-  if(files.length > 6){
-
-    showMessage(
-      `${kode}/${nama}: maksimal 6 foto`,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  const tanggal =
-  document.getElementById(
-    "tanggal"
-  ).value;
-
-
-  if(!tanggal){
-
-    showMessage(
-      "Tanggal belum dipilih",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  button.disabled = true;
-
-  button.textContent =
-  "⏳ MENYIMPAN...";
-
-  status.textContent =
-  "⏳";
-
-
-  showMessage(
-    `Mengirim ${kode}/${nama}...`,
-    "loading"
-  );
-
-
-  try{
-
-    const foto = [];
-
-
-    for(
-      let i=0;
-      i<files.length;
-      i++
-    ){
-
-      const hasil =
-      await resizeImage(
-        files[i]
-      );
-
-      foto.push(hasil);
-
-    }
-
-
-    const data = {
-
-      tanggal: tanggal,
-
-      area: "TRIYANTO",
-
-      tokoPic: "KUTN",
-
-      kodeToko: kode,
-
-      namaToko: nama,
-
-      status: "✅",
-
-      foto: foto
-
-    };
-
-
-    /*
-      KIRIM KE GOOGLE APPS SCRIPT
-
-      no-cors digunakan supaya browser
-      tidak memblokir koneksi.
-    */
-
-    await fetch(
-      API_URL,
-      {
-        method: "POST",
-
-        mode: "no-cors",
-
-        headers: {
-          "Content-Type":
-          "text/plain;charset=utf-8"
-        },
-
-        body:
-        JSON.stringify(data)
-      }
-    );
-
-
-    /*
-      Request sudah terkirim.
-    */
-
-    status.textContent =
-    "✅";
-
-
-    button.textContent =
-    "✅ DATA TERKIRIM";
-
-
-    button.style.background =
-    "#16a34a";
-
-
-    savedStores.add(kode);
-
-
-    updateProgress();
-
-
-    showMessage(
-      `${kode}/${nama} berhasil dikirim ke database`,
-      "success"
-    );
-
-
-  }catch(error){
-
-    console.error(error);
-
-
-    status.textContent =
-    "❌";
-
-
-    button.disabled =
-    false;
-
-
-    button.textContent =
-    "💾 COBA SIMPAN LAGI";
-
-
-    showMessage(
-      `${kode}/${nama}: ${error.message}`,
-      "error"
-    );
-
-  }
+return;
 
 }
 
 
-/* =========================================
-   PROGRESS
-========================================= */
+if(
+daftar.length > 6
+){
+
+pesan(
+`${kode}/${nama}: maksimal 6 foto`,
+"error"
+);
+
+return;
+
+}
+
+
+const tanggal =
+document.getElementById(
+"tanggal"
+).value;
+
+
+tombol.disabled=true;
+
+tombol.textContent =
+"⏳ MENYIMPAN...";
+
+status.textContent="⏳";
+
+
+pesan(
+`Mengirim ${kode}/${nama}...`,
+"loading"
+);
+
+
+try{
+
+
+/* KONVERSI FOTO */
+
+const foto=[];
+
+
+for(
+let i=0;
+i<daftar.length;
+i++
+){
+
+const hasil =
+await kompres(
+daftar[i]
+);
+
+foto.push(hasil);
+
+}
+
+
+/* DATA */
+
+const data={
+
+tanggal:tanggal,
+
+area:"TRIYANTO",
+
+tokoPic:"KUTN",
+
+kodeToko:kode,
+
+namaToko:nama,
+
+status:"✅",
+
+foto:foto
+
+};
+
+
+/* KIRIM KE APPS SCRIPT */
+
+await fetch(
+API_URL,
+{
+
+method:"POST",
+
+mode:"no-cors",
+
+headers:{
+"Content-Type":
+"text/plain;charset=utf-8"
+},
+
+body:
+JSON.stringify(data)
+
+}
+);
+
+
+/* BERHASIL TERKIRIM */
+
+status.textContent="✅";
+
+tombol.textContent =
+"✅ DATA TERKIRIM";
+
+tombol.style.background =
+"#16a34a";
+
+
+SUDAH_SIMPAN.add(kode);
+
+updateProgress();
+
+
+pesan(
+`${kode}/${nama} berhasil dikirim`,
+"success"
+);
+
+
+}catch(error){
+
+
+console.error(error);
+
+
+status.textContent="❌";
+
+tombol.disabled=false;
+
+tombol.textContent =
+"💾 COBA SIMPAN LAGI";
+
+
+pesan(
+`${kode}/${nama}: ${error.message}`,
+"error"
+);
+
+}
+
+}
+
+
+/* =====================================================
+   UPDATE PROGRESS
+===================================================== */
 
 function updateProgress(){
 
-  const jumlah =
-  savedStores.size;
+const jumlah =
+SUDAH_SIMPAN.size;
 
 
-  document.getElementById(
-    "progressText"
-  ).textContent =
-  `${jumlah} / 20 toko tersimpan`;
+document.getElementById(
+"progressText"
+).textContent =
+`${jumlah} / 20 toko tersimpan`;
 
 
-  document.getElementById(
-    "progressBar"
-  ).style.width =
-  `${jumlah / 20 * 100}%`;
+document.getElementById(
+"progressBar"
+).style.width =
+`${jumlah/20*100}%`;
 
 }
 
 
-/* =========================================
+/* =====================================================
    WHATSAPP
-========================================= */
+===================================================== */
 
-function shareWhatsApp(kode,nama){
+function whatsapp(kode,nama){
 
-  const tanggal =
-  document.getElementById(
-    "tanggal"
-  ).value;
-
-
-  const jumlah =
-  FOTO_TOKO[kode].length;
+const tanggal =
+document.getElementById(
+"tanggal"
+).value;
 
 
-  const text =
+const jumlah =
+FOTO[kode].length;
 
+
+const teks =
 `*REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO*
 
 *AREA : TRIYANTO*
@@ -1068,24 +1065,20 @@ ${kode}/${nama}/✅
 Jumlah foto: ${jumlah} foto`;
 
 
-  const url =
-  "https://wa.me/?text=" +
-  encodeURIComponent(text);
-
-
-  window.open(
-    url,
-    "_blank"
-  );
+window.open(
+"https://wa.me/?text="+
+encodeURIComponent(teks),
+"_blank"
+);
 
 }
 
 
-/* =========================================
-   MULAI APLIKASI
-========================================= */
+/* =====================================================
+   MULAI
+===================================================== */
 
-renderStores();
+tampilkanToko();
 
 </script>
 

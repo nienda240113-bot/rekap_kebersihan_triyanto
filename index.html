@@ -1,197 +1,181 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#1677ff">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>Rekap Kebersihan Area Triyanto</title>
+<title>Rekap Kebersihan Triyanto</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 body{
- margin:0;
- font-family:Arial,sans-serif;
- background:#f3f6fa;
- color:#172033;
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f1f5f9;
+  color:#111827;
 }
 
 header{
- background:#1677ff;
- color:white;
- padding:18px 16px;
- position:sticky;
- top:0;
- z-index:5;
+  background:#0f766e;
+  color:white;
+  padding:18px 14px;
+  text-align:center;
 }
 
-h1{
- font-size:20px;
- margin:0 0 5px;
+header h1{
+  margin:0;
+  font-size:20px;
 }
 
-.sub{
- font-size:13px;
- opacity:.9;
+header p{
+  margin:5px 0 0;
+  font-size:14px;
 }
 
-.wrap{
- max-width:720px;
- margin:auto;
- padding:12px;
+.container{
+  max-width:700px;
+  margin:auto;
+  padding:12px;
 }
 
-.card{
- background:white;
- border-radius:14px;
- padding:14px;
- margin:10px 0;
- box-shadow:0 2px 10px #0001;
+.info{
+  background:white;
+  border-radius:12px;
+  padding:15px;
+  margin-bottom:12px;
+  box-shadow:0 2px 8px #0001;
 }
 
-.row{
- display:flex;
- gap:8px;
- align-items:center;
+.info b{
+  display:inline-block;
+  margin-bottom:5px;
 }
 
-.grow{
- flex:1;
+.store{
+  background:white;
+  border-radius:14px;
+  margin-bottom:15px;
+  padding:15px;
+  box-shadow:0 2px 8px #0001;
 }
 
 .store-title{
- font-weight:700;
- font-size:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
 }
 
-.badge{
- font-size:11px;
- padding:5px 8px;
- border-radius:20px;
- background:#eef2f7;
-}
-
-.photos{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:6px;
- margin:10px 0;
-}
-
-.photo{
- aspect-ratio:1/1;
- border:1px dashed #9aa8b8;
- border-radius:9px;
- overflow:hidden;
- position:relative;
- background:#f7f9fb;
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:11px;
- color:#718096;
- text-align:center;
-}
-
-.photo img{
- width:100%;
- height:100%;
- object-fit:cover;
-}
-
-.photo button{
- position:absolute;
- right:3px;
- top:3px;
- border:0;
- border-radius:50%;
- background:#d22;
- color:white;
- width:23px;
- height:23px;
-}
-
-button{
- border:0;
- border-radius:9px;
- padding:10px 12px;
- font-weight:700;
- cursor:pointer;
-}
-
-.add{
- background:#e9f1ff;
- color:#1677ff;
- padding:10px 12px;
- border-radius:9px;
- font-weight:700;
-}
-
-.ok{
- background:#18a558;
- color:white;
-}
-
-.secondary{
- background:#edf1f5;
-}
-
-.save{
- background:#1677ff;
- color:white;
- width:100%;
- font-size:16px;
- margin-top:10px;
+.store-title h3{
+  margin:0;
+  font-size:17px;
 }
 
 .status{
- font-size:12px;
- margin-top:6px;
-}
-
-.good{
- color:#128548;
-}
-
-.bad{
- color:#d33;
-}
-
-.small{
- font-size:12px;
- color:#64748b;
-}
-
-.top-actions{
- display:flex;
- gap:8px;
- flex-wrap:wrap;
-}
-
-.top-actions button{
- flex:1;
+  font-size:22px;
 }
 
 input[type=file]{
- display:none;
+  width:100%;
+  margin:8px 0;
+}
+
+.preview{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-top:10px;
+}
+
+.preview img{
+  width:100%;
+  height:100px;
+  object-fit:cover;
+  border-radius:8px;
+  background:#ddd;
+}
+
+.count{
+  font-size:13px;
+  margin-top:6px;
+  font-weight:bold;
+}
+
+button{
+  width:100%;
+  border:0;
+  border-radius:10px;
+  padding:13px;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.save{
+  background:#0f766e;
+  color:white;
+  margin-top:10px;
+}
+
+.save:disabled{
+  background:#94a3b8;
+}
+
+.whatsapp{
+  background:#16a34a;
+  color:white;
+  margin-top:10px;
+}
+
+.result{
+  position:fixed;
+  left:10px;
+  right:10px;
+  bottom:10px;
+  padding:14px;
+  border-radius:10px;
+  color:white;
+  text-align:center;
+  font-weight:bold;
+  display:none;
+  z-index:999;
+}
+
+.success{
+  background:#16a34a;
+}
+
+.error{
+  background:#dc2626;
 }
 
 .loading{
- display:none;
- text-align:center;
- padding:10px;
- color:#1677ff;
- font-weight:bold;
+  background:#2563eb;
 }
 
-#preview{
- white-space:pre-wrap;
- background:#f6f7f8;
- border-radius:10px;
- padding:12px;
- font-size:13px;
- line-height:1.45;
+.top{
+  background:white;
+  padding:12px;
+  border-radius:12px;
+  margin-bottom:12px;
+}
+
+.progress{
+  height:12px;
+  background:#e5e7eb;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:8px;
+}
+
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#0f766e;
+  transition:.3s;
 }
 </style>
 </head>
@@ -199,91 +183,38 @@ input[type=file]{
 <body>
 
 <header>
-
-<h1>
-REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO
-</h1>
-
-<div class="sub">
-AREA: TRIYANTO • TOKO PIC: KUTN • 17 AGUSTUS 2026
-</div>
-
+<h1>REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO</h1>
+<p>AREA : TRIYANTO</p>
+<p>TOKO PIC : KUTN</p>
 </header>
 
-<div class="wrap">
+<div class="container">
 
-<div class="card">
-
-<div class="top-actions">
-
-<button class="ok" onclick="checkAll()">
-✓ Semua Sesuai
-</button>
-
-<button class="secondary" onclick="loadData()">
-🔄 Ambil Data Online
-</button>
-
+<div class="info">
+  <b>Tanggal</b>
+  <input id="tanggal" type="date">
 </div>
 
-<p class="small">
-Setiap toko wajib mengunggah
-<b>minimal 3</b> dan maksimal
-<b>6 foto</b>.
-</p>
-
-<div id="onlineStatus" class="small">
-🔄 Menghubungkan database...
-</div>
-
+<div class="top">
+  <b>Progress Penyimpanan</b>
+  <div id="progressText">0 / 20 toko tersimpan</div>
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
 </div>
 
 <div id="stores"></div>
 
-<div class="card">
-
-<h3>
-Preview WhatsApp
-</h3>
-
-<div id="preview">
-Belum ada data.
 </div>
 
-<button
-class="save"
-onclick="saveAll()">
-
-💾 SIMPAN SEMUA DATA ONLINE
-
-</button>
-
-<div id="loading" class="loading">
-
-⏳ Menyimpan data ke database...
-
-</div>
-
-</div>
-
-</div>
+<div id="result" class="result"></div>
 
 <script>
 
-/* =========================
-   DATABASE ONLINE
-========================= */
-
 const API_URL =
-"https://script.google.com/macros/s/AKfycbyYF4F3V97_Ii65ptNfyhpD4WpGZ9QhWbOSGfTsUbJP6VCRMWNaMysbTZzpX5kQRyyA/exec";
+"https://script.google.com/macros/s/AKfycbzyrkzoISeGTCSffRNOAtn8Dt_xfEJVxH6qdi49grTXhf9Fyge5groxSk07cZ8zV4rN/exec";
 
-
-/* =========================
-   DAFTAR 20 TOKO
-========================= */
-
-const stores=[
-
+const TOKO = [
 ["C624","RWBT"],
 ["C560","RAJ"],
 ["CH81","CDKS"],
@@ -304,658 +235,471 @@ const stores=[
 ["CF50","DNIA"],
 ["CC21","KUTN"],
 ["CI84","TLKW"]
-
 ];
 
+let savedCount = 0;
 
-/* =========================
-   DATA LOKAL
-========================= */
+const today = new Date();
 
-const data=stores.map(()=>({
-
-photos:[],
-ok:false,
-saved:false
-
-}));
+document.getElementById("tanggal").value =
+  today.getFullYear() + "-" +
+  String(today.getMonth()+1).padStart(2,"0") + "-" +
+  String(today.getDate()).padStart(2,"0");
 
 
-/* =========================
-   TAMPILKAN TOKO
-========================= */
+function showMessage(text,type){
 
-function render(){
+  const el =
+    document.getElementById("result");
 
-const el=document.getElementById("stores");
+  el.textContent = text;
 
-el.innerHTML="";
+  el.className =
+    "result " + type;
 
-stores.forEach((s,i)=>{
+  el.style.display = "block";
 
-const c=document.createElement("div");
-
-c.className="card";
-
-c.innerHTML=`
-
-<div class="row">
-
-<div class="grow store-title">
-
-${i+1}. ${s[0]} / ${s[1]}
-
-</div>
-
-<span
-id="badge${i}"
-class="badge">
-
-0/6 foto
-
-</span>
-
-</div>
+  if(type !== "loading"){
+    setTimeout(()=>{
+      el.style.display="none";
+    },4000);
+  }
+}
 
 
-<div
-class="photos"
-id="photos${i}">
-</div>
+function renderStores(){
 
+  const container =
+    document.getElementById("stores");
 
-<div class="row">
+  container.innerHTML = "";
 
-<label class="add">
+  TOKO.forEach((toko,index)=>{
 
-＋ Tambah Foto
+    const kode = toko[0];
+    const nama = toko[1];
 
-<input
-type="file"
-accept="image/*"
-multiple
-onchange="addPhotos(${i},this.files)">
+    const div =
+      document.createElement("div");
 
-</label>
+    div.className="store";
 
+    div.innerHTML = `
 
-<button
-class="secondary"
-onclick="clearPhotos(${i})">
+      <div class="store-title">
 
-Hapus Foto
+        <h3>
+          ${index+1}. ${kode}/${nama}
+        </h3>
 
-</button>
+        <span
+          class="status"
+          id="status-${kode}">
+          ⏳
+        </span>
 
-</div>
+      </div>
 
+      <input
+        type="file"
+        id="foto-${kode}"
+        accept="image/*"
+        capture="environment"
+        multiple>
 
-<div
-id="status${i}"
-class="status">
-</div>
+      <div
+        class="count"
+        id="count-${kode}">
+        Pilih 3–6 foto
+      </div>
 
+      <div
+        class="preview"
+        id="preview-${kode}">
+      </div>
 
-<label style="display:block;margin-top:10px">
+      <button
+        class="save"
+        id="save-${kode}"
+        onclick="simpanToko('${kode}','${nama}')">
 
-<input
-type="checkbox"
-id="ok${i}"
-onchange="toggleOK(${i},this.checked)">
+        💾 SIMPAN ONLINE
 
-Saya sudah memastikan foto sesuai permintaan
+      </button>
 
-</label>
+      <button
+        class="whatsapp"
+        onclick="shareWhatsApp('${kode}','${nama}')">
 
+        📲 KIRIM WHATSAPP
 
-<div
-id="saved${i}"
-class="small"
-style="margin-top:6px">
+      </button>
 
-</div>
+    `;
 
-`;
+    container.appendChild(div);
 
-el.appendChild(c);
+    document
+      .getElementById(`foto-${kode}`)
+      .addEventListener(
+        "change",
+        function(){
 
-drawPhotos(i);
+          previewFoto(
+            kode,
+            this.files
+          );
 
-});
+        }
+      );
 
-updatePreview();
+  });
 
 }
 
 
-/* =========================
-   TAMBAH FOTO
-========================= */
+function previewFoto(kode,files){
 
-function addPhotos(i,files){
+  const preview =
+    document.getElementById(
+      `preview-${kode}`
+    );
 
-const remain =
-6-data[i].photos.length;
+  const count =
+    document.getElementById(
+      `count-${kode}`
+    );
 
-[...files]
-.slice(0,remain)
-.forEach(file=>{
+  preview.innerHTML="";
 
-const reader =
-new FileReader();
+  if(files.length < 3){
 
-reader.onload=e=>{
+    count.textContent =
+      `⚠️ ${files.length} foto — minimal 3`;
 
-data[i].photos.push(
-e.target.result
-);
+    count.style.color="#dc2626";
 
-data[i].saved=false;
+  }else if(files.length > 6){
 
-drawPhotos(i);
+    count.textContent =
+      `⚠️ ${files.length} foto — maksimal 6`;
 
-updatePreview();
+    count.style.color="#dc2626";
 
-};
+  }else{
 
-reader.readAsDataURL(file);
+    count.textContent =
+      `✅ ${files.length} foto siap disimpan`;
 
-});
+    count.style.color="#16a34a";
 
-}
+  }
 
+  const jumlah =
+    Math.min(files.length,6);
 
-/* =========================
-   TAMPIL FOTO
-========================= */
+  for(let i=0;i<jumlah;i++){
 
-function drawPhotos(i){
+    const reader =
+      new FileReader();
 
-const p =
-document.getElementById(
-"photos"+i
-);
+    reader.onload =
+      function(e){
 
-if(!p)return;
+        const img =
+          document.createElement("img");
 
-p.innerHTML="";
+        img.src=e.target.result;
 
+        preview.appendChild(img);
 
-data[i].photos.forEach(
-(src,j)=>{
+      };
 
-const d =
-document.createElement("div");
+    reader.readAsDataURL(files[i]);
 
-d.className="photo";
-
-d.innerHTML=`
-
-<img src="${src}">
-
-<button
-onclick="removePhoto(${i},${j})">
-
-×
-</button>
-
-`;
-
-p.appendChild(d);
-
-});
-
-
-for(
-let k=data[i].photos.length;
-k<6;
-k++
-){
-
-const d =
-document.createElement("div");
-
-d.className="photo";
-
-d.textContent =
-k<3
-?
-"Foto "+(k+1)+" wajib"
-:
-"Foto "+(k+1)+" opsional";
-
-p.appendChild(d);
+  }
 
 }
 
 
-document.getElementById(
-"badge"+i
-).textContent =
-data[i].photos.length+
-"/6 foto";
+function resizeImage(file){
 
+  return new Promise((resolve,reject)=>{
 
-const st =
-document.getElementById(
-"status"+i
-);
+    const reader =
+      new FileReader();
 
-st.className =
-"status "+
-(
-data[i].photos.length>=3
-?
-"good"
-:
-"bad"
-);
+    reader.onload =
+      function(e){
 
-st.textContent =
-data[i].photos.length>=3
-?
-"✓ Minimal foto terpenuhi"
-:
-"⚠ Minimal 3 foto belum terpenuhi";
+        const img =
+          new Image();
 
-}
+        img.onload =
+          function(){
 
+            const maxWidth=1200;
 
-/* =========================
-   HAPUS FOTO
-========================= */
+            let width=img.width;
+            let height=img.height;
 
-function removePhoto(i,j){
+            if(width>maxWidth){
 
-data[i].photos.splice(j,1);
+              height =
+                height *
+                maxWidth /
+                width;
 
-data[i].saved=false;
+              width=maxWidth;
 
-drawPhotos(i);
+            }
 
-updatePreview();
+            const canvas =
+              document.createElement("canvas");
 
-}
+            canvas.width=width;
+            canvas.height=height;
 
+            const ctx =
+              canvas.getContext("2d");
 
-/* =========================
-   HAPUS SEMUA FOTO TOKO
-========================= */
+            ctx.drawImage(
+              img,
+              0,
+              0,
+              width,
+              height
+            );
 
-function clearPhotos(i){
+            resolve(
+              canvas.toDataURL(
+                "image/jpeg",
+                0.75
+              )
+            );
 
-data[i].photos=[];
+          };
 
-data[i].ok=false;
+        img.onerror=reject;
 
-data[i].saved=false;
+        img.src=e.target.result;
 
-document.getElementById(
-"ok"+i
-).checked=false;
+      };
 
-drawPhotos(i);
+    reader.onerror=reject;
 
-updatePreview();
+    reader.readAsDataURL(file);
 
-}
-
-
-/* =========================
-   CHECKBOX
-========================= */
-
-function toggleOK(i,v){
-
-data[i].ok=v;
-
-data[i].saved=false;
-
-updatePreview();
+  });
 
 }
 
 
-/* =========================
-   SEMUA SESUAI
-========================= */
+async function simpanToko(kode,nama){
 
-function checkAll(){
+  const input =
+    document.getElementById(
+      `foto-${kode}`
+    );
 
-data.forEach((x,i)=>{
+  const button =
+    document.getElementById(
+      `save-${kode}`
+    );
 
-x.ok =
-x.photos.length>=3;
+  const status =
+    document.getElementById(
+      `status-${kode}`
+    );
 
-document.getElementById(
-"ok"+i
-).checked=x.ok;
+  const files =
+    Array.from(input.files);
 
-});
+  if(files.length < 3){
 
-updatePreview();
+    showMessage(
+      `${kode}/${nama}: minimal 3 foto`,
+      "error"
+    );
+
+    return;
+
+  }
+
+  if(files.length > 6){
+
+    showMessage(
+      `${kode}/${nama}: maksimal 6 foto`,
+      "error"
+    );
+
+    return;
+
+  }
+
+  const tanggal =
+    document.getElementById(
+      "tanggal"
+    ).value;
+
+  if(!tanggal){
+
+    showMessage(
+      "Tanggal belum dipilih",
+      "error"
+    );
+
+    return;
+
+  }
+
+  button.disabled=true;
+
+  button.textContent =
+    "⏳ MENYIMPAN...";
+
+  status.textContent="⏳";
+
+  showMessage(
+    `Menyimpan ${kode}/${nama}...`,
+    "loading"
+  );
+
+  try{
+
+    const foto=[];
+
+    for(let i=0;i<files.length;i++){
+
+      foto.push(
+        await resizeImage(files[i])
+      );
+
+    }
+
+    const data={
+
+      tanggal:tanggal,
+
+      area:"TRIYANTO",
+
+      tokoPic:"KUTN",
+
+      kodeToko:kode,
+
+      namaToko:nama,
+
+      status:"✅",
+
+      foto:foto
+
+    };
+
+    const response =
+      await fetch(
+        API_URL,
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+          body:JSON.stringify(data)
+        }
+      );
+
+    const result =
+      await response.json();
+
+    if(!result.success){
+
+      throw new Error(
+        result.message ||
+        "Gagal menyimpan"
+      );
+
+    }
+
+    status.textContent="✅";
+
+    button.textContent =
+      "✅ SUDAH TERSIMPAN";
+
+    button.style.background =
+      "#16a34a";
+
+    savedCount++;
+
+    updateProgress();
+
+    showMessage(
+      `${kode}/${nama} berhasil disimpan online`,
+      "success"
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    status.textContent="❌";
+
+    button.disabled=false;
+
+    button.textContent =
+      "💾 COBA SIMPAN LAGI";
+
+    showMessage(
+      `${kode}/${nama}: ${error.message}`,
+      "error"
+    );
+
+  }
 
 }
 
 
-/* =========================
-   TANGGAL
-========================= */
+function updateProgress(){
 
-function today(){
+  document.getElementById(
+    "progressText"
+  ).textContent =
+    `${savedCount} / 20 toko tersimpan`;
 
-return "17-08-2026";
-
-}
-
-
-/* =========================
-   PREVIEW WHATSAPP
-========================= */
-
-function makeText(){
-
-let out=
-"*REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO*\n"+
-"*AREA : TRIYANTO*\n"+
-"*PER TGL : 17 AGUSTUS 2026*\n"+
-"*TOKO PIC : KUTN*\n\n";
-
-
-stores.forEach((s,i)=>{
-
-const x=data[i];
-
-out+=
-`${i+1}. ${s[0]} / ${s[1]} `+
-`${x.ok?"✅":"❌"} `+
-`(${x.photos.length} foto)\n`;
-
-});
-
-
-const done =
-data.filter(
-x=>x.ok
-).length;
-
-
-out+=
-`\n*REKAP:* ${done}/20 toko sudah sesuai.\n`+
-"*Ketentuan foto:* minimal 3, maksimal 6 foto per toko.";
-
-
-return out;
+  document.getElementById(
+    "progressBar"
+  ).style.width =
+    (savedCount/20*100)+"%";
 
 }
 
 
-function updatePreview(){
+function shareWhatsApp(kode,nama){
 
-document.getElementById(
-"preview"
-).textContent =
-makeText();
+  const tanggal =
+    document.getElementById(
+      "tanggal"
+    ).value;
 
-}
+  const text =
+`*REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO*
+*AREA : TRIYANTO*
+*PER TGL : ${tanggal}*
+*TOKO PIC : KUTN*
 
+${kode}/${nama}/✅
 
-/* =========================
-   SIMPAN ONLINE
-========================= */
+Foto: 3–6 foto telah disiapkan melalui aplikasi.`;
 
-async function saveAll(){
+  const url =
+    "https://wa.me/?text=" +
+    encodeURIComponent(text);
 
-const loading =
-document.getElementById(
-"loading"
-);
-
-loading.style.display =
-"block";
-
-
-let berhasil=0;
-
-let gagal=0;
-
-
-for(
-let i=0;
-i<stores.length;
-i++
-){
-
-const x=data[i];
-
-
-if(
-x.photos.length===0 &&
-!x.ok
-){
-
-continue;
+  window.open(url,"_blank");
 
 }
 
 
-try{
-
-const response =
-await fetch(
-API_URL,
-{
-
-method:"POST",
-
-headers:{
-"Content-Type":
-"text/plain;charset=utf-8"
-},
-
-body:
-JSON.stringify({
-
-id:
-stores[i][0]+"_"+today(),
-
-kode:
-stores[i][0],
-
-nama:
-stores[i][1],
-
-tanggal:
-today(),
-
-jumlahFoto:
-x.photos.length,
-
-status:
-x.ok
-?
-"SESUAI"
-:
-"BELUM SESUAI"
-
-})
-
-});
-
-
-const result =
-await response.json();
-
-
-if(
-result.success!==true
-){
-
-throw new Error(
-result.error ||
-"Gagal menyimpan"
-);
-
-}
-
-
-data[i].saved=true;
-
-
-document.getElementById(
-"saved"+i
-).textContent =
-"☁️ Tersimpan online";
-
-
-berhasil++;
-
-
-}catch(error){
-
-console.error(error);
-
-document.getElementById(
-"saved"+i
-).textContent =
-"❌ Gagal menyimpan";
-
-gagal++;
-
-}
-
-}
-
-
-loading.style.display =
-"none";
-
-
-alert(
-"SELESAI\n\n"+
-"✅ Berhasil: "+
-berhasil+
-" toko\n"+
-"❌ Gagal: "+
-gagal+
-" toko"
-);
-
-}
-
-
-/* =========================
-   AMBIL DATA ONLINE
-========================= */
-
-async function loadData(){
-
-const status =
-document.getElementById(
-"onlineStatus"
-);
-
-status.textContent =
-"🔄 Mengambil data online...";
-
-
-try{
-
-const response =
-await fetch(
-API_URL+
-"?t="+
-Date.now()
-);
-
-
-if(!response.ok){
-
-throw new Error(
-"Server tidak merespons"
-);
-
-}
-
-
-const result =
-await response.json();
-
-
-if(!Array.isArray(result)){
-
-throw new Error(
-"Format database tidak sesuai"
-);
-
-}
-
-
-result.forEach(item=>{
-
-const index =
-stores.findIndex(
-s=>
-s[0]===item.toko
-);
-
-
-if(index===-1)return;
-
-
-data[index].saved=true;
-
-data[index].ok =
-item.status==="SESUAI";
-
-
-const saved =
-document.getElementById(
-"saved"+index
-);
-
-
-if(saved){
-
-saved.textContent =
-"☁️ Sudah tersimpan online";
-
-}
-
-});
-
-
-status.textContent =
-"✅ Database online terhubung";
-
-
-status.className =
-"small good";
-
-
-}catch(error){
-
-console.error(error);
-
-status.textContent =
-"❌ Database online belum dapat dibaca";
-
-
-status.className =
-"small bad";
-
-}
-
-}
-
-
-/* =========================
-   START
-========================= */
-
-render();
-
-loadData();
+renderStores();
 
 </script>
 

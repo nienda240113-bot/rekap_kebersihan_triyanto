@@ -2,1058 +2,994 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Rekap Kebersihan Triyanto</title>
 
 <style>
-
 *{
-box-sizing:border-box;
+  box-sizing:border-box;
 }
 
 body{
-margin:0;
-font-family:Arial,sans-serif;
-background:#f1f5f9;
-color:#111827;
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f1f5f9;
+  color:#111827;
 }
 
 header{
-background:#0f766e;
-color:white;
-padding:18px 12px;
-text-align:center;
+  background:#0f766e;
+  color:#fff;
+  padding:18px 12px;
+  text-align:center;
 }
 
 header h1{
-font-size:20px;
-margin:0 0 7px;
+  margin:0 0 8px;
+  font-size:20px;
 }
 
 header p{
-margin:3px 0;
-font-size:14px;
+  margin:3px 0;
+  font-size:14px;
 }
 
 .container{
-max-width:720px;
-margin:auto;
-padding:12px;
+  max-width:720px;
+  margin:auto;
+  padding:12px;
 }
 
-.card{
-background:white;
-border-radius:14px;
-padding:15px;
-margin-bottom:14px;
-box-shadow:0 2px 8px #0001;
+.card,
+.store{
+  background:#fff;
+  border-radius:14px;
+  padding:15px;
+  margin-bottom:14px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
 label{
-font-weight:bold;
-display:block;
-margin-bottom:6px;
+  display:block;
+  font-weight:bold;
+  margin-bottom:7px;
 }
 
 input[type=date]{
-width:100%;
-padding:12px;
-border:1px solid #cbd5e1;
-border-radius:9px;
-font-size:15px;
+  width:100%;
+  padding:12px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  font-size:15px;
 }
 
 .progress-text{
-font-weight:bold;
-margin-bottom:8px;
+  font-weight:bold;
+  margin-bottom:8px;
 }
 
 .progress{
-height:13px;
-background:#e5e7eb;
-border-radius:20px;
-overflow:hidden;
+  height:13px;
+  background:#e5e7eb;
+  border-radius:20px;
+  overflow:hidden;
 }
 
 .progress-bar{
-height:100%;
-width:0%;
-background:#0f766e;
-transition:.3s;
-}
-
-.store{
-background:white;
-border-radius:14px;
-padding:15px;
-margin-bottom:14px;
-box-shadow:0 2px 8px #0001;
+  height:100%;
+  width:0%;
+  background:#0f766e;
+  transition:.3s;
 }
 
 .store-header{
-display:flex;
-align-items:center;
-justify-content:space-between;
-margin-bottom:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
 }
 
 .store-name{
-font-size:17px;
-font-weight:bold;
+  font-size:17px;
+  font-weight:bold;
 }
 
 .status{
-font-size:22px;
+  font-size:22px;
 }
 
 .photo-buttons{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
 }
 
 .photo-buttons button{
-border:0;
-border-radius:10px;
-padding:13px 5px;
-font-size:14px;
-font-weight:bold;
-color:white;
+  border:0;
+  border-radius:10px;
+  padding:13px 5px;
+  color:white;
+  font-size:14px;
+  font-weight:bold;
 }
 
 .camera{
-background:#2563eb;
+  background:#2563eb;
 }
 
 .gallery{
-background:#7c3aed;
+  background:#7c3aed;
 }
 
 .photo-info{
-font-size:13px;
-font-weight:bold;
-margin-top:10px;
+  margin-top:10px;
+  font-size:13px;
+  font-weight:bold;
 }
 
 .preview{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:7px;
-margin-top:10px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-top:10px;
 }
 
 .preview-box{
-position:relative;
+  position:relative;
 }
 
 .preview-box img{
-width:100%;
-height:100px;
-object-fit:cover;
-border-radius:8px;
+  width:100%;
+  height:100px;
+  object-fit:cover;
+  border-radius:8px;
 }
 
 .delete-photo{
-position:absolute;
-right:4px;
-top:4px;
-width:25px;
-height:25px;
-border:0;
-border-radius:50%;
-background:#dc2626;
-color:white;
-font-weight:bold;
-font-size:17px;
-padding:0;
+  position:absolute;
+  top:4px;
+  right:4px;
+  width:26px;
+  height:26px;
+  border:0;
+  border-radius:50%;
+  background:#dc2626;
+  color:#fff;
+  font-size:18px;
+  font-weight:bold;
 }
 
 .save{
-width:100%;
-border:0;
-border-radius:10px;
-padding:14px;
-margin-top:12px;
-background:#0f766e;
-color:white;
-font-weight:bold;
-font-size:15px;
+  width:100%;
+  margin-top:12px;
+  padding:14px;
+  border:0;
+  border-radius:10px;
+  background:#0f766e;
+  color:#fff;
+  font-size:15px;
+  font-weight:bold;
 }
 
 .save:disabled{
-background:#94a3b8;
+  background:#94a3b8;
 }
 
 .whatsapp{
-width:100%;
-border:0;
-border-radius:10px;
-padding:14px;
-margin-top:8px;
-background:#16a34a;
-color:white;
-font-weight:bold;
-font-size:15px;
+  width:100%;
+  margin-top:8px;
+  padding:14px;
+  border:0;
+  border-radius:10px;
+  background:#16a34a;
+  color:#fff;
+  font-size:15px;
+  font-weight:bold;
 }
 
 .message{
-position:fixed;
-left:10px;
-right:10px;
-bottom:10px;
-padding:14px;
-border-radius:10px;
-color:white;
-font-weight:bold;
-text-align:center;
-display:none;
-z-index:9999;
+  position:fixed;
+  left:10px;
+  right:10px;
+  bottom:10px;
+  padding:14px;
+  border-radius:10px;
+  color:#fff;
+  font-weight:bold;
+  text-align:center;
+  display:none;
+  z-index:9999;
 }
 
 .message.success{
-background:#16a34a;
+  background:#16a34a;
 }
 
 .message.error{
-background:#dc2626;
+  background:#dc2626;
 }
 
 .message.loading{
-background:#2563eb;
+  background:#2563eb;
 }
-
 </style>
 </head>
 
-
 <body>
 
-
 <header>
-
-<h1>
-REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO
-</h1>
-
-<p>AREA : TRIYANTO</p>
-
-<p>TOKO PIC : KUTN</p>
-
+  <h1>REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO</h1>
+  <p>AREA : TRIYANTO</p>
+  <p>TOKO PIC : KUTN</p>
 </header>
-
 
 <div class="container">
 
+  <div class="card">
+    <label>Tanggal Laporan</label>
+    <input id="tanggal" type="date">
+  </div>
 
-<!-- TANGGAL -->
+  <div class="card">
+    <div class="progress-text" id="progressText">
+      0 / 20 toko tersimpan
+    </div>
 
-<div class="card">
+    <div class="progress">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+  </div>
 
-<label>Tanggal Laporan</label>
-
-<input
-id="tanggal"
-type="date">
-
-</div>
-
-
-<!-- PROGRESS -->
-
-<div class="card">
-
-<div
-class="progress-text"
-id="progressText">
-
-0 / 20 toko tersimpan
+  <div id="daftarToko"></div>
 
 </div>
 
-<div class="progress">
-
-<div
-id="progressBar"
-class="progress-bar">
-</div>
-
-</div>
-
-</div>
-
-
-<!-- DAFTAR TOKO -->
-
-<div id="daftarToko"></div>
-
-
-</div>
-
-
-<div
-id="message"
-class="message">
-</div>
-
+<div id="message" class="message"></div>
 
 <script>
 
-
-/* =====================================================
-   URL DATABASE GOOGLE APPS SCRIPT
-===================================================== */
+/* ==========================================
+   URL GOOGLE APPS SCRIPT
+========================================== */
 
 const API_URL =
 "https://script.google.com/macros/s/AKfycbzLr5lu9lj-w9r0n9FTGLhtID30fnEAQhMwjhiKePpSrhfVP1OLKyFh3P5-y3BHmSSR/exec";
 
 
-/* =====================================================
-   20 TOKO AREA TRIYANTO
-===================================================== */
+/* ==========================================
+   20 TOKO
+========================================== */
 
 const TOKO = [
-
-["C624","RWBT"],
-["C560","RAJ"],
-["CH81","CDKS"],
-["CG76","SPMM"],
-["C573","GMM"],
-["CE47","MKRI"],
-["CI30","STTD"],
-["CH41","KPMRK"],
-["CG54","MM2100"],
-["C935","TLJ2"],
-["CA71","WSGN"],
-["C965","CBNU"],
-["CG86","JKST"],
-["CA94","KPTI"],
-["C574","SKU"],
-["CI15","RPSU"],
-["CI54","RJLB"],
-["CF50","DNIA"],
-["CC21","KUTN"],
-["CI84","TLKW"]
-
+  ["C624","RWBT"],
+  ["C560","RAJ"],
+  ["CH81","CDKS"],
+  ["CG76","SPMM"],
+  ["C573","GMM"],
+  ["CE47","MKRI"],
+  ["CI30","STTD"],
+  ["CH41","KPMRK"],
+  ["CG54","MM2100"],
+  ["C935","TLJ2"],
+  ["CA71","WSGN"],
+  ["C965","CBNU"],
+  ["CG86","JKST"],
+  ["CA94","KPTI"],
+  ["C574","SKU"],
+  ["CI15","RPSU"],
+  ["CI54","RJLB"],
+  ["CF50","DNIA"],
+  ["CC21","KUTN"],
+  ["CI84","TLKW"]
 ];
 
 
-/* =====================================================
-   PENYIMPANAN FOTO
-===================================================== */
+/* ==========================================
+   DATA FOTO
+========================================== */
 
 const FOTO = {};
-
 const SUDAH_SIMPAN = new Set();
 
 
-/* =====================================================
+/* ==========================================
    TANGGAL OTOMATIS
-===================================================== */
+========================================== */
 
-const d = new Date();
+const sekarang = new Date();
 
 document.getElementById("tanggal").value =
-d.getFullYear() +
-"-" +
-String(d.getMonth()+1).padStart(2,"0") +
-"-" +
-String(d.getDate()).padStart(2,"0");
+  sekarang.getFullYear() +
+  "-" +
+  String(sekarang.getMonth()+1).padStart(2,"0") +
+  "-" +
+  String(sekarang.getDate()).padStart(2,"0");
 
 
-/* =====================================================
+/* ==========================================
    PESAN
-===================================================== */
+========================================== */
 
 function pesan(text,type){
 
-const el =
-document.getElementById("message");
+  const el =
+    document.getElementById("message");
 
-el.textContent=text;
+  el.textContent = text;
+  el.className = "message " + type;
+  el.style.display = "block";
 
-el.className =
-"message " + type;
+  if(type !== "loading"){
 
-el.style.display="block";
+    setTimeout(function(){
 
-if(type !== "loading"){
+      el.style.display = "none";
 
-setTimeout(function(){
+    },5000);
 
-el.style.display="none";
-
-},4000);
-
-}
-
+  }
 }
 
 
-/* =====================================================
-   MEMBUAT 20 TOKO
-===================================================== */
+/* ==========================================
+   TAMPILKAN TOKO
+========================================== */
 
 function tampilkanToko(){
 
-const area =
-document.getElementById("daftarToko");
+  const area =
+    document.getElementById("daftarToko");
 
-area.innerHTML="";
+  area.innerHTML = "";
 
+  TOKO.forEach(function(toko,index){
 
-TOKO.forEach(function(toko,index){
+    const kode = toko[0];
+    const nama = toko[1];
 
-const kode=toko[0];
+    FOTO[kode] = [];
 
-const nama=toko[1];
+    const box =
+      document.createElement("div");
 
-FOTO[kode]=[];
+    box.className = "store";
 
+    box.innerHTML = `
 
-const box =
-document.createElement("div");
+      <div class="store-header">
 
-box.className="store";
+        <div class="store-name">
+          ${index+1}. ${kode} / ${nama}
+        </div>
 
+        <div
+          class="status"
+          id="status-${kode}">
+          ⏳
+        </div>
 
-box.innerHTML=`
+      </div>
 
-<div class="store-header">
+      <div class="photo-buttons">
 
-<div class="store-name">
+        <button
+          class="camera"
+          type="button"
+          onclick="bukaKamera('${kode}')">
 
-${index+1}. ${kode} / ${nama}
+          📷 Ambil Foto
 
-</div>
+        </button>
 
-<div
-class="status"
-id="status-${kode}">
+        <button
+          class="gallery"
+          type="button"
+          onclick="bukaGaleri('${kode}')">
 
-⏳
+          🖼️ Pilih Galeri
 
-</div>
+        </button>
 
-</div>
+      </div>
 
+      <input
+        id="camera-${kode}"
+        type="file"
+        accept="image/*"
+        capture="environment"
+        hidden>
 
-<div class="photo-buttons">
+      <input
+        id="gallery-${kode}"
+        type="file"
+        accept="image/*"
+        multiple
+        hidden>
 
+      <div
+        class="photo-info"
+        id="info-${kode}">
 
-<button
-class="camera"
-onclick="kamera('${kode}')">
+        Belum ada foto — wajib 3 sampai 6 foto
 
-📷 Ambil Foto
+      </div>
 
-</button>
+      <div
+        class="preview"
+        id="preview-${kode}">
+      </div>
 
+      <button
+        class="save"
+        id="save-${kode}"
+        type="button"
+        onclick="simpan('${kode}','${nama}')">
 
-<button
-class="gallery"
-onclick="galeri('${kode}')">
+        💾 SIMPAN ONLINE
 
-🖼️ Pilih dari Galeri
+      </button>
 
-</button>
+      <button
+        class="whatsapp"
+        type="button"
+        onclick="whatsapp('${kode}','${nama}')">
 
+        📲 KIRIM WHATSAPP
 
-</div>
+      </button>
 
+    `;
 
-<input
-type="file"
-id="camera-${kode}"
-accept="image/*"
-capture="environment"
-hidden>
-
-
-<input
-type="file"
-id="gallery-${kode}"
-accept="image/*"
-multiple
-hidden>
-
-
-<div
-class="photo-info"
-id="info-${kode}">
-
-Belum ada foto — wajib 3 sampai 6 foto
-
-</div>
-
-
-<div
-class="preview"
-id="preview-${kode}">
-</div>
-
-
-<button
-class="save"
-id="save-${kode}"
-onclick="simpan('${kode}','${nama}')">
-
-💾 SIMPAN ONLINE
-
-</button>
-
-
-<button
-class="whatsapp"
-onclick="whatsapp('${kode}','${nama}')">
-
-📲 KIRIM WHATSAPP
-
-</button>
-
-`;
+    area.appendChild(box);
 
 
-area.appendChild(box);
+    document
+      .getElementById(`camera-${kode}`)
+      .addEventListener("change",function(){
+
+        tambahFoto(kode,this.files);
+
+        this.value = "";
+
+      });
 
 
-/* KAMERA */
+    document
+      .getElementById(`gallery-${kode}`)
+      .addEventListener("change",function(){
 
-document
-.getElementById(`camera-${kode}`)
-.addEventListener(
-"change",
-function(){
+        tambahFoto(kode,this.files);
 
-tambahFoto(
-kode,
-this.files
-);
+        this.value = "";
 
-this.value="";
+      });
+
+  });
 
 }
-);
 
 
-/* GALERI */
+/* ==========================================
+   KAMERA
+========================================== */
 
-document
-.getElementById(`gallery-${kode}`)
-.addEventListener(
-"change",
-function(){
+function bukaKamera(kode){
 
-tambahFoto(
-kode,
-this.files
-);
-
-this.value="";
-
-}
-);
-
-});
+  document
+    .getElementById(`camera-${kode}`)
+    .click();
 
 }
 
 
-/* =====================================================
-   BUKA KAMERA
-===================================================== */
+/* ==========================================
+   GALERI
+========================================== */
 
-function kamera(kode){
+function bukaGaleri(kode){
 
-document
-.getElementById(`camera-${kode}`)
-.click();
-
-}
-
-
-/* =====================================================
-   BUKA GALERI
-===================================================== */
-
-function galeri(kode){
-
-document
-.getElementById(`gallery-${kode}`)
-.click();
+  document
+    .getElementById(`gallery-${kode}`)
+    .click();
 
 }
 
 
-/* =====================================================
+/* ==========================================
    TAMBAH FOTO
-===================================================== */
+========================================== */
 
 function tambahFoto(kode,files){
 
-const daftar =
-FOTO[kode];
+  const daftar = FOTO[kode];
 
+  for(let i=0;i<files.length;i++){
 
-for(
-let i=0;
-i<files.length;
-i++
-){
+    if(daftar.length >= 6){
 
-if(
-daftar.length >= 6
-){
+      pesan(
+        `${kode}: maksimal 6 foto`,
+        "error"
+      );
 
-pesan(
-"Maksimal 6 foto per toko",
-"error"
-);
+      break;
+    }
 
-break;
+    if(
+      files[i].type &&
+      files[i].type.startsWith("image/")
+    ){
 
-}
+      daftar.push(files[i]);
 
+    }
 
-if(
-files[i].type.startsWith("image/")
-){
+  }
 
-daftar.push(
-files[i]
-);
-
-}
+  tampilkanPreview(kode);
 
 }
 
 
-preview(kode);
+/* ==========================================
+   PREVIEW FOTO
+========================================== */
+
+function tampilkanPreview(kode){
+
+  const daftar = FOTO[kode];
+
+  const preview =
+    document.getElementById(
+      `preview-${kode}`
+    );
+
+  const info =
+    document.getElementById(
+      `info-${kode}`
+    );
+
+  preview.innerHTML = "";
+
+
+  if(daftar.length < 3){
+
+    info.textContent =
+      `⚠️ ${daftar.length} foto — minimal 3 foto`;
+
+    info.style.color = "#dc2626";
+
+  }else{
+
+    info.textContent =
+      `✅ ${daftar.length} foto siap disimpan`;
+
+    info.style.color = "#16a34a";
+
+  }
+
+
+  daftar.forEach(function(file,index){
+
+    const box =
+      document.createElement("div");
+
+    box.className = "preview-box";
+
+
+    const img =
+      document.createElement("img");
+
+
+    const reader =
+      new FileReader();
+
+
+    reader.onload =
+      function(e){
+
+        img.src = e.target.result;
+
+      };
+
+
+    reader.readAsDataURL(file);
+
+
+    const hapus =
+      document.createElement("button");
+
+    hapus.className =
+      "delete-photo";
+
+    hapus.textContent = "×";
+
+
+    hapus.onclick =
+      function(){
+
+        FOTO[kode].splice(index,1);
+
+        tampilkanPreview(kode);
+
+      };
+
+
+    box.appendChild(img);
+    box.appendChild(hapus);
+
+    preview.appendChild(box);
+
+  });
 
 }
 
 
-/* =====================================================
-   PREVIEW
-===================================================== */
-
-function preview(kode){
-
-const daftar =
-FOTO[kode];
-
-
-const tempat =
-document.getElementById(
-`preview-${kode}`
-);
-
-
-const info =
-document.getElementById(
-`info-${kode}`
-);
-
-
-tempat.innerHTML="";
-
-
-if(
-daftar.length < 3
-){
-
-info.textContent =
-`⚠️ ${daftar.length} foto — minimal 3 foto`;
-
-info.style.color="#dc2626";
-
-}
-else{
-
-info.textContent =
-`✅ ${daftar.length} foto siap disimpan`;
-
-info.style.color="#16a34a";
-
-}
-
-
-daftar.forEach(
-function(file,index){
-
-const box =
-document.createElement("div");
-
-box.className="preview-box";
-
-
-const img =
-document.createElement("img");
-
-
-const reader =
-new FileReader();
-
-
-reader.onload =
-function(e){
-
-img.src=e.target.result;
-
-};
-
-
-reader.readAsDataURL(file);
-
-
-const hapus =
-document.createElement("button");
-
-hapus.className=
-"delete-photo";
-
-hapus.textContent="×";
-
-
-hapus.onclick =
-function(){
-
-FOTO[kode].splice(
-index,
-1
-);
-
-preview(kode);
-
-};
-
-
-box.appendChild(img);
-
-box.appendChild(hapus);
-
-tempat.appendChild(box);
-
-}
-);
-
-}
-
-
-/* =====================================================
+/* ==========================================
    KOMPRES FOTO
-===================================================== */
+========================================== */
 
-function kompres(file){
+function kompresFoto(file){
 
-return new Promise(
-function(resolve,reject){
+  return new Promise(function(resolve,reject){
 
-const reader =
-new FileReader();
-
-
-reader.onload =
-function(e){
-
-const img =
-new Image();
+    const reader =
+      new FileReader();
 
 
-img.onload =
-function(){
+    reader.onload =
+      function(e){
 
-const max=1200;
-
-let w=img.width;
-
-let h=img.height;
+        const img =
+          new Image();
 
 
-if(w>max){
+        img.onload =
+          function(){
 
-h =
-h*max/w;
+            const maxWidth = 1000;
 
-w=max;
+            let width = img.width;
+            let height = img.height;
+
+
+            if(width > maxWidth){
+
+              height =
+                height * maxWidth / width;
+
+              width = maxWidth;
+
+            }
+
+
+            const canvas =
+              document.createElement("canvas");
+
+            canvas.width = width;
+            canvas.height = height;
+
+
+            const ctx =
+              canvas.getContext("2d");
+
+
+            ctx.drawImage(
+              img,
+              0,
+              0,
+              width,
+              height
+            );
+
+
+            resolve(
+              canvas.toDataURL(
+                "image/jpeg",
+                0.65
+              )
+            );
+
+          };
+
+
+        img.onerror = function(){
+
+          reject(
+            new Error("Foto tidak dapat diproses")
+          );
+
+        };
+
+
+        img.src = e.target.result;
+
+      };
+
+
+    reader.onerror = function(){
+
+      reject(
+        new Error("Foto gagal dibaca")
+      );
+
+    };
+
+
+    reader.readAsDataURL(file);
+
+  });
 
 }
 
 
-const canvas =
-document.createElement(
-"canvas"
-);
-
-canvas.width=w;
-
-canvas.height=h;
-
-
-const ctx =
-canvas.getContext("2d");
-
-
-ctx.drawImage(
-img,
-0,
-0,
-w,
-h
-);
-
-
-resolve(
-canvas.toDataURL(
-"image/jpeg",
-0.70
-)
-);
-
-};
-
-
-img.onerror=reject;
-
-img.src=e.target.result;
-
-};
-
-
-reader.onerror=reject;
-
-reader.readAsDataURL(file);
-
-}
-);
-
-}
-
-
-/* =====================================================
+/* ==========================================
    SIMPAN ONLINE
-===================================================== */
+========================================== */
 
 async function simpan(kode,nama){
 
-const daftar =
-FOTO[kode];
+  const daftar = FOTO[kode];
+
+  const tombol =
+    document.getElementById(
+      `save-${kode}`
+    );
+
+  const status =
+    document.getElementById(
+      `status-${kode}`
+    );
 
 
-const tombol =
-document.getElementById(
-`save-${kode}`
-);
+  if(daftar.length < 3){
+
+    pesan(
+      `${kode}/${nama}: minimal 3 foto`,
+      "error"
+    );
+
+    return;
+
+  }
 
 
-const status =
-document.getElementById(
-`status-${kode}`
-);
+  if(daftar.length > 6){
+
+    pesan(
+      `${kode}/${nama}: maksimal 6 foto`,
+      "error"
+    );
+
+    return;
+
+  }
 
 
-if(
-daftar.length < 3
-){
+  const tanggal =
+    document.getElementById(
+      "tanggal"
+    ).value;
 
-pesan(
-`${kode}/${nama}: minimal 3 foto`,
-"error"
-);
 
-return;
+  if(!tanggal){
+
+    pesan(
+      "Tanggal belum dipilih",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  tombol.disabled = true;
+  tombol.textContent = "⏳ MENYIMPAN...";
+  status.textContent = "⏳";
+
+
+  pesan(
+    `${kode}/${nama}: menyiapkan foto...`,
+    "loading"
+  );
+
+
+  try{
+
+    const foto = [];
+
+
+    for(let i=0;i<daftar.length;i++){
+
+      pesan(
+        `${kode}/${nama}: memproses foto ${i+1}/${daftar.length}...`,
+        "loading"
+      );
+
+      const hasil =
+        await kompresFoto(
+          daftar[i]
+        );
+
+      foto.push(hasil);
+
+    }
+
+
+    const data = {
+
+      tanggal: tanggal,
+
+      area: "TRIYANTO",
+
+      tokoPic: "KUTN",
+
+      kodeToko: kode,
+
+      namaToko: nama,
+
+      status: "✅",
+
+      foto: foto
+
+    };
+
+
+    pesan(
+      `${kode}/${nama}: mengirim ke Google Drive...`,
+      "loading"
+    );
+
+
+    /*
+      Kirim sebagai text/plain.
+      Ini sesuai dengan doPost() Code.gs.
+    */
+
+    const response =
+      await fetch(
+        API_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+
+          body:
+            JSON.stringify(data)
+        }
+      );
+
+
+    const text =
+      await response.text();
+
+
+    console.log(
+      "RESPONS APPS SCRIPT:",
+      text
+    );
+
+
+    let hasilServer;
+
+
+    try{
+
+      hasilServer =
+        JSON.parse(text);
+
+    }catch(e){
+
+      throw new Error(
+        "Respons Google bukan JSON: " +
+        text
+      );
+
+    }
+
+
+    if(!hasilServer.success){
+
+      throw new Error(
+        hasilServer.message ||
+        "Google gagal menyimpan data"
+      );
+
+    }
+
+
+    status.textContent = "✅";
+
+    tombol.textContent =
+      "✅ TERSIMPAN ONLINE";
+
+    tombol.style.background =
+      "#16a34a";
+
+
+    SUDAH_SIMPAN.add(kode);
+
+    updateProgress();
+
+
+    pesan(
+      `${kode}/${nama}: data + ${hasilServer.jumlahFoto} foto berhasil disimpan ke Drive`,
+      "success"
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "ERROR SIMPAN:",
+      error
+    );
+
+
+    status.textContent = "❌";
+
+    tombol.disabled = false;
+
+    tombol.textContent =
+      "💾 COBA SIMPAN LAGI";
+
+
+    pesan(
+      `${kode}/${nama}: ${error.message}`,
+      "error"
+    );
+
+  }
 
 }
 
 
-if(
-daftar.length > 6
-){
-
-pesan(
-`${kode}/${nama}: maksimal 6 foto`,
-"error"
-);
-
-return;
-
-}
-
-
-const tanggal =
-document.getElementById(
-"tanggal"
-).value;
-
-
-tombol.disabled=true;
-
-tombol.textContent =
-"⏳ MENYIMPAN...";
-
-status.textContent="⏳";
-
-
-pesan(
-`Mengirim ${kode}/${nama}...`,
-"loading"
-);
-
-
-try{
-
-
-/* KONVERSI FOTO */
-
-const foto=[];
-
-
-for(
-let i=0;
-i<daftar.length;
-i++
-){
-
-const hasil =
-await kompres(
-daftar[i]
-);
-
-foto.push(hasil);
-
-}
-
-
-/* DATA */
-
-const data={
-
-tanggal:tanggal,
-
-area:"TRIYANTO",
-
-tokoPic:"KUTN",
-
-kodeToko:kode,
-
-namaToko:nama,
-
-status:"✅",
-
-foto:foto
-
-};
-
-
-/* KIRIM KE APPS SCRIPT */
-
-await fetch(
-API_URL,
-{
-
-method:"POST",
-
-mode:"no-cors",
-
-headers:{
-"Content-Type":
-"text/plain;charset=utf-8"
-},
-
-body:
-JSON.stringify(data)
-
-}
-);
-
-
-/* BERHASIL TERKIRIM */
-
-status.textContent="✅";
-
-tombol.textContent =
-"✅ DATA TERKIRIM";
-
-tombol.style.background =
-"#16a34a";
-
-
-SUDAH_SIMPAN.add(kode);
-
-updateProgress();
-
-
-pesan(
-`${kode}/${nama} berhasil dikirim`,
-"success"
-);
-
-
-}catch(error){
-
-
-console.error(error);
-
-
-status.textContent="❌";
-
-tombol.disabled=false;
-
-tombol.textContent =
-"💾 COBA SIMPAN LAGI";
-
-
-pesan(
-`${kode}/${nama}: ${error.message}`,
-"error"
-);
-
-}
-
-}
-
-
-/* =====================================================
-   UPDATE PROGRESS
-===================================================== */
+/* ==========================================
+   PROGRESS
+========================================== */
 
 function updateProgress(){
 
-const jumlah =
-SUDAH_SIMPAN.size;
+  const jumlah =
+    SUDAH_SIMPAN.size;
 
 
-document.getElementById(
-"progressText"
-).textContent =
-`${jumlah} / 20 toko tersimpan`;
+  document.getElementById(
+    "progressText"
+  ).textContent =
+    `${jumlah} / 20 toko tersimpan`;
 
 
-document.getElementById(
-"progressBar"
-).style.width =
-`${jumlah/20*100}%`;
+  document.getElementById(
+    "progressBar"
+  ).style.width =
+    `${jumlah / 20 * 100}%`;
 
 }
 
 
-/* =====================================================
+/* ==========================================
    WHATSAPP
-===================================================== */
+========================================== */
 
 function whatsapp(kode,nama){
 
-const tanggal =
-document.getElementById(
-"tanggal"
-).value;
+  const tanggal =
+    document.getElementById(
+      "tanggal"
+    ).value;
 
 
-const jumlah =
-FOTO[kode].length;
+  const jumlah =
+    FOTO[kode].length;
 
 
-const teks =
+  const teks =
 `*REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO*
 
 *AREA : TRIYANTO*
@@ -1065,18 +1001,18 @@ ${kode}/${nama}/✅
 Jumlah foto: ${jumlah} foto`;
 
 
-window.open(
-"https://wa.me/?text="+
-encodeURIComponent(teks),
-"_blank"
-);
+  window.open(
+    "https://wa.me/?text=" +
+    encodeURIComponent(teks),
+    "_blank"
+  );
 
 }
 
 
-/* =====================================================
+/* ==========================================
    MULAI
-===================================================== */
+========================================== */
 
 tampilkanToko();
 

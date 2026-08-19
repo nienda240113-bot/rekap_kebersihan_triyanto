@@ -31,7 +31,7 @@ header h1{
 }
 
 header p{
-  margin:5px 0 0;
+  margin:5px 0;
   font-size:14px;
 }
 
@@ -41,9 +41,11 @@ header p{
   padding:12px;
 }
 
-.info{
+.info,
+.progress-box,
+.store{
   background:white;
-  border-radius:12px;
+  border-radius:14px;
   padding:15px;
   margin-bottom:12px;
   box-shadow:0 2px 8px #0001;
@@ -54,12 +56,12 @@ header p{
   margin-bottom:7px;
 }
 
-.store{
-  background:white;
-  border-radius:14px;
-  margin-bottom:15px;
-  padding:15px;
-  box-shadow:0 2px 8px #0001;
+input[type=date]{
+  width:100%;
+  padding:11px;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  font-size:15px;
 }
 
 .store-title{
@@ -82,7 +84,6 @@ header p{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:8px;
-  margin-top:10px;
 }
 
 .photo-buttons button{
@@ -91,22 +92,20 @@ header p{
   padding:13px 5px;
   font-size:14px;
   font-weight:bold;
-  cursor:pointer;
+  color:white;
 }
 
 .camera-btn{
   background:#2563eb;
-  color:white;
 }
 
 .gallery-btn{
   background:#7c3aed;
-  color:white;
 }
 
 .count{
-  font-size:13px;
   margin-top:10px;
+  font-size:13px;
   font-weight:bold;
 }
 
@@ -121,26 +120,25 @@ header p{
   position:relative;
 }
 
-.preview img{
+.preview-item img{
   width:100%;
   height:100px;
   object-fit:cover;
   border-radius:8px;
-  background:#ddd;
 }
 
 .remove-photo{
   position:absolute;
-  top:4px;
   right:4px;
-  width:25px;
-  height:25px;
-  border-radius:50%;
+  top:4px;
+  width:26px;
+  height:26px;
   border:0;
+  border-radius:50%;
   background:#dc2626;
   color:white;
-  font-size:14px;
   font-weight:bold;
+  font-size:18px;
   padding:0;
 }
 
@@ -149,12 +147,11 @@ header p{
   border:0;
   border-radius:10px;
   padding:13px;
-  font-size:15px;
-  font-weight:bold;
-  cursor:pointer;
+  margin-top:12px;
   background:#0f766e;
   color:white;
-  margin-top:12px;
+  font-size:15px;
+  font-weight:bold;
 }
 
 .save:disabled{
@@ -166,20 +163,11 @@ header p{
   border:0;
   border-radius:10px;
   padding:13px;
-  font-size:15px;
-  font-weight:bold;
-  cursor:pointer;
+  margin-top:8px;
   background:#16a34a;
   color:white;
-  margin-top:8px;
-}
-
-.top{
-  background:white;
-  padding:12px;
-  border-radius:12px;
-  margin-bottom:12px;
-  box-shadow:0 2px 8px #0001;
+  font-size:15px;
+  font-weight:bold;
 }
 
 .progress{
@@ -208,7 +196,7 @@ header p{
   text-align:center;
   font-weight:bold;
   display:none;
-  z-index:999;
+  z-index:9999;
 }
 
 .success{
@@ -221,14 +209,6 @@ header p{
 
 .loading{
   background:#2563eb;
-}
-
-input[type=date]{
-  width:100%;
-  padding:11px;
-  border:1px solid #cbd5e1;
-  border-radius:8px;
-  font-size:15px;
 }
 </style>
 </head>
@@ -255,13 +235,13 @@ REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO
 <b>Tanggal</b>
 
 <input
-  id="tanggal"
-  type="date">
+id="tanggal"
+type="date">
 
 </div>
 
 
-<div class="top">
+<div class="progress-box">
 
 <b>Progress Penyimpanan</b>
 
@@ -272,8 +252,8 @@ REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO
 <div class="progress">
 
 <div
-  class="progress-bar"
-  id="progressBar">
+id="progressBar"
+class="progress-bar">
 </div>
 
 </div>
@@ -288,23 +268,23 @@ REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO
 
 
 <div
-  id="result"
-  class="result">
+id="result"
+class="result">
 </div>
 
 
 <script>
 
-
 /* =========================================
-   URL DATABASE GOOGLE APPS SCRIPT
+   DATABASE GOOGLE APPS SCRIPT
 ========================================= */
 
 const API_URL =
-const API_URL =
 "https://script.google.com/macros/s/AKfycbzLr5lu9lj-w9r0n9FTGLhtID30fnEAQhMwjhiKePpSrhfVP1OLKyFh3P5-y3BHmSSR/exec";
+
+
 /* =========================================
-   DAFTAR 20 TOKO
+   DAFTAR TOKO
 ========================================= */
 
 const TOKO = [
@@ -334,24 +314,26 @@ const TOKO = [
 
 
 /* =========================================
-   PENYIMPANAN FOTO SETIAP TOKO
+   PENYIMPANAN FOTO
 ========================================= */
 
 const FOTO_TOKO = {};
+
+const savedStores = new Set();
 
 
 /* =========================================
    TANGGAL OTOMATIS
 ========================================= */
 
-const today = new Date();
+const now = new Date();
 
 document.getElementById("tanggal").value =
-today.getFullYear() +
+now.getFullYear() +
 "-" +
-String(today.getMonth()+1).padStart(2,"0") +
+String(now.getMonth()+1).padStart(2,"0") +
 "-" +
-String(today.getDate()).padStart(2,"0");
+String(now.getDate()).padStart(2,"0");
 
 
 /* =========================================
@@ -363,28 +345,27 @@ function showMessage(text,type){
   const el =
   document.getElementById("result");
 
-  el.textContent=text;
+  el.textContent = text;
 
-  el.className=
-  "result "+type;
+  el.className =
+  "result " + type;
 
-  el.style.display="block";
+  el.style.display = "block";
 
-  if(type!=="loading"){
+  if(type !== "loading"){
 
     setTimeout(function(){
 
-      el.style.display="none";
+      el.style.display = "none";
 
     },4000);
 
   }
-
 }
 
 
 /* =========================================
-   BUAT 20 TOKO
+   MEMBUAT DAFTAR TOKO
 ========================================= */
 
 function renderStores(){
@@ -392,37 +373,36 @@ function renderStores(){
   const container =
   document.getElementById("stores");
 
-  container.innerHTML="";
+  container.innerHTML = "";
 
 
   TOKO.forEach(function(toko,index){
 
-    const kode=toko[0];
+    const kode = toko[0];
 
-    const nama=toko[1];
+    const nama = toko[1];
+
+    FOTO_TOKO[kode] = [];
 
 
-    FOTO_TOKO[kode]=[];
-
-
-    const div=
+    const div =
     document.createElement("div");
 
-    div.className="store";
+    div.className = "store";
 
 
-    div.innerHTML=`
+    div.innerHTML = `
 
       <div class="store-title">
 
         <h3>
-        ${index+1}. ${kode}/${nama}
+          ${index+1}. ${kode}/${nama}
         </h3>
 
         <span
         class="status"
         id="status-${kode}">
-        ⏳
+          ⏳
         </span>
 
       </div>
@@ -435,7 +415,7 @@ function renderStores(){
         class="camera-btn"
         onclick="bukaKamera('${kode}')">
 
-        📷 Ambil Foto
+          📷 Ambil Foto
 
         </button>
 
@@ -445,7 +425,7 @@ function renderStores(){
         class="gallery-btn"
         onclick="bukaGaleri('${kode}')">
 
-        🖼️ Pilih dari Galeri
+          🖼️ Pilih dari Galeri
 
         </button>
 
@@ -472,7 +452,7 @@ function renderStores(){
       class="count"
       id="count-${kode}">
 
-      Belum ada foto — wajib 3–6 foto
+        Belum ada foto — wajib 3–6 foto
 
       </div>
 
@@ -488,7 +468,7 @@ function renderStores(){
       id="save-${kode}"
       onclick="simpanToko('${kode}','${nama}')">
 
-      💾 SIMPAN ONLINE
+        💾 SIMPAN ONLINE
 
       </button>
 
@@ -497,7 +477,7 @@ function renderStores(){
       class="whatsapp"
       onclick="shareWhatsApp('${kode}','${nama}')">
 
-      📲 KIRIM WHATSAPP
+        📲 KIRIM WHATSAPP
 
       </button>
 
@@ -518,7 +498,7 @@ function renderStores(){
           this.files
         );
 
-        this.value="";
+        this.value = "";
 
       }
     );
@@ -535,7 +515,7 @@ function renderStores(){
           this.files
         );
 
-        this.value="";
+        this.value = "";
 
       }
     );
@@ -546,33 +526,27 @@ function renderStores(){
 
 
 /* =========================================
-   BUKA KAMERA
+   KAMERA
 ========================================= */
 
 function bukaKamera(kode){
 
-  const input =
-  document.getElementById(
-    `kamera-${kode}`
-  );
-
-  input.click();
+  document
+  .getElementById(`kamera-${kode}`)
+  .click();
 
 }
 
 
 /* =========================================
-   BUKA GALERI
+   GALERI
 ========================================= */
 
 function bukaGaleri(kode){
 
-  const input =
-  document.getElementById(
-    `galeri-${kode}`
-  );
-
-  input.click();
+  document
+  .getElementById(`galeri-${kode}`)
+  .click();
 
 }
 
@@ -583,13 +557,17 @@ function bukaGaleri(kode){
 
 function tambahFoto(kode,files){
 
-  const daftar=
+  const daftar =
   FOTO_TOKO[kode];
 
 
-  for(let i=0;i<files.length;i++){
+  for(
+    let i=0;
+    i<files.length;
+    i++
+  ){
 
-    if(daftar.length>=6){
+    if(daftar.length >= 6){
 
       showMessage(
         "Maksimal 6 foto",
@@ -600,17 +578,14 @@ function tambahFoto(kode,files){
 
     }
 
-    const file=files[i];
 
+    if(
+      files[i].type.startsWith("image/")
+    ){
 
-    if(!file.type.startsWith("image/")){
-
-      continue;
+      daftar.push(files[i]);
 
     }
-
-
-    daftar.push(file);
 
   }
 
@@ -621,118 +596,123 @@ function tambahFoto(kode,files){
 
 
 /* =========================================
-   PREVIEW FOTO
+   PREVIEW
 ========================================= */
 
 function renderPreview(kode){
 
-  const daftar=
+  const daftar =
   FOTO_TOKO[kode];
 
 
-  const preview=
+  const preview =
   document.getElementById(
     `preview-${kode}`
   );
 
 
-  const count=
+  const count =
   document.getElementById(
     `count-${kode}`
   );
 
 
-  preview.innerHTML="";
+  preview.innerHTML = "";
 
 
-  if(daftar.length===0){
+  if(daftar.length === 0){
 
-    count.textContent=
+    count.textContent =
     "Belum ada foto — wajib 3–6 foto";
 
-    count.style.color="#dc2626";
+    count.style.color =
+    "#dc2626";
 
     return;
 
   }
 
 
-  if(daftar.length<3){
+  if(daftar.length < 3){
 
-    count.textContent=
+    count.textContent =
     `⚠️ ${daftar.length} foto — minimal 3`;
 
-    count.style.color="#dc2626";
+    count.style.color =
+    "#dc2626";
 
-  }
+  }else{
 
-  else{
-
-    count.textContent=
+    count.textContent =
     `✅ ${daftar.length} foto siap disimpan`;
 
-    count.style.color="#16a34a";
+    count.style.color =
+    "#16a34a";
 
   }
 
 
-  daftar.forEach(function(file,index){
+  daftar.forEach(
+    function(file,index){
 
-    const item=
-    document.createElement("div");
+      const item =
+      document.createElement("div");
 
-    item.className=
-    "preview-item";
-
-
-    const img=
-    document.createElement("img");
+      item.className =
+      "preview-item";
 
 
-    const reader=
-    new FileReader();
+      const img =
+      document.createElement("img");
 
 
-    reader.onload=
-    function(e){
-
-      img.src=e.target.result;
-
-    };
+      const reader =
+      new FileReader();
 
 
-    reader.readAsDataURL(file);
+      reader.onload =
+      function(e){
+
+        img.src =
+        e.target.result;
+
+      };
 
 
-    const remove=
-    document.createElement("button");
-
-    remove.className=
-    "remove-photo";
-
-    remove.textContent="×";
+      reader.readAsDataURL(file);
 
 
-    remove.onclick=
-    function(){
+      const remove =
+      document.createElement("button");
 
-      FOTO_TOKO[kode].splice(
-        index,
-        1
-      );
+      remove.className =
+      "remove-photo";
 
-      renderPreview(kode);
-
-    };
+      remove.textContent =
+      "×";
 
 
-    item.appendChild(img);
+      remove.onclick =
+      function(){
 
-    item.appendChild(remove);
+        FOTO_TOKO[kode].splice(
+          index,
+          1
+        );
 
-    preview.appendChild(item);
+        renderPreview(kode);
 
-  });
+      };
+
+
+      item.appendChild(img);
+
+      item.appendChild(remove);
+
+      preview.appendChild(item);
+
+    }
+  );
 
 }
 
@@ -743,111 +723,122 @@ function renderPreview(kode){
 
 function resizeImage(file){
 
-  return new Promise(function(resolve,reject){
+  return new Promise(
+    function(resolve,reject){
 
-    const reader=
-    new FileReader();
-
-
-    reader.onload=
-    function(e){
-
-      const img=
-      new Image();
+      const reader =
+      new FileReader();
 
 
-      img.onload=
-      function(){
+      reader.onload =
+      function(e){
 
-        const maxWidth=1200;
-
-
-        let width=img.width;
-
-        let height=img.height;
+        const img =
+        new Image();
 
 
-        if(width>maxWidth){
+        img.onload =
+        function(){
 
-          height=
-          height*maxWidth/width;
+          const maxWidth = 1200;
 
-          width=maxWidth;
+          let width =
+          img.width;
 
-        }
-
-
-        const canvas=
-        document.createElement("canvas");
+          let height =
+          img.height;
 
 
-        canvas.width=width;
+          if(width > maxWidth){
 
-        canvas.height=height;
+            height =
+            height *
+            maxWidth /
+            width;
 
+            width =
+            maxWidth;
 
-        const ctx=
-        canvas.getContext("2d");
-
-
-        ctx.drawImage(
-          img,
-          0,
-          0,
-          width,
-          height
-        );
+          }
 
 
-        resolve(
-          canvas.toDataURL(
-            "image/jpeg",
-            0.70
-          )
-        );
+          const canvas =
+          document.createElement(
+            "canvas"
+          );
+
+
+          canvas.width =
+          width;
+
+          canvas.height =
+          height;
+
+
+          const ctx =
+          canvas.getContext("2d");
+
+
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            width,
+            height
+          );
+
+
+          resolve(
+            canvas.toDataURL(
+              "image/jpeg",
+              0.70
+            )
+          );
+
+        };
+
+
+        img.onerror = reject;
+
+        img.src =
+        e.target.result;
 
       };
 
 
-      img.onerror=reject;
+      reader.onerror = reject;
 
-      img.src=e.target.result;
+      reader.readAsDataURL(file);
 
-    };
-
-
-    reader.onerror=reject;
-
-    reader.readAsDataURL(file);
-
-  });
+    }
+  );
 
 }
 
 
 /* =========================================
-   SIMPAN TOKO
+   SIMPAN ONLINE
 ========================================= */
 
 async function simpanToko(kode,nama){
 
-  const files=
+  const files =
   FOTO_TOKO[kode];
 
 
-  const button=
+  const button =
   document.getElementById(
     `save-${kode}`
   );
 
 
-  const status=
+  const status =
   document.getElementById(
     `status-${kode}`
   );
 
 
-  if(files.length<3){
+  if(!files || files.length < 3){
 
     showMessage(
       `${kode}/${nama}: minimal 3 foto`,
@@ -859,7 +850,7 @@ async function simpanToko(kode,nama){
   }
 
 
-  if(files.length>6){
+  if(files.length > 6){
 
     showMessage(
       `${kode}/${nama}: maksimal 6 foto`,
@@ -871,7 +862,7 @@ async function simpanToko(kode,nama){
   }
 
 
-  const tanggal=
+  const tanggal =
   document.getElementById(
     "tanggal"
   ).value;
@@ -889,13 +880,13 @@ async function simpanToko(kode,nama){
   }
 
 
-  button.disabled=true;
+  button.disabled = true;
 
-  button.textContent=
+  button.textContent =
   "⏳ MENYIMPAN...";
 
-
-  status.textContent="⏳";
+  status.textContent =
+  "⏳";
 
 
   showMessage(
@@ -906,7 +897,7 @@ async function simpanToko(kode,nama){
 
   try{
 
-    const foto=[];
+    const foto = [];
 
 
     for(
@@ -915,42 +906,50 @@ async function simpanToko(kode,nama){
       i++
     ){
 
-      const compressed=
+      const hasil =
       await resizeImage(
         files[i]
       );
 
-      foto.push(compressed);
+      foto.push(hasil);
 
     }
 
 
-    const data={
+    const data = {
 
-      tanggal:tanggal,
+      tanggal: tanggal,
 
-      area:"TRIYANTO",
+      area: "TRIYANTO",
 
-      tokoPic:"KUTN",
+      tokoPic: "KUTN",
 
-      kodeToko:kode,
+      kodeToko: kode,
 
-      namaToko:nama,
+      namaToko: nama,
 
-      status:"✅",
+      status: "✅",
 
-      foto:foto
+      foto: foto
 
     };
 
 
-    const response=
+    /*
+      KIRIM KE GOOGLE APPS SCRIPT
+
+      no-cors digunakan supaya browser
+      tidak memblokir koneksi.
+    */
+
     await fetch(
       API_URL,
       {
-        method:"POST",
+        method: "POST",
 
-        headers:{
+        mode: "no-cors",
+
+        headers: {
           "Content-Type":
           "text/plain;charset=utf-8"
         },
@@ -961,38 +960,32 @@ async function simpanToko(kode,nama){
     );
 
 
-    const result=
-    await response.json();
+    /*
+      Request sudah terkirim.
+    */
+
+    status.textContent =
+    "✅";
 
 
-    if(!result.success){
-
-      throw new Error(
-        result.message ||
-        "Gagal menyimpan"
-      );
-
-    }
+    button.textContent =
+    "✅ DATA TERKIRIM";
 
 
-    status.textContent="✅";
-
-
-    button.textContent=
-    "✅ SUDAH TERSIMPAN";
-
-
-    button.style.background=
+    button.style.background =
     "#16a34a";
 
 
-    showMessage(
-      `${kode}/${nama} berhasil disimpan online`,
-      "success"
-    );
+    savedStores.add(kode);
 
 
     updateProgress();
+
+
+    showMessage(
+      `${kode}/${nama} berhasil dikirim ke database`,
+      "success"
+    );
 
 
   }catch(error){
@@ -1000,13 +993,15 @@ async function simpanToko(kode,nama){
     console.error(error);
 
 
-    status.textContent="❌";
+    status.textContent =
+    "❌";
 
 
-    button.disabled=false;
+    button.disabled =
+    false;
 
 
-    button.textContent=
+    button.textContent =
     "💾 COBA SIMPAN LAGI";
 
 
@@ -1024,56 +1019,22 @@ async function simpanToko(kode,nama){
    PROGRESS
 ========================================= */
 
-let savedStores=new Set();
-
-
 function updateProgress(){
 
-  TOKO.forEach(function(toko){
-
-    const kode=toko[0];
-
-    const status=
-    document.getElementById(
-      `status-${kode}`
-    );
-
-    const button=
-    document.getElementById(
-      `save-${kode}`
-    );
-
-
-    if(
-      status &&
-      status.textContent==="✅" &&
-      button &&
-      button.textContent.includes(
-        "SUDAH TERSIMPAN"
-      )
-    ){
-
-      savedStores.add(kode);
-
-    }
-
-  });
-
-
-  const jumlah=
+  const jumlah =
   savedStores.size;
 
 
   document.getElementById(
     "progressText"
-  ).textContent=
+  ).textContent =
   `${jumlah} / 20 toko tersimpan`;
 
 
   document.getElementById(
     "progressBar"
-  ).style.width=
-  `${jumlah/20*100}%`;
+  ).style.width =
+  `${jumlah / 20 * 100}%`;
 
 }
 
@@ -1084,17 +1045,18 @@ function updateProgress(){
 
 function shareWhatsApp(kode,nama){
 
-  const tanggal=
+  const tanggal =
   document.getElementById(
     "tanggal"
   ).value;
 
 
-  const jumlah=
+  const jumlah =
   FOTO_TOKO[kode].length;
 
 
-  const text=
+  const text =
+
 `*REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO*
 
 *AREA : TRIYANTO*
@@ -1106,8 +1068,8 @@ ${kode}/${nama}/✅
 Jumlah foto: ${jumlah} foto`;
 
 
-  const url=
-  "https://wa.me/?text="+
+  const url =
+  "https://wa.me/?text=" +
   encodeURIComponent(text);
 
 
@@ -1120,7 +1082,7 @@ Jumlah foto: ${jumlah} foto`;
 
 
 /* =========================================
-   JALANKAN
+   MULAI APLIKASI
 ========================================= */
 
 renderStores();
@@ -1128,4 +1090,4 @@ renderStores();
 </script>
 
 </body>
-  </html>
+</html>

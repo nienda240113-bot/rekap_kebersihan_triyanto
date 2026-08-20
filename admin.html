@@ -55,6 +55,11 @@ margin-bottom:14px;
 box-shadow:0 2px 8px #0001;
 }
 
+label{
+display:block;
+margin-bottom:7px;
+}
+
 input[type=date]{
 width:100%;
 padding:12px;
@@ -76,6 +81,13 @@ width:100%;
 margin-top:9px;
 background:#2563eb;
 color:white;
+}
+
+.whatsapp-all{
+width:100%;
+background:#16a34a;
+color:white;
+margin-top:9px;
 }
 
 .summary{
@@ -101,6 +113,39 @@ font-weight:bold;
 .summary-label{
 font-size:12px;
 margin-top:4px;
+}
+
+.percent-box{
+background:white;
+padding:15px;
+border-radius:12px;
+margin-bottom:14px;
+box-shadow:0 2px 8px #0001;
+}
+
+.percent-title{
+font-weight:bold;
+margin-bottom:8px;
+}
+
+.progress{
+height:15px;
+background:#e5e7eb;
+border-radius:20px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:100%;
+width:0%;
+background:#0f766e;
+transition:.3s;
+}
+
+.progress-text{
+text-align:center;
+font-weight:bold;
+margin-top:7px;
 }
 
 .store{
@@ -145,6 +190,7 @@ width:100%;
 height:110px;
 object-fit:cover;
 border-radius:8px;
+cursor:pointer;
 }
 
 .no-photo{
@@ -178,6 +224,15 @@ border-radius:10px;
 font-weight:bold;
 }
 
+.info{
+background:#ecfeff;
+color:#155e75;
+padding:12px;
+border-radius:10px;
+margin-bottom:14px;
+font-size:13px;
+}
+
 </style>
 
 </head>
@@ -209,10 +264,8 @@ TOKO PIC : KUTN
 <div class="toolbar">
 
 <label>
-<b>Tanggal laporan</b>
+<b>📅 Tanggal laporan</b>
 </label>
-
-<br>
 
 <input
 id="tanggal"
@@ -226,10 +279,27 @@ onclick="loadData()">
 
 </button>
 
+<button
+class="whatsapp-all"
+onclick="buatRekapWhatsApp()">
+
+📲 REKAP 20 TOKO → WHATSAPP
+
+</button>
+
+</div>
+
+
+<div class="info">
+
+💡 Pilih tanggal untuk melihat status 20 toko.
+Foto yang sudah dikirim dapat ditekan untuk melihat ukuran penuh.
+
 </div>
 
 
 <div class="summary">
+
 
 <div class="summary-box">
 
@@ -242,7 +312,9 @@ class="summary-number">
 </div>
 
 <div class="summary-label">
+
 TOTAL TOKO
+
 </div>
 
 </div>
@@ -259,7 +331,9 @@ class="summary-number">
 </div>
 
 <div class="summary-label">
+
 SUDAH KIRIM
+
 </div>
 
 </div>
@@ -276,8 +350,39 @@ class="summary-number">
 </div>
 
 <div class="summary-label">
+
 BELUM KIRIM
+
 </div>
+
+</div>
+
+
+</div>
+
+
+<div class="percent-box">
+
+<div class="percent-title">
+
+📊 PERSENTASE PENYELESAIAN
+
+</div>
+
+<div class="progress">
+
+<div
+id="progressBar"
+class="progress-bar">
+</div>
+
+</div>
+
+<div
+id="progressText"
+class="progress-text">
+
+0%
 
 </div>
 
@@ -302,17 +407,17 @@ id="hasil">
 <script>
 
 
-/* ================================
-   URL APPS SCRIPT BARU
-================================ */
+/* =====================================
+   APPS SCRIPT DEPLOYMENT TERBARU
+===================================== */
 
 const API_URL =
 "https://script.google.com/macros/s/AKfycbxWjPI9_Oej-tHG2xXq-VFveR6ksWqikXZZLORqDJVw73apm9EUV6tEc2xpYWkL98y5/exec";
 
 
-/* ================================
+/* =====================================
    20 TOKO
-================================ */
+===================================== */
 
 const TOKO = [
 
@@ -340,31 +445,34 @@ const TOKO = [
 ];
 
 
-/* ================================
-   TANGGAL OTOMATIS
-================================ */
+let dataAdmin = [];
 
-const d =
+
+/* =====================================
+   TANGGAL HARI INI
+===================================== */
+
+const sekarang =
 new Date();
 
 document.getElementById(
 "tanggal"
 ).value =
 
-d.getFullYear() +
+sekarang.getFullYear() +
 "-" +
 String(
-d.getMonth()+1
+sekarang.getMonth()+1
 ).padStart(2,"0") +
 "-" +
 String(
-d.getDate()
+sekarang.getDate()
 ).padStart(2,"0");
 
 
-/* ================================
-   LOAD DATA
-================================ */
+/* =====================================
+   LOAD DATA GOOGLE SHEETS
+===================================== */
 
 async function loadData(){
 
@@ -374,9 +482,11 @@ document.getElementById(
 );
 
 area.innerHTML =
-`<div class="loading">
+`
+<div class="loading">
 ⏳ Mengambil data Google Sheets...
-</div>`;
+</div>
+`;
 
 
 try{
@@ -388,6 +498,16 @@ API_URL +
 );
 
 
+if(!response.ok){
+
+throw new Error(
+"HTTP " +
+response.status
+);
+
+}
+
+
 const result =
 await response.json();
 
@@ -396,20 +516,24 @@ if(!result.success){
 
 throw new Error(
 result.message ||
-"Gagal membaca data"
+"Gagal membaca database"
 );
 
 }
 
 
-tampilkanData(
-result.data || []
-);
+dataAdmin =
+result.data || [];
+
+
+tampilkanData();
 
 
 }catch(error){
 
-console.error(error);
+console.error(
+error
+);
 
 
 area.innerHTML =
@@ -430,11 +554,11 @@ ${error.message}
 }
 
 
-/* ================================
+/* =====================================
    TAMPILKAN DATA
-================================ */
+===================================== */
 
-function tampilkanData(data){
+function tampilkanData(){
 
 const tanggal =
 document.getElementById(
@@ -443,7 +567,8 @@ document.getElementById(
 
 
 const dataTanggal =
-data.filter(function(item){
+dataAdmin.filter(
+function(item){
 
 return String(
 item.tanggal
@@ -454,13 +579,31 @@ tanggal;
 });
 
 
-const terkirim =
+const sudah =
 new Set(
-dataTanggal.map(function(item){
+dataTanggal.map(
+function(item){
 
 return item.kodeToko;
 
 })
+);
+
+
+const jumlahSudah =
+sudah.size;
+
+
+const jumlahBelum =
+TOKO.length -
+jumlahSudah;
+
+
+const persen =
+Math.round(
+(jumlahSudah /
+TOKO.length) *
+100
 );
 
 
@@ -473,14 +616,25 @@ TOKO.length;
 document.getElementById(
 "terkirim"
 ).textContent =
-terkirim.size;
+jumlahSudah;
 
 
 document.getElementById(
 "belum"
 ).textContent =
-TOKO.length -
-terkirim.size;
+jumlahBelum;
+
+
+document.getElementById(
+"progressBar"
+).style.width =
+persen + "%";
+
+
+document.getElementById(
+"progressText"
+).textContent =
+persen + "%";
 
 
 const area =
@@ -488,7 +642,7 @@ document.getElementById(
 "hasil"
 );
 
-area.innerHTML="";
+area.innerHTML = "";
 
 
 TOKO.forEach(
@@ -503,9 +657,11 @@ toko[1];
 
 const dataToko =
 dataTanggal
-.filter(function(item){
+.filter(
+function(item){
 
-return item.kodeToko === kode;
+return item.kodeToko ===
+kode;
 
 })
 .pop();
@@ -531,10 +687,12 @@ dataToko.foto4,
 dataToko.foto5,
 dataToko.foto6
 
-].filter(Boolean);
+].filter(
+Boolean
+);
 
 
-let htmlFoto="";
+let htmlFoto = "";
 
 
 foto.forEach(
@@ -567,7 +725,7 @@ ${kode} / ${nama}
 
 <div class="photo-count">
 
-${foto.length} foto tersimpan
+📸 ${foto.length} foto
 
 </div>
 
@@ -589,9 +747,13 @@ ${htmlFoto}
 
 <button
 class="copy"
-onclick="copyWhatsApp('${kode}','${nama}',${foto.length})">
+onclick="copyWhatsApp(
+'${kode}',
+'${nama}',
+${foto.length}
+)">
 
-📲 COPY REKAP WHATSAPP
+📲 COPY REKAP TOKO
 
 </button>
 
@@ -639,14 +801,182 @@ box
 }
 
 
-/* ================================
-   COPY WHATSAPP
-================================ */
+/* =====================================
+   REKAP 20 TOKO WHATSAPP
+===================================== */
+
+function buatRekapWhatsApp(){
+
+const tanggal =
+document.getElementById(
+"tanggal"
+).value;
+
+
+const dataTanggal =
+dataAdmin.filter(
+function(item){
+
+return String(
+item.tanggal
+).substring(0,10)
+===
+tanggal;
+
+});
+
+
+const sudah =
+new Set(
+dataTanggal.map(
+function(item){
+
+return item.kodeToko;
+
+})
+);
+
+
+let text =
+
+`*REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO*
+
+*AREA : TRIYANTO*
+*PER TGL : ${tanggal}*
+*TOKO PIC : KUTN*
+
+`;
+
+
+TOKO.forEach(
+function(toko,index){
+
+const kode =
+toko[0];
+
+const nama =
+toko[1];
+
+
+const tanda =
+sudah.has(kode)
+? "✅"
+: "❌";
+
+
+text +=
+`${index+1}.${kode}/${nama}/${tanda}\n`;
+
+});
+
+
+const jumlahSudah =
+sudah.size;
+
+
+const jumlahBelum =
+TOKO.length -
+jumlahSudah;
+
+
+const persen =
+Math.round(
+(jumlahSudah /
+TOKO.length) *
+100
+);
+
+
+text +=
+
+`
+━━━━━━━━━━━━━━━━
+*TOTAL TOKO : ${TOKO.length}*
+*SUDAH KIRIM : ${jumlahSudah}*
+*BELUM KIRIM : ${jumlahBelum}*
+*PERSENTASE : ${persen}%*
+━━━━━━━━━━━━━━━━
+`;
+
+
+if(
+navigator.share
+){
+
+navigator.share({
+
+title:
+"Rekap Kebersihan Triyanto",
+
+text:
+text
+
+}).catch(
+function(){
+
+salinRekap(text);
+
+});
+
+}else{
+
+salinRekap(text);
+
+}
+
+}
+
+
+/* =====================================
+   COPY REKAP
+===================================== */
+
+function salinRekap(text){
+
+if(
+navigator.clipboard
+){
+
+navigator.clipboard
+.writeText(text)
+.then(
+function(){
+
+alert(
+"✅ Rekap berhasil disalin.\n\nBuka WhatsApp lalu Paste."
+);
+
+})
+.catch(
+function(){
+
+prompt(
+"Salin rekap berikut:",
+text
+);
+
+});
+
+}else{
+
+prompt(
+"Salin rekap berikut:",
+text
+);
+
+}
+
+}
+
+
+/* =====================================
+   COPY REKAP SATU TOKO
+===================================== */
 
 function copyWhatsApp(
 kode,
 nama,
-jumlah
+jumlahFoto
 ){
 
 const tanggal =
@@ -656,6 +986,7 @@ document.getElementById(
 
 
 const text =
+
 `*REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO*
 
 *AREA : TRIYANTO*
@@ -664,49 +995,35 @@ const text =
 
 ${kode}/${nama}/✅
 
-Foto: ${jumlah} foto`;
+Foto : ${jumlahFoto} foto`;
 
 
-if(
-navigator.clipboard
-){
-
-navigator.clipboard.writeText(
-text
-).then(function(){
-
-alert(
-"Rekap berhasil disalin. Silakan paste ke WhatsApp."
-);
-
-});
-
-}else{
-
-alert(text);
-
-}
+salinRekap(text);
 
 }
 
 
-/* ================================
+/* =====================================
    TANGGAL BERUBAH
-================================ */
+===================================== */
 
 document.getElementById(
 "tanggal"
 ).addEventListener(
 "change",
-loadData
-);
+function(){
+
+tampilkanData();
+
+});
 
 
-/* ================================
+/* =====================================
    MULAI
-================================ */
+===================================== */
 
 loadData();
+
 
 </script>
 

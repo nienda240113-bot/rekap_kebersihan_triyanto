@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>Grid Foto 20 Toko - Triyanto</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f1f5f9;
+color:#111827;
+}
+
+header{
+background:#0f766e;
+color:white;
+padding:18px 12px;
+text-align:center;
+}
+
+header h1{
+margin:0 0 6px;
+font-size:20px;
+}
+
+header p{
+margin:3px;
+font-size:13px;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+padding:12px;
+}
+
+.panel{
+background:white;
+padding:14px;
+border-radius:14px;
+margin-bottom:14px;
+box-shadow:0 2px 8px #0001;
+}
+
+input{
+width:100%;
+padding:12px;
+border:1px solid #cbd5e1;
+border-radius:9px;
+font-size:15px;
+}
+
+button{
+width:100%;
+border:0;
+border-radius:9px;
+padding:13px;
+margin-top:8px;
+font-weight:bold;
+font-size:14px;
+}
+
+.blue{
+background:#2563eb;
+color:white;
+}
+
+.purple{
+background:#7c3aed;
+color:white;
+}
+
+.orange{
+background:#ea580c;
+color:white;
+}
+
+.green{
+background:#16a34a;
+color:white;
+}
+
+.status{
+background:white;
+padding:12px;
+border-radius:12px;
+margin-bottom:14px;
+box-shadow:0 2px 8px #0001;
+text-align:center;
+font-weight:bold;
+}
+
+.progress{
+height:14px;
+background:#e5e7eb;
+border-radius:20px;
+overflow:hidden;
+margin-top:8px;
+}
+
+.bar{
+height:100%;
+width:0%;
+background:#0f766e;
+transition:.3s;
+}
+
+.loading{
+text-align:center;
+padding:30px;
+font-weight:bold;
+}
+
+.error{
+background:#fee2e2;
+color:#991b1b;
+padding:14px;
+border-radius:10px;
+font-weight:bold;
+}
+
+
+/* ============================
+   GRID SETIAP TOKO
+============================ */
+
+.store{
+background:white;
+padding:12px;
+border-radius:14px;
+margin-bottom:15px;
+box-shadow:0 2px 8px #0001;
+}
+
+.store-title{
+font-weight:bold;
+font-size:17px;
+margin-bottom:5px;
+}
+
+.store-info{
+font-size:13px;
+margin-bottom:9px;
+}
+
+.store-photos{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:5px;
+}
+
+.store-photos img{
+width:100%;
+aspect-ratio:1/1;
+object-fit:cover;
+border-radius:6px;
+cursor:pointer;
+background:#e5e7eb;
+}
+
+.no-photo{
+background:#fee2e2;
+color:#991b1b;
+padding:14px;
+border-radius:8px;
+text-align:center;
+font-weight:bold;
+}
+
+
+/* ============================
+   FRAME GABUNGAN
+============================ */
+
+.frame-box{
+background:white;
+padding:10px;
+border-radius:14px;
+margin-top:15px;
+box-shadow:0 2px 8px #0001;
+}
+
+.frame-title{
+text-align:center;
+font-size:18px;
+font-weight:bold;
+margin-bottom:3px;
+}
+
+.frame-subtitle{
+text-align:center;
+font-size:12px;
+margin-bottom:10px;
+}
+
+.combined-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:4px;
+}
+
+.combined-item{
+position:relative;
+background:#e5e7eb;
+overflow:hidden;
+border-radius:4px;
+}
+
+.combined-item img{
+width:100%;
+aspect-ratio:1/1;
+object-fit:cover;
+display:block;
+}
+
+.combined-label{
+position:absolute;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,.72);
+color:white;
+font-size:10px;
+padding:5px 2px;
+text-align:center;
+font-weight:bold;
+}
+
+.empty-frame{
+background:#e5e7eb;
+aspect-ratio:1/1;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+font-size:11px;
+font-weight:bold;
+color:#991b1b;
+padding:5px;
+}
+
+.footer{
+text-align:center;
+font-size:10px;
+color:#475569;
+margin-top:8px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<h1>
+🖼️ GRID FOTO 20 TOKO
+</h1>
+
+<p>
+AREA : TRIYANTO
+</p>
+
+<p>
+TOKO PIC : KUTN
+</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="panel">
+
+<b>📅 Tanggal laporan</b>
+
+<br><br>
+
+<input
+id="tanggal"
+type="date">
+
+
+<button
+class="blue"
+onclick="ambilData()">
+
+🔄 AMBIL DATA
+
+</button>
+
+
+<button
+class="purple"
+onclick="tampilkanGridToko()">
+
+📸 GRID FOTO PER TOKO
+
+</button>
+
+
+<button
+class="orange"
+onclick="buatFrameGabungan()">
+
+🖼️ BUAT 1 FRAME TOKO YANG SUDAH KIRIM
+
+</button>
+
+
+<button
+class="green"
+onclick="bagikanFrame()">
+
+📲 BAGIKAN FRAME
+
+</button>
+
+</div>
+
+
+<div class="status">
+
+<div>
+
+SUDAH KIRIM :
+<span id="sudah">0</span>
+
+&nbsp;&nbsp;|&nbsp;&nbsp;
+
+BELUM :
+<span id="belum">20</span>
+
+</div>
+
+
+<div class="progress">
+
+<div
+id="bar"
+class="bar">
+</div>
+
+</div>
+
+
+<div
+id="persen">
+
+0%
+
+</div>
+
+</div>
+
+
+<div
+id="frameArea">
+</div>
+
+
+<div
+id="hasil">
+
+<div class="loading">
+
+⏳ Silakan tekan AMBIL DATA
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+/* =================================
+   APPS SCRIPT
+================================= */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxWjPI9_Oej-tHG2xXq-VFveR6ksWqikXZZLORqDJVw73apm9EUV6tEc2xpYWkL98y5/exec";
+
+
+/* =================================
+   20 TOKO
+================================= */
+
+const TOKO = [
+
+["C624","RWBT"],
+["C560","RAJ"],
+["CH81","CDKS"],
+["CG76","SPMM"],
+["C573","GMM"],
+["CE47","MKRI"],
+["CI30","STTD"],
+["CH41","KPMRK"],
+["CG54","MM2100"],
+["C935","TLJ2"],
+["CA71","WSGN"],
+["C965","CBNU"],
+["CG86","JKST"],
+["CA94","KPTI"],
+["C574","SKU"],
+["CI15","RPSU"],
+["CI54","RJLB"],
+["CF50","DNIA"],
+["CC21","KUTN"],
+["CI84","TLKW"]
+
+];
+
+
+let DATA = [];
+
+let FRAME_CANVAS = null;
+
+
+/* =================================
+   TANGGAL OTOMATIS
+================================= */
+
+const d =
+new Date();
+
+document.getElementById(
+"tanggal"
+).value =
+
+d.getFullYear() +
+"-" +
+String(
+d.getMonth()+1
+).padStart(2,"0") +
+"-" +
+String(
+d.getDate()
+).padStart(2,"0");
+
+
+/* =================================
+   AMBIL DATA
+================================= */
+
+async function ambilData(){
+
+const hasil =
+document.getElementById(
+"hasil"
+);
+
+
+hasil.innerHTML =
+
+`
+<div class="loading">
+
+⏳ Mengambil data Google Sheets...
+
+</div>
+`;
+
+
+try{
+
+const response =
+await fetch(
+API_URL +
+"?action=rekap"
+);
+
+
+if(!response.ok){
+
+throw new Error(
+"HTTP " +
+response.status
+);
+
+}
+
+
+const result =
+await response.json();
+
+
+if(!result.success){
+
+throw new Error(
+result.message ||
+"Database gagal dibaca"
+);
+
+}
+
+
+DATA =
+result.data || [];
+
+
+updateStatus();
+
+
+hasil.innerHTML =
+
+`
+<div class="loading">
+
+✅ Data berhasil diambil.
+
+<br><br>
+
+Tekan tombol GRID FOTO PER TOKO
+atau BUAT 1 FRAME.
+
+</div>
+`;
+
+
+}catch(error){
+
+console.error(error);
+
+
+hasil.innerHTML =
+
+`
+<div class="error">
+
+❌ Gagal mengambil data.
+
+<br><br>
+
+${error.message}
+
+</div>
+`;
+
+}
+
+}
+
+
+/* =================================
+   DATA TANGGAL
+================================= */
+
+function dataHariIni(){
+
+const tanggal =
+document.getElementById(
+"tanggal"
+).value;
+
+
+return DATA.filter(
+function(item){
+
+return String(
+item.tanggal
+).substring(0,10)
+===
+tanggal;
+
+});
+
+}
+
+
+/* =================================
+   CARI TOKO
+================================= */
+
+function cariToko(
+kode,
+data
+){
+
+return data
+.filter(
+function(item){
+
+return item.kodeToko ===
+kode;
+
+})
+.pop();
+
+}
+
+
+/* =================================
+   AMBIL FOTO
+================================= */
+
+function fotoToko(
+item
+){
+
+if(!item){
+
+return [];
+
+}
+
+
+return [
+
+item.foto1,
+item.foto2,
+item.foto3,
+item.foto4,
+item.foto5,
+item.foto6
+
+].filter(
+function(foto){
+
+return foto &&
+foto !== "undefined" &&
+foto !== "null";
+
+});
+
+}
+
+
+/* =================================
+   STATUS
+================================= */
+
+function updateStatus(){
+
+const data =
+dataHariIni();
+
+
+const sudah =
+new Set(
+data.map(
+function(item){
+
+return item.kodeToko;
+
+})
+);
+
+
+const jumlah =
+sudah.size;
+
+
+const persen =
+Math.round(
+jumlah /
+20 *
+100
+);
+
+
+document.getElementById(
+"sudah"
+).textContent =
+jumlah;
+
+
+document.getElementById(
+"belum"
+).textContent =
+20 - jumlah;
+
+
+document.getElementById(
+"bar"
+).style.width =
+persen + "%";
+
+
+document.getElementById(
+"persen"
+).textContent =
+persen + "%";
+
+}
+
+
+/* =================================
+   GRID PER TOKO
+================================= */
+
+function tampilkanGridToko(){
+
+if(!DATA.length){
+
+alert(
+"Tekan AMBIL DATA terlebih dahulu."
+);
+
+return;
+
+}
+
+
+const data =
+dataHariIni();
+
+
+const hasil =
+document.getElementById(
+"hasil"
+);
+
+
+hasil.innerHTML = "";
+
+
+TOKO.forEach(
+function(toko,index){
+
+const kode =
+toko[0];
+
+const nama =
+toko[1];
+
+
+const item =
+cariToko(
+kode,
+data
+);
+
+
+const foto =
+fotoToko(item);
+
+
+const div =
+document.createElement(
+"div"
+);
+
+
+div.className =
+"store";
+
+
+let html =
+
+`
+<div class="store-title">
+
+${index+1}. ${kode} / ${nama}
+
+</div>
+`;
+
+
+if(foto.length){
+
+html +=
+
+`
+<div class="store-info">
+
+✅ ${foto.length} foto
+
+</div>
+
+<div class="store-photos">
+
+`;
+
+
+foto.forEach(
+function(url){
+
+html +=
+
+`
+<img
+src="${url}"
+loading="lazy"
+onclick="window.open('${url}','_blank')"
+onerror="this.style.opacity='.25'">
+
+`;
+
+});
+
+
+html +=
+"</div>";
+
+}else{
+
+html +=
+
+`
+<div class="no-photo">
+
+❌ BELUM MENGIRIM FOTO
+
+</div>
+`;
+
+}
+
+
+div.innerHTML =
+html;
+
+
+hasil.appendChild(
+div
+);
+
+});
+
+}
+
+
+/* =================================
+   BUAT FRAME GABUNGAN
+================================= */
+
+function buatFrameGabungan(){
+
+if(!DATA.length){
+
+alert(
+"Tekan AMBIL DATA terlebih dahulu."
+);
+
+return;
+
+}
+
+
+const data =
+dataHariIni();
+
+
+const daftar =
+[];
+
+
+TOKO.forEach(
+function(toko){
+
+const item =
+cariToko(
+toko[0],
+data
+);
+
+
+const foto =
+fotoToko(item);
+
+
+if(foto.length){
+
+daftar.push({
+
+kode:toko[0],
+
+nama:toko[1],
+
+foto:foto[0]
+
+});
+
+}
+
+});
+
+
+if(!daftar.length){
+
+alert(
+"Belum ada toko yang mengirim."
+);
+
+return;
+
+}
+
+
+const tanggal =
+document.getElementById(
+"tanggal"
+).value;
+
+
+const area =
+document.getElementById(
+"frameArea"
+);
+
+
+area.innerHTML =
+
+`
+<div class="frame-box">
+
+<div class="frame-title">
+
+🖼️ REKAP FOTO TOKO
+
+</div>
+
+<div class="frame-subtitle">
+
+AREA TRIYANTO • ${tanggal}
+
+</div>
+
+<div
+id="combinedGrid"
+class="combined-grid">
+</div>
+
+<div class="footer">
+
+${daftar.length}
+TOKO SUDAH KIRIM
+
+</div>
+
+</div>
+`;
+
+
+const grid =
+document.getElementById(
+"combinedGrid"
+);
+
+
+/*
+ * TAMPILKAN LANGSUNG
+ * TANPA MENUNGGU CANVAS
+ */
+
+daftar.forEach(
+function(toko,index){
+
+const card =
+document.createElement(
+"div"
+);
+
+
+card.className =
+"combined-item";
+
+
+card.innerHTML =
+
+`
+<img
+src="${toko.foto}"
+loading="lazy"
+onerror="this.style.display='none'">
+
+<div class="combined-label">
+
+${index+1}.
+${toko.kode}/${toko.nama}
+
+</div>
+
+`;
+
+
+grid.appendChild(
+card
+);
+
+});
+
+
+/*
+ * Buat canvas di belakang
+ */
+
+buatCanvasCepat(
+daftar
+);
+
+
+area.scrollIntoView({
+behavior:"smooth"
+});
+
+}
+
+
+/* =================================
+   CANVAS CEPAT
+================================= */
+
+async function buatCanvasCepat(
+daftar
+){
+
+const cols = 4;
+
+const cell = 350;
+
+
+const rows =
+Math.ceil(
+daftar.length /
+cols
+);
+
+
+const canvas =
+document.createElement(
+"canvas"
+);
+
+
+canvas.width =
+cols * cell;
+
+
+canvas.height =
+rows * cell;
+
+
+const ctx =
+canvas.getContext(
+"2d"
+);
+
+
+ctx.fillStyle =
+"#ffffff";
+
+
+ctx.fillRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+
+/*
+ * Jalankan semua gambar bersamaan
+ */
+
+const pekerjaan =
+daftar.map(
+function(toko,index){
+
+return new Promise(
+function(resolve){
+
+const img =
+new Image();
+
+
+img.crossOrigin =
+"anonymous";
+
+
+const x =
+(index % cols) *
+cell;
+
+
+const y =
+Math.floor(
+index / cols
+) * cell;
+
+
+img.onload =
+function(){
+
+const scale =
+Math.max(
+cell/img.width,
+cell/img.height
+);
+
+
+const w =
+img.width *
+scale;
+
+
+const h =
+img.height *
+scale;
+
+
+const dx =
+x +
+(cell-w)/2;
+
+
+const dy =
+y +
+(cell-h)/2;
+
+
+ctx.save();
+
+ctx.beginPath();
+
+ctx.rect(
+x,
+y,
+cell,
+cell
+);
+
+ctx.clip();
+
+
+ctx.drawImage(
+img,
+dx,
+dy,
+w,
+h
+);
+
+
+ctx.restore();
+
+
+ctx.fillStyle =
+"rgba(0,0,0,.72)";
+
+
+ctx.fillRect(
+x,
+y+cell-55,
+cell,
+55
+);
+
+
+ctx.fillStyle =
+"#ffffff";
+
+
+ctx.font =
+"bold 20px Arial";
+
+
+ctx.textAlign =
+"center";
+
+
+ctx.fillText(
+`${index+1}. ${toko.kode}/${toko.nama}`,
+x+cell/2,
+y+cell-22
+);
+
+
+ctx.textAlign =
+"left";
+
+
+resolve();
+
+};
+
+
+img.onerror =
+function(){
+
+ctx.fillStyle =
+"#e5e7eb";
+
+
+ctx.fillRect(
+x,
+y,
+cell,
+cell
+);
+
+
+ctx.fillStyle =
+"#991b1b";
+
+
+ctx.font =
+"bold 18px Arial";
+
+
+ctx.textAlign =
+"center";
+
+
+ctx.fillText(
+"FOTO GAGAL",
+x+cell/2,
+y+cell/2
+);
+
+
+ctx.textAlign =
+"left";
+
+
+resolve();
+
+};
+
+
+img.src =
+toko.foto;
+
+});
+
+});
+
+
+await Promise.all(
+pekerjaan
+);
+
+
+FRAME_CANVAS =
+canvas;
+
+}
+
+
+/* =================================
+   BAGIKAN
+================================= */
+
+function bagikanFrame(){
+
+if(!FRAME_CANVAS){
+
+alert(
+"Buat 1 FRAME terlebih dahulu."
+);
+
+return;
+
+}
+
+
+FRAME_CANVAS.toBlob(
+async function(blob){
+
+const file =
+new File(
+[blob],
+"REKAP_FOTO_TRIYANTO.png",
+{
+type:"image/png"
+}
+);
+
+
+if(
+navigator.share &&
+navigator.canShare &&
+navigator.canShare({
+files:[file]
+})
+){
+
+try{
+
+await navigator.share({
+
+title:
+"Rekap Foto Kebersihan",
+
+text:
+"Rekap Foto Area Triyanto",
+
+files:[
+file
+]
+
+});
+
+}catch(e){
+
+console.log(e);
+
+}
+
+}else{
+
+downloadFrame();
+
+}
+
+},
+"image/png"
+);
+
+}
+
+
+/* =================================
+   DOWNLOAD
+================================= */
+
+function downloadFrame(){
+
+if(!FRAME_CANVAS){
+
+return;
+
+}
+
+
+const a =
+document.createElement(
+"a"
+);
+
+
+a.download =
+"REKAP_FOTO_TRIYANTO.png";
+
+
+a.href =
+FRAME_CANVAS.toDataURL(
+"image/png"
+);
+
+
+a.click();
+
+}
+
+
+/* =================================
+   TANGGAL BERUBAH
+================================= */
+
+document.getElementById(
+"tanggal"
+).addEventListener(
+"change",
+function(){
+
+FRAME_CANVAS =
+null;
+
+document.getElementById(
+"hasil"
+).innerHTML = "";
+
+document.getElementById(
+"frameArea"
+).innerHTML = "";
+
+if(DATA.length){
+
+updateStatus();
+
+}
+
+});
+
+
+</script>
+
+</body>
+  </html>

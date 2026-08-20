@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>Admin Rekap Kebersihan Triyanto</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f1f5f9;
+color:#111827;
+}
+
+header{
+background:#0f766e;
+color:white;
+padding:20px 14px;
+text-align:center;
+}
+
+header h1{
+margin:0 0 7px;
+font-size:21px;
+}
+
+header p{
+margin:3px;
+font-size:14px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:12px;
+}
+
+.toolbar{
+background:white;
+padding:14px;
+border-radius:14px;
+margin-bottom:14px;
+box-shadow:0 2px 8px #0001;
+}
+
+input[type=date]{
+width:100%;
+padding:12px;
+border:1px solid #cbd5e1;
+border-radius:9px;
+font-size:15px;
+}
+
+button{
+border:0;
+border-radius:9px;
+padding:12px;
+font-weight:bold;
+font-size:14px;
+}
+
+.refresh{
+width:100%;
+margin-top:9px;
+background:#2563eb;
+color:white;
+}
+
+.summary{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
+margin-bottom:14px;
+}
+
+.summary-box{
+background:white;
+border-radius:12px;
+padding:13px;
+text-align:center;
+box-shadow:0 2px 8px #0001;
+}
+
+.summary-number{
+font-size:23px;
+font-weight:bold;
+}
+
+.summary-label{
+font-size:12px;
+margin-top:4px;
+}
+
+.store{
+background:white;
+border-radius:14px;
+padding:14px;
+margin-bottom:12px;
+box-shadow:0 2px 8px #0001;
+}
+
+.store-head{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+}
+
+.store-name{
+font-size:17px;
+font-weight:bold;
+}
+
+.status{
+font-size:23px;
+}
+
+.photo-count{
+font-size:13px;
+margin-top:5px;
+font-weight:bold;
+}
+
+.photos{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:7px;
+margin-top:10px;
+}
+
+.photos img{
+width:100%;
+height:110px;
+object-fit:cover;
+border-radius:8px;
+}
+
+.no-photo{
+margin-top:10px;
+padding:12px;
+border-radius:9px;
+background:#fee2e2;
+color:#b91c1c;
+font-weight:bold;
+text-align:center;
+}
+
+.copy{
+width:100%;
+margin-top:10px;
+background:#16a34a;
+color:white;
+}
+
+.loading{
+text-align:center;
+padding:30px;
+font-weight:bold;
+}
+
+.error{
+background:#fee2e2;
+color:#b91c1c;
+padding:14px;
+border-radius:10px;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<h1>
+ADMIN REKAP KEBERSIHAN
+</h1>
+
+<p>
+AREA : TRIYANTO
+</p>
+
+<p>
+TOKO PIC : KUTN
+</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div class="toolbar">
+
+<label>
+<b>Tanggal laporan</b>
+</label>
+
+<br>
+
+<input
+id="tanggal"
+type="date">
+
+<button
+class="refresh"
+onclick="loadData()">
+
+🔄 REFRESH DATA
+
+</button>
+
+</div>
+
+
+<div class="summary">
+
+<div class="summary-box">
+
+<div
+id="total"
+class="summary-number">
+
+20
+
+</div>
+
+<div class="summary-label">
+TOTAL TOKO
+</div>
+
+</div>
+
+
+<div class="summary-box">
+
+<div
+id="terkirim"
+class="summary-number">
+
+0
+
+</div>
+
+<div class="summary-label">
+SUDAH KIRIM
+</div>
+
+</div>
+
+
+<div class="summary-box">
+
+<div
+id="belum"
+class="summary-number">
+
+20
+
+</div>
+
+<div class="summary-label">
+BELUM KIRIM
+</div>
+
+</div>
+
+</div>
+
+
+<div
+id="hasil">
+
+<div class="loading">
+
+⏳ Memuat data...
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+/* ================================
+   URL APPS SCRIPT BARU
+================================ */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwRrfB8TkEtiMJJSOVwRNssejHS0w4ovp-tO65r3cl_e7icY4WsiMHG1rFrSvaWUPJXRg/exec";
+
+
+/* ================================
+   20 TOKO
+================================ */
+
+const TOKO = [
+
+["C624","RWBT"],
+["C560","RAJ"],
+["CH81","CDKS"],
+["CG76","SPMM"],
+["C573","GMM"],
+["CE47","MKRI"],
+["CI30","STTD"],
+["CH41","KPMRK"],
+["CG54","MM2100"],
+["C935","TLJ2"],
+["CA71","WSGN"],
+["C965","CBNU"],
+["CG86","JKST"],
+["CA94","KPTI"],
+["C574","SKU"],
+["CI15","RPSU"],
+["CI54","RJLB"],
+["CF50","DNIA"],
+["CC21","KUTN"],
+["CI84","TLKW"]
+
+];
+
+
+/* ================================
+   TANGGAL OTOMATIS
+================================ */
+
+const d =
+new Date();
+
+document.getElementById(
+"tanggal"
+).value =
+
+d.getFullYear() +
+"-" +
+String(
+d.getMonth()+1
+).padStart(2,"0") +
+"-" +
+String(
+d.getDate()
+).padStart(2,"0");
+
+
+/* ================================
+   LOAD DATA
+================================ */
+
+async function loadData(){
+
+const area =
+document.getElementById(
+"hasil"
+);
+
+area.innerHTML =
+`<div class="loading">
+⏳ Mengambil data Google Sheets...
+</div>`;
+
+
+try{
+
+const response =
+await fetch(
+API_URL +
+"?action=rekap"
+);
+
+
+const result =
+await response.json();
+
+
+if(!result.success){
+
+throw new Error(
+result.message ||
+"Gagal membaca data"
+);
+
+}
+
+
+tampilkanData(
+result.data || []
+);
+
+
+}catch(error){
+
+console.error(error);
+
+
+area.innerHTML =
+`
+<div class="error">
+
+❌ Gagal membaca database.
+
+<br><br>
+
+${error.message}
+
+</div>
+`;
+
+}
+
+}
+
+
+/* ================================
+   TAMPILKAN DATA
+================================ */
+
+function tampilkanData(data){
+
+const tanggal =
+document.getElementById(
+"tanggal"
+).value;
+
+
+const dataTanggal =
+data.filter(function(item){
+
+return String(
+item.tanggal
+).substring(0,10)
+===
+tanggal;
+
+});
+
+
+const terkirim =
+new Set(
+dataTanggal.map(function(item){
+
+return item.kodeToko;
+
+})
+);
+
+
+document.getElementById(
+"total"
+).textContent =
+TOKO.length;
+
+
+document.getElementById(
+"terkirim"
+).textContent =
+terkirim.size;
+
+
+document.getElementById(
+"belum"
+).textContent =
+TOKO.length -
+terkirim.size;
+
+
+const area =
+document.getElementById(
+"hasil"
+);
+
+area.innerHTML="";
+
+
+TOKO.forEach(
+function(toko,index){
+
+const kode =
+toko[0];
+
+const nama =
+toko[1];
+
+
+const dataToko =
+dataTanggal
+.filter(function(item){
+
+return item.kodeToko === kode;
+
+})
+.pop();
+
+
+const box =
+document.createElement(
+"div"
+);
+
+box.className =
+"store";
+
+
+if(dataToko){
+
+const foto = [
+
+dataToko.foto1,
+dataToko.foto2,
+dataToko.foto3,
+dataToko.foto4,
+dataToko.foto5,
+dataToko.foto6
+
+].filter(Boolean);
+
+
+let htmlFoto="";
+
+
+foto.forEach(
+function(url){
+
+htmlFoto +=
+`
+<img
+src="${url}"
+onclick="window.open('${url}','_blank')"
+>
+`;
+
+});
+
+
+box.innerHTML =
+
+`
+<div class="store-head">
+
+<div>
+
+<div class="store-name">
+
+${index+1}.
+${kode} / ${nama}
+
+</div>
+
+<div class="photo-count">
+
+${foto.length} foto tersimpan
+
+</div>
+
+</div>
+
+<div class="status">
+
+✅
+
+</div>
+
+</div>
+
+<div class="photos">
+
+${htmlFoto}
+
+</div>
+
+<button
+class="copy"
+onclick="copyWhatsApp('${kode}','${nama}',${foto.length})">
+
+📲 COPY REKAP WHATSAPP
+
+</button>
+
+`;
+
+}else{
+
+box.innerHTML =
+
+`
+<div class="store-head">
+
+<div class="store-name">
+
+${index+1}.
+${kode} / ${nama}
+
+</div>
+
+<div class="status">
+
+❌
+
+</div>
+
+</div>
+
+<div class="no-photo">
+
+BELUM MENGIRIM LAPORAN
+
+</div>
+
+`;
+
+}
+
+
+area.appendChild(
+box
+);
+
+});
+
+}
+
+
+/* ================================
+   COPY WHATSAPP
+================================ */
+
+function copyWhatsApp(
+kode,
+nama,
+jumlah
+){
+
+const tanggal =
+document.getElementById(
+"tanggal"
+).value;
+
+
+const text =
+`*REKAP AKTIVITAS KEBERSIHAN HARIAN TOKO*
+
+*AREA : TRIYANTO*
+*PER TGL : ${tanggal}*
+*TOKO PIC : KUTN*
+
+${kode}/${nama}/✅
+
+Foto: ${jumlah} foto`;
+
+
+if(
+navigator.clipboard
+){
+
+navigator.clipboard.writeText(
+text
+).then(function(){
+
+alert(
+"Rekap berhasil disalin. Silakan paste ke WhatsApp."
+);
+
+});
+
+}else{
+
+alert(text);
+
+}
+
+}
+
+
+/* ================================
+   TANGGAL BERUBAH
+================================ */
+
+document.getElementById(
+"tanggal"
+).addEventListener(
+"change",
+loadData
+);
+
+
+/* ================================
+   MULAI
+================================ */
+
+loadData();
+
+</script>
+
+</body>
+
+</html>

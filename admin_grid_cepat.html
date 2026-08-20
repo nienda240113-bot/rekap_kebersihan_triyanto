@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Grid Cepat - Triyanto</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f1f5f9;
+  color:#111827;
+}
+
+header{
+  background:#0f766e;
+  color:#fff;
+  text-align:center;
+  padding:18px 12px;
+}
+
+header h1{
+  margin:0 0 5px;
+  font-size:20px;
+}
+
+header p{
+  margin:3px;
+  font-size:13px;
+}
+
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:12px;
+}
+
+.panel,
+.status-box,
+.store{
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 2px 8px #0001;
+}
+
+.panel{
+  padding:14px;
+  margin-bottom:14px;
+}
+
+input[type=date]{
+  width:100%;
+  padding:12px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  font-size:15px;
+}
+
+button{
+  width:100%;
+  border:0;
+  border-radius:9px;
+  padding:13px;
+  margin-top:8px;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.btn-blue{background:#2563eb;color:white}
+.btn-purple{background:#7c3aed;color:white}
+.btn-orange{background:#ea580c;color:white}
+.btn-green{background:#16a34a;color:white}
+
+.status-box{
+  padding:13px;
+  text-align:center;
+  margin-bottom:14px;
+  font-weight:bold;
+}
+
+.progress{
+  height:13px;
+  background:#e5e7eb;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:9px;
+}
+
+.bar{
+  height:100%;
+  width:0%;
+  background:#0f766e;
+  transition:.3s;
+}
+
+.loading{
+  text-align:center;
+  padding:25px;
+  font-weight:bold;
+}
+
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+  padding:14px;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+/* GRID TOKO */
+
+.store{
+  padding:12px;
+  margin-bottom:14px;
+}
+
+.store-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.store-title{
+  font-size:17px;
+  font-weight:bold;
+}
+
+.store-status{
+  font-size:13px;
+  margin-top:4px;
+}
+
+.store-photo-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:4px;
+  margin-top:10px;
+}
+
+.store-photo-grid img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:5px;
+  background:#e5e7eb;
+}
+
+.more-btn{
+  background:#64748b;
+  color:white;
+}
+
+/* FRAME */
+
+.frame-box{
+  background:white;
+  border-radius:14px;
+  padding:10px;
+  margin-bottom:15px;
+  box-shadow:0 2px 8px #0001;
+}
+
+.frame-title{
+  text-align:center;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.frame-subtitle{
+  text-align:center;
+  font-size:12px;
+  margin:4px 0 10px;
+}
+
+.combined-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:4px;
+}
+
+.combined-item{
+  position:relative;
+  background:#e5e7eb;
+  overflow:hidden;
+  border-radius:4px;
+  aspect-ratio:1/1;
+}
+
+.combined-item img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.combined-label{
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:5px 2px;
+  background:rgba(0,0,0,.72);
+  color:white;
+  font-size:9px;
+  text-align:center;
+  font-weight:bold;
+}
+
+.frame-footer{
+  text-align:center;
+  font-size:10px;
+  margin-top:8px;
+  color:#475569;
+}
+
+@media(max-width:600px){
+  .combined-grid{
+    grid-template-columns:repeat(4,1fr);
+  }
+
+  .combined-label{
+    font-size:8px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>⚡ ADMIN GRID FOTO CEPAT</h1>
+  <p>AREA : TRIYANTO</p>
+  <p>TOKO PIC : KUTN</p>
+</header>
+
+<div class="container">
+
+  <div class="panel">
+
+    <b>📅 Tanggal laporan</b>
+
+    <br><br>
+
+    <input
+      id="tanggal"
+      type="date"
+    >
+
+    <button
+      class="btn-blue"
+      onclick="ambilData()"
+    >
+      🔄 AMBIL DATA 20 TOKO
+    </button>
+
+    <button
+      class="btn-purple"
+      onclick="tampilkanSemuaToko()"
+    >
+      📸 TAMPILKAN GRID PER TOKO
+    </button>
+
+    <button
+      class="btn-orange"
+      onclick="buatFrameCepat()"
+    >
+      🖼️ BUAT 1 FRAME TOKO SUDAH KIRIM
+    </button>
+
+    <button
+      class="btn-green"
+      onclick="bagikanFrame()"
+    >
+      📲 BAGIKAN FRAME
+    </button>
+
+  </div>
+
+  <div class="status-box">
+
+    <div>
+      SUDAH:
+      <span id="sudah">0</span>
+      &nbsp; | &nbsp;
+      BELUM:
+      <span id="belum">20</span>
+    </div>
+
+    <div class="progress">
+      <div id="bar" class="bar"></div>
+    </div>
+
+    <div id="persen" style="margin-top:6px">
+      0%
+    </div>
+
+  </div>
+
+  <div id="frameArea"></div>
+
+  <div id="hasil">
+
+    <div class="loading">
+      Tekan <b>AMBIL DATA 20 TOKO</b>
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =====================================
+   APPS SCRIPT YANG SUDAH BERHASIL
+===================================== */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxWjPI9_Oej-tHG2xXq-VFveR6ksWqikXZZLORqDJVw73apm9EUV6tEc2xpYWkL98y5/exec";
+
+
+/* =====================================
+   20 TOKO
+===================================== */
+
+const TOKO = [
+
+["C624","RWBT"],
+["C560","RAJ"],
+["CH81","CDKS"],
+["CG76","SPMM"],
+["C573","GMM"],
+["CE47","MKRI"],
+["CI30","STTD"],
+["CH41","KPMRK"],
+["CG54","MM2100"],
+["C935","TLJ2"],
+["CA71","WSGN"],
+["C965","CBNU"],
+["CG86","JKST"],
+["CA94","KPTI"],
+["C574","SKU"],
+["CI15","RPSU"],
+["CI54","RJLB"],
+["CF50","DNIA"],
+["CC21","KUTN"],
+["CI84","TLKW"]
+
+];
+
+
+let DATA = [];
+
+let FRAME_READY = false;
+
+
+/* =====================================
+   TANGGAL HARI INI
+===================================== */
+
+const now = new Date();
+
+document.getElementById("tanggal").value =
+now.getFullYear() +
+"-" +
+String(now.getMonth()+1).padStart(2,"0") +
+"-" +
+String(now.getDate()).padStart(2,"0");
+
+
+/* =====================================
+   AMBIL DATA
+===================================== */
+
+async function ambilData(){
+
+  const hasil =
+  document.getElementById("hasil");
+
+  hasil.innerHTML = `
+    <div class="loading">
+      ⏳ Mengambil data 20 toko...
+    </div>
+  `;
+
+  try{
+
+    const response =
+    await fetch(
+      API_URL + "?action=rekap",
+      {
+        cache:"no-store"
+      }
+    );
+
+    if(!response.ok){
+      throw new Error(
+        "HTTP " + response.status
+      );
+    }
+
+    const result =
+    await response.json();
+
+    if(!result.success){
+      throw new Error(
+        result.message ||
+        "Database gagal dibaca"
+      );
+    }
+
+    DATA =
+    Array.isArray(result.data)
+    ? result.data
+    : [];
+
+    updateStatus();
+
+    hasil.innerHTML = `
+      <div class="loading">
+        ✅ Data 20 toko berhasil dibaca.
+      </div>
+    `;
+
+  }catch(error){
+
+    hasil.innerHTML = `
+      <div class="error">
+        ❌ Gagal mengambil data.
+        <br><br>
+        ${error.message}
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =====================================
+   DATA SESUAI TANGGAL
+===================================== */
+
+function dataTanggal(){
+
+  const tanggal =
+  document.getElementById("tanggal").value;
+
+  return DATA.filter(function(item){
+
+    return String(
+      item.tanggal
+    ).substring(0,10) === tanggal;
+
+  });
+
+}
+
+
+/* =====================================
+   CARI TOKO
+===================================== */
+
+function cariToko(kode,data){
+
+  return data
+    .filter(function(item){
+
+      return String(item.kodeToko)
+      .trim()
+      .toUpperCase()
+      ===
+      String(kode)
+      .trim()
+      .toUpperCase();
+
+    })
+    .pop();
+
+}
+
+
+/* =====================================
+   AMBIL FOTO
+===================================== */
+
+function ambilFoto(item){
+
+  if(!item){
+    return [];
+  }
+
+  return [
+    item.foto1,
+    item.foto2,
+    item.foto3,
+    item.foto4,
+    item.foto5,
+    item.foto6
+  ].filter(function(foto){
+
+    return foto &&
+           foto !== "undefined" &&
+           foto !== "null";
+
+  });
+
+}
+
+
+/* =====================================
+   STATUS
+===================================== */
+
+function updateStatus(){
+
+  const data =
+  dataTanggal();
+
+  const sudah =
+  new Set();
+
+  data.forEach(function(item){
+
+    if(item.kodeToko){
+      sudah.add(
+        String(item.kodeToko)
+        .trim()
+        .toUpperCase()
+      );
+    }
+
+  });
+
+  const jumlah =
+  sudah.size;
+
+  const persen =
+  Math.round(
+    jumlah / TOKO.length * 100
+  );
+
+  document.getElementById("sudah")
+  .textContent = jumlah;
+
+  document.getElementById("belum")
+  .textContent =
+  TOKO.length - jumlah;
+
+  document.getElementById("bar")
+  .style.width =
+  persen + "%";
+
+  document.getElementById("persen")
+  .textContent =
+  persen + "%";
+
+}
+
+
+/* =====================================
+   TAMPILKAN GRID PER TOKO
+===================================== */
+
+function tampilkanSemuaToko(){
+
+  if(!DATA.length){
+
+    alert(
+      "Tekan AMBIL DATA 20 TOKO terlebih dahulu."
+    );
+
+    return;
+
+  }
+
+  const data =
+  dataTanggal();
+
+  const hasil =
+  document.getElementById("hasil");
+
+  hasil.innerHTML = "";
+
+  TOKO.forEach(function(toko,index){
+
+    const item =
+    cariToko(
+      toko[0],
+      data
+    );
+
+    const foto =
+    ambilFoto(item);
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "store";
+
+    let html = `
+      <div class="store-head">
+
+        <div>
+          <div class="store-title">
+            ${index+1}. ${toko[0]} / ${toko[1]}
+          </div>
+
+          <div class="store-status">
+            ${
+              foto.length
+              ? "✅ " + foto.length + " foto"
+              : "❌ BELUM KIRIM"
+            }
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    if(foto.length){
+
+      html += `
+        <div class="store-photo-grid">
+      `;
+
+      foto.forEach(function(url){
+
+        html += `
+          <img
+            src="${url}"
+            loading="lazy"
+            onclick="window.open('${url}','_blank')"
+            onerror="this.style.opacity='.25'"
+          >
+        `;
+
+      });
+
+      html += `
+        </div>
+      `;
+
+    }else{
+
+      html += `
+        <div class="no-photo">
+          ❌ BELUM MENGIRIM FOTO
+        </div>
+      `;
+
+    }
+
+    div.innerHTML =
+    html;
+
+    hasil.appendChild(div);
+
+  });
+
+}
+
+
+/* =====================================
+   FRAME CEPAT
+===================================== */
+
+function buatFrameCepat(){
+
+  if(!DATA.length){
+
+    alert(
+      "Tekan AMBIL DATA 20 TOKO terlebih dahulu."
+    );
+
+    return;
+
+  }
+
+  const data =
+  dataTanggal();
+
+  const daftar = [];
+
+  TOKO.forEach(function(toko){
+
+    const item =
+    cariToko(
+      toko[0],
+      data
+    );
+
+    const foto =
+    ambilFoto(item);
+
+    /*
+     * Hanya foto pertama.
+     * Jadi maksimal 20 foto untuk frame.
+     */
+
+    if(foto.length){
+
+      daftar.push({
+
+        nomor:
+        daftar.length + 1,
+
+        kode:
+        toko[0],
+
+        nama:
+        toko[1],
+
+        foto:
+        foto[0]
+
+      });
+
+    }
+
+  });
+
+
+  if(!daftar.length){
+
+    alert(
+      "Belum ada toko yang mengirim foto."
+    );
+
+    return;
+
+  }
+
+
+  const tanggal =
+  document.getElementById(
+    "tanggal"
+  ).value;
+
+
+  const area =
+  document.getElementById(
+    "frameArea"
+  );
+
+
+  /*
+   * FRAME LANGSUNG MUNCUL.
+   * Tidak menunggu canvas.
+   */
+
+  area.innerHTML = `
+
+    <div class="frame-box">
+
+      <div class="frame-title">
+        🖼️ REKAP FOTO TOKO
+      </div>
+
+      <div class="frame-subtitle">
+        AREA TRIYANTO • ${tanggal}
+      </div>
+
+      <div
+        id="combinedGrid"
+        class="combined-grid">
+      </div>
+
+      <div class="frame-footer">
+        ${daftar.length} TOKO SUDAH KIRIM
+      </div>
+
+    </div>
+
+  `;
+
+
+  const grid =
+  document.getElementById(
+    "combinedGrid"
+  );
+
+
+  /*
+   * FOTO DIMUAT BERTAHAP.
+   * Tidak menggunakan canvas berat.
+   */
+
+  daftar.forEach(function(toko,index){
+
+    const card =
+    document.createElement("div");
+
+    card.className =
+    "combined-item";
+
+    card.innerHTML = `
+
+      <img
+        src="${toko.foto}"
+        loading="lazy"
+        decoding="async"
+        onerror="
+          this.style.display='none';
+        "
+      >
+
+      <div class="combined-label">
+        ${toko.nomor}.
+        ${toko.kode}/${toko.nama}
+      </div>
+
+    `;
+
+    grid.appendChild(card);
+
+  });
+
+
+  FRAME_READY = true;
+
+
+  area.scrollIntoView({
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =====================================
+   BAGIKAN FRAME
+===================================== */
+
+async function bagikanFrame(){
+
+  /*
+   * Kita ambil elemen frame.
+   */
+
+  const frame =
+  document.querySelector(
+    ".frame-box"
+  );
+
+
+  if(!frame){
+
+    alert(
+      "Buat 1 FRAME terlebih dahulu."
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Browser tidak selalu bisa
+   * mengubah HTML + foto Drive
+   * menjadi gambar.
+   *
+   * Karena itu untuk HP kita
+   * gunakan screenshot/share halaman
+   * jika tersedia.
+   */
+
+  if(
+    navigator.share
+  ){
+
+    const tanggal =
+    document.getElementById(
+      "tanggal"
+    ).value;
+
+    const text =
+    `Rekap Foto Kebersihan
+AREA TRIYANTO
+Tanggal: ${tanggal}`;
+
+    try{
+
+      await navigator.share({
+        title:
+        "Rekap Foto Kebersihan Triyanto",
+
+        text:
+        text
+
+      });
+
+      return;
+
+    }catch(error){
+
+      console.log(error);
+
+    }
+
+  }
+
+
+  alert(
+    "Frame sudah dibuat. Gunakan screenshot frame untuk dikirim ke WhatsApp."
+  );
+
+}
+
+
+/* =====================================
+   TANGGAL BERUBAH
+===================================== */
+
+document.getElementById(
+  "tanggal"
+).addEventListener(
+  "change",
+  function(){
+
+    FRAME_READY = false;
+
+    document.getElementById(
+      "hasil"
+    ).innerHTML = "";
+
+    document.getElementById(
+      "frameArea"
+    ).innerHTML = "";
+
+    if(DATA.length){
+      updateStatus();
+    }
+
+  }
+);
+
+
+/* =====================================
+   MULAI OTOMATIS
+===================================== */
+
+ambilData();
+
+</script>
+
+</body>
+</html>

@@ -177,11 +177,6 @@ select, input[type="file"] {
 .btn-danger { background: var(--danger); }
 .btn-danger:hover { background: var(--danger-hover); }
 
-/* Tombol Tersembunyi */
-.hidden-btn {
-  display: none !important;
-}
-
 #status {
   margin-top: 10px;
   padding: 8px;
@@ -200,9 +195,9 @@ select, input[type="file"] {
 
 <div class="box">
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
-  <div class="sub-desc">Upload kilat foto toko, grid Ultra HD otomatis, & auto-reset harian.</div>
+  <div class="sub-desc">Sinkronisasi Real-Time & Real-Time Reset Laporan 20 Toko.</div>
 
-  <!-- Form Upload Toko (Di Atas) -->
+  <!-- Form Upload Toko -->
   <label for="toko">Pilih Toko untuk Upload Foto</label>
   <select id="toko" onchange="simpanPilihanToko()">
     <option value="">-- Pilih Toko --</option>
@@ -238,12 +233,12 @@ select, input[type="file"] {
 
   <div class="action-buttons" style="margin-top: 12px;">
     <button class="btn btn-wa" onclick="shareMasterGridDirectly()">💬 Kirim Grid Ultra HD ke WhatsApp</button>
-    <button class="btn btn-danger" onclick="resetSemuaGrid()">🗑️ Reset / Hapus Semua Grid Hari Ini</button>
+    <button class="btn btn-danger" onclick="resetSemuaGridRealtime()">🗑️ Reset / Hapus Semua Grid (Real-Time)</button>
   </div>
 
   <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
 
-  <!-- Kotak Statistik & Grid 20 Toko (Di Bawah) -->
+  <!-- Kotak Statistik & Grid 20 Toko -->
   <div class="stats-container">
     <div class="stat-box"><div class="stat-num" id="st-total">20</div><div class="stat-label">Total Toko</div></div>
     <div class="stat-box"><div class="stat-num" id="st-sudah">0</div><div class="stat-label">Sudah Kirim</div></div>
@@ -255,17 +250,10 @@ select, input[type="file"] {
   <div class="grid-preview-box">
     <div id="grid-visual-20" class="grid-20-preview"></div>
   </div>
-
-  <!-- Fungsi Pendukung Tersembunyi -->
-  <div style="display:none;">
-    <button class="btn btn-primary hidden-btn" onclick="renderGridVisual()">🔄 Refresh Grid</button>
-    <button class="btn btn-success hidden-btn" onclick="downloadMasterGrid()">📥 Simpan Gambar Master</button>
-    <a href="#" id="btn-wa-rekap" target="_blank" class="btn btn-dark hidden-btn">📋 Kirim Rekap Teks</a>
-  </div>
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbwmae6m05HhR8Wm5NMFyh2Ocq1T15s6LPd1ky5jIH44UQA7cGnkAYggXunmPt7QM6uP/exec";
+const API = "https://script.google.com/macros/s/AKfycbzrR02hYWX2lncc1E3uSh712Py6NB5oXiS0No0dzaWFjwyUCNAvvMPBZKicVufV87dE/exec";
 
 const listTokoData = [
   {id: 1, kode: "C624", nama: "RWBT"}, {id: 2, kode: "C560", nama: "RAJ"},
@@ -281,31 +269,61 @@ const listTokoData = [
 ];
 
 window.addEventListener("DOMContentLoaded", () => {
-  cekDanResetOtomatisTanggal();
   const savedToko = localStorage.getItem("last_selected_toko");
   if (savedToko) document.getElementById("toko").value = savedToko;
-  renderGridVisual();
+  
+  // Sinkronisasi data real-time dengan server Google Sheet saat pertama kali dibuka
+  sinkronisasiDataServer();
 });
 
-function cekDanResetOtomatisTanggal() {
-  const tanggalHariIni = new Date().toISOString().split('T')[0];
-  const tanggalTersimpan = localStorage.getItem("app_tanggal_aktif");
+async function sinkronisasiDataServer() {
+  tampilStatus("⏳ Menyinkronkan data real-time...", "info");
+  try {
+    const response = await fetch(API);
+    const result = await response.json();
+    if (result.status === "success") {
+      listTokoData.forEach(toko => localStorage.removeItem(`upload_${toko.kode}`));
 
-  if (tanggalTersimpan !== tanggalHariIni) {
-    listTokoData.forEach(toko => {
-      localStorage.removeItem(`upload_${toko.kode}`);
-    });
-    localStorage.setItem("app_tanggal_aktif", tanggalHariIni);
+      if (result.data && result.data.length > 0) {
+        result.data.forEach(item => {
+          localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
+            status: "Sukses",
+            jumlah: parseInt(item.jumlah) || 1,
+            collageImg: item.collageImg || "",
+            links: item.links ? item.links.split(",") : []
+          }));
+        });
+      }
+      renderGridVisual();
+      tampilStatus("✅ Data tersinkron secara real-time.", "success");
+      setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
+    }
+  } catch (error) {
+    console.error("Sinkronisasi gagal:", error);
+    renderGridVisual();
   }
 }
 
-function resetSemuaGrid() {
-  if (confirm("Yakin ingin menghapus semua data grid toko hari ini?")) {
+async function resetSemuaGridRealtime() {
+  if (confirm("⚠️ Yakin ingin menghapus seluruh data grid hari ini secara real-time di semua perangkat?")) {
+    tampilStatus("🗑️ Mengosongkan data di server pusat...", "info");
+    
     listTokoData.forEach(toko => {
       localStorage.removeItem(`upload_${toko.kode}`);
     });
+
+    try {
+      await fetch(API, {
+        method: "POST",
+        body: JSON.stringify({ action: "reset" })
+      });
+    } catch (err) {
+      console.error(err);
+    }
+
     renderGridVisual();
-    tampilStatus("🗑️ Semua data grid berhasil dikosongkan.", "success");
+    tampilStatus("✅ Semua data grid berhasil dikosongkan secara real-time.", "success");
+    setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
 }
 
@@ -376,8 +394,6 @@ function gambarKeCanvasUltra(ctx, imgs) {
 }
 
 function renderGridVisual() {
-  cekDanResetOtomatisTanggal();
-
   const container = document.getElementById("grid-visual-20");
   container.innerHTML = "";
 
@@ -546,10 +562,6 @@ function downloadMasterGridFallback(dataUrl) {
   tampilStatus("⚠️ Gambar terunduh. Silakan kirim ke WA beserta teks rekap.", "success");
 }
 
-function downloadMasterGrid() {
-  shareMasterGridDirectly();
-}
-
 document.getElementById("foto").addEventListener("change", function() {
   const preview = document.getElementById("preview-upload");
   preview.innerHTML = "";
@@ -585,12 +597,18 @@ async function kirimFoto() {
       const base64Compressed = await kompresDanUbahKeBase64(file, 1400, 0.82);
       base64Collection.push(`data:image/jpeg;base64,${base64Compressed}`);
 
+      const listLinkStr = listLinkDrive.join(",");
+      const collageDataUrl = await buatKolaseThumbnail(base64Collection);
+
       const payload = {
         kodeToko: kodeToko,
         namaToko: namaToko,
         namaFile: `${kodeToko}_${Date.now()}_${i}_${file.name}`,
         mimeType: "image/jpeg",
-        foto: base64Compressed
+        foto: base64Compressed,
+        jumlahFoto: files.length,
+        listLink: listLinkStr,
+        collageImg: collageDataUrl
       };
 
       const response = await fetch(API, {
@@ -619,12 +637,11 @@ async function kirimFoto() {
   if (gagal === 0) {
     tampilStatus(`✅ Sukses! ${sukses} Foto berhasil di-upload kilat ke Cloud.`, "success");
     
-    const collageDataUrl = await buatKolaseThumbnail(base64Collection);
-
+    const finalCollage = await buatKolaseThumbnail(base64Collection);
     localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
       status: "Sukses",
       jumlah: sukses,
-      collageImg: collageDataUrl,
+      collageImg: finalCollage,
       links: listLinkDrive
     }));
 

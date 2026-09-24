@@ -8,8 +8,6 @@
 :root {
   --primary: #1677ff;
   --primary-hover: #0958d9;
-  --success: #52c41a;
-  --success-hover: #389e0d;
   --whatsapp: #25d366;
   --whatsapp-hover: #1ebe5d;
   --bg-color: #f5f7fa;
@@ -158,13 +156,13 @@ button:disabled { background: #999; cursor: not-allowed; }
 
   <button id="upload" onclick="kirimFoto()">📤 UPLOAD FOTO</button>
   
-  <!-- Tombol WhatsApp yang akan muncul otomatis saat sukses -->
   <div id="wa-container">
     <a id="btn-wa-link" href="#" target="_blank" class="btn-wa">📱 KIRIM LAPORAN KE WHATSAPP</a>
   </div>
 </div>
 
 <script>
+// URL Google Apps Script yang baru terpasang
 const API = "https://script.google.com/macros/s/AKfycbyrCQAcZKf6MEU5KqZnOczBo7-cyjclZ8ZO7wHh_kKLKv-mLb0eZi3QWUzB2J8AJDn2/exec";
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -180,7 +178,7 @@ function simpanPilihanToko() {
 document.getElementById("foto").addEventListener("change", function() {
   const preview = document.getElementById("preview");
   preview.innerHTML = "";
-  document.getElementById("wa-container").style.display = "none"; // Sembunyikan tombol WA jika ganti foto
+  document.getElementById("wa-container").style.display = "none";
   for (const file of this.files) {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -204,14 +202,13 @@ async function kirimFoto() {
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
   let sukses = 0, gagal = 0;
-  let linkDriveTerakhir = "";
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     tampilStatus(`⏳ Mengompres & Mengupload (${i + 1}/${files.length})...`, "info");
 
     try {
-      const base64Compressed = await kompresDanUbahKeBase64(file, 1200, 0.7);
+      const base64Compressed = await kompresDanUbahKeBase64(file, 1000, 0.6);
       const payload = {
         kodeToko: kodeToko,
         namaToko: namaToko,
@@ -226,10 +223,16 @@ async function kirimFoto() {
         body: JSON.stringify(payload)
       });
 
-      const hasil = await response.json();
+      const textRes = await response.text();
+      let hasil;
+      try {
+        hasil = JSON.parse(textRes);
+      } catch (err) {
+        throw new Error("Respon server bukan JSON yang valid");
+      }
+
       if (hasil.status === "success") {
         sukses++;
-        if (hasil.link) linkDriveTerakhir = hasil.link;
       } else {
         gagal++;
       }
@@ -244,7 +247,7 @@ async function kirimFoto() {
   if (gagal === 0) {
     tampilStatus(`✅ Berhasil upload ${sukses} foto toko ${kodeToko}`, "success");
     
-    // Buat format pesan otomatis untuk WhatsApp
+    // Siapkan teks pesan otomatis untuk dikirim ke WhatsApp
     const tanggalHariIni = new Date().toLocaleDateString("id-ID", {dateStyle: "full"});
     let pesanWA = `*LAPORAN FOTO TOKO*%0A`;
     pesanWA += `📅 Tanggal: ${tanggalHariIni}%0A`;
@@ -252,14 +255,10 @@ async function kirimFoto() {
     pesanWA += `📸 Jumlah Foto: ${sukses} File berhasil diunggah.%0A%0A`;
     pesanWA += `Status: ✅ Aman & Tersimpan di Cloud.`;
 
-    // Pasang link ke tombol WA
     const waLink = document.getElementById("btn-wa-link");
     waLink.href = `https://wa.me/?text=${pesanWA}`;
-    
-    // Munculkan tombol WA di bawah
     document.getElementById("wa-container").style.display = "block";
 
-    // Reset input file (preview tetap dibiarkan agar user tahu apa yang baru di-upload)
     document.getElementById("foto").value = "";
   } else {
     tampilStatus(`⚠️ Berhasil: ${sukses} | Gagal: ${gagal}`, "error");

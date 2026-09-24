@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Preview WhatsApp - Master Grid HD Auto-Reset</title>
+<title>Preview WhatsApp - Clean UI HD</title>
 <style>
 :root {
   --primary: #1677ff;
@@ -146,15 +146,15 @@ select, input[type="file"] {
 /* Tombol Aksi Bawah */
 .action-buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 8px;
   margin-top: 15px;
 }
 .btn {
-  padding: 10px;
+  padding: 12px;
   border: 0;
-  border-radius: 6px;
-  font-size: 11px;
+  border-radius: 8px;
+  font-size: 12px;
   font-weight: bold;
   cursor: pointer;
   text-align: center;
@@ -162,16 +162,19 @@ select, input[type="file"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
   color: white;
 }
 .btn-primary { background: #1677ff; }
-.btn-wa { background: var(--whatsapp); }
+.btn-wa { background: var(--whatsapp); font-size: 14px; padding: 15px; }
 .btn-wa:hover { background: var(--whatsapp-hover); }
-.btn-success { background: #52c41a; }
-.btn-dark { background: #333; }
 .btn-danger { background: var(--danger); }
 .btn-danger:hover { background: var(--danger-hover); }
+
+/* Tombol yang disembunyikan sesuai permintaan */
+.hidden-btn {
+  display: none !important;
+}
 
 #status {
   margin-top: 10px;
@@ -190,8 +193,8 @@ select, input[type="file"] {
 <body>
 
 <div class="box">
-  <h3 class="title">💬 Preview WhatsApp (HD & Auto-Reset)</h3>
-  <div class="sub-desc">Data grid otomatis reset saat tanggal berganti. Kompatibel di Android, iOS, dan PC.</div>
+  <h3 class="title">💬 Preview WhatsApp</h3>
+  <div class="sub-desc">Grid otomatis terupdate & reset tanggal. Siap kirim laporan instan.</div>
 
   <!-- Kotak Statistik Atas -->
   <div class="stats-container">
@@ -243,13 +246,15 @@ select, input[type="file"] {
 
   <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:12px;">📤 UPLOAD FOTO & GENERATE FRAME HD</button>
 
-  <!-- Tombol Aksi Bawah -->
+  <!-- Tombol Aksi Utama yang Tersedia -->
   <div class="action-buttons">
-    <button class="btn btn-primary" onclick="renderGridVisual()">🔄 Refresh Grid</button>
     <button class="btn btn-wa" onclick="shareMasterGridDirectly()">💬 Kirim Grid HD ke WhatsApp</button>
-    <button class="btn btn-success" onclick="downloadMasterGrid()">📥 Simpan Gambar Master HD</button>
-    <a href="#" id="btn-wa-rekap" target="_blank" class="btn btn-dark">📋 Kirim Rekap Teks</a>
-    <button class="btn btn-danger" onclick="resetSemuaGrid()" style="grid-column: span 2;">🗑️ Reset / Hapus Semua Grid Hari Ini</button>
+    <button class="btn btn-danger" onclick="resetSemuaGrid()">🗑️ Reset / Hapus Semua Grid Hari Ini</button>
+    
+    <!-- Tombol yang disembunyikan sesuai permintaan -->
+    <button class="btn btn-primary hidden-btn" onclick="renderGridVisual()">🔄 Refresh Grid</button>
+    <button class="btn btn-success hidden-btn" onclick="downloadMasterGrid()">📥 Simpan Gambar Master HD</button>
+    <a href="#" id="btn-wa-rekap" target="_blank" class="btn btn-dark hidden-btn">📋 Kirim Rekap Teks</a>
   </div>
 </div>
 
@@ -277,13 +282,11 @@ window.addEventListener("DOMContentLoaded", () => {
   renderGridVisual();
 });
 
-// Cek Tanggal Otomatis (Auto-Reset jika hari berganti di Android/iOS/PC)
 function cekDanResetOtomatisTanggal() {
-  const tanggalHariIni = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+  const tanggalHariIni = new Date().toISOString().split('T')[0];
   const tanggalTersimpan = localStorage.getItem("app_tanggal_aktif");
 
   if (tanggalTersimpan !== tanggalHariIni) {
-    // Jika tanggal berubah (hari baru), bersihkan seluruh data upload toko kemarin
     listTokoData.forEach(toko => {
       localStorage.removeItem(`upload_${toko.kode}`);
     });
@@ -291,7 +294,6 @@ function cekDanResetOtomatisTanggal() {
   }
 }
 
-// Tombol Reset Manual
 function resetSemuaGrid() {
   if (confirm("Yakin ingin menghapus semua data grid toko hari ini?")) {
     listTokoData.forEach(toko => {
@@ -368,7 +370,7 @@ function gambarKeCanvasHD(ctx, imgs) {
 }
 
 function renderGridVisual() {
-  cekDanResetOtomatisTanggal(); // Pastikan selalu sinkron tanggal
+  cekDanResetOtomatisTanggal();
 
   const container = document.getElementById("grid-visual-20");
   container.innerHTML = "";
@@ -427,8 +429,6 @@ function renderGridVisual() {
     `📈 Progress : ${progress}%\n\n` +
     `━━━━━━━━━━━━━━━\n` +
     `*DAFTAR 20 TOKO*\n` + rekapTeksWA;
-
-  document.getElementById("btn-wa-rekap").href = `https://wa.me/?text=${encodeURIComponent(window.teksLaporanFinal)}`;
 }
 
 async function buatMasterGridImageHD() {

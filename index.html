@@ -149,7 +149,7 @@ select, input[type="file"] {
   border-radius: 6px;
 }
 
-/* Tombol Aksi Bawah */
+/* Tombol Aksi */
 .action-buttons {
   display: grid;
   grid-template-columns: 1fr;
@@ -202,23 +202,7 @@ select, input[type="file"] {
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
   <div class="sub-desc">Upload kilat foto toko, grid Ultra HD otomatis, & auto-reset harian.</div>
 
-  <!-- Kotak Statistik Atas -->
-  <div class="stats-container">
-    <div class="stat-box"><div class="stat-num" id="st-total">20</div><div class="stat-label">Total Toko</div></div>
-    <div class="stat-box"><div class="stat-num" id="st-sudah">0</div><div class="stat-label">Sudah Kirim</div></div>
-    <div class="stat-box"><div class="stat-num" id="st-belum">20</div><div class="stat-label">Belum Kirim</div></div>
-    <div class="stat-box"><div class="stat-num" id="st-lengkap">0</div><div class="stat-label">Lengkap</div></div>
-    <div class="stat-box"><div class="stat-num" id="st-foto">0</div><div class="stat-label">Total Foto</div></div>
-  </div>
-
-  <!-- Tampilan Visual Grid 20 Toko -->
-  <div class="grid-preview-box">
-    <div id="grid-visual-20" class="grid-20-preview"></div>
-  </div>
-
-  <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-
-  <!-- Form Upload Toko Aktif -->
+  <!-- Form Upload Toko Aktif (Dipindah ke Atas) -->
   <label for="toko">Pilih Toko untuk Upload Foto</label>
   <select id="toko" onchange="simpanPilihanToko()">
     <option value="">-- Pilih Toko --</option>
@@ -252,12 +236,28 @@ select, input[type="file"] {
 
   <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:12px;">⚡ UPLOAD KILAT & GENERATE GRID</button>
 
-  <!-- Tombol Aksi Bawah -->
-  <div class="action-buttons">
+  <div class="action-buttons" style="margin-top: 12px;">
     <button class="btn btn-wa" onclick="shareMasterGridDirectly()">💬 Kirim Grid Ultra HD ke WhatsApp</button>
     <button class="btn btn-danger" onclick="resetSemuaGrid()">🗑️ Reset / Hapus Semua Grid Hari Ini</button>
-    
-    <!-- Tombol Tersembunyi -->
+  </div>
+
+  <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+
+  <!-- Kotak Statistik & Tampilan Visual Grid 20 Toko (Dipindah ke Bawah) -->
+  <div class="stats-container">
+    <div class="stat-box"><div class="stat-num" id="st-total">20</div><div class="stat-label">Total Toko</div></div>
+    <div class="stat-box"><div class="stat-num" id="st-sudah">0</div><div class="stat-label">Sudah Kirim</div></div>
+    <div class="stat-box"><div class="stat-num" id="st-belum">20</div><div class="stat-label">Belum Kirim</div></div>
+    <div class="stat-box"><div class="stat-num" id="st-lengkap">0</div><div class="stat-label">Lengkap</div></div>
+    <div class="stat-box"><div class="stat-num" id="st-foto">0</div><div class="stat-label">Total Foto</div></div>
+  </div>
+
+  <div class="grid-preview-box">
+    <div id="grid-visual-20" class="grid-20-preview"></div>
+  </div>
+
+  <!-- Tombol Tersembunyi -->
+  <div style="display:none;">
     <button class="btn btn-primary hidden-btn" onclick="renderGridVisual()">🔄 Refresh Grid</button>
     <button class="btn btn-success hidden-btn" onclick="downloadMasterGrid()">📥 Simpan Gambar Master</button>
     <a href="#" id="btn-wa-rekap" target="_blank" class="btn btn-dark hidden-btn">📋 Kirim Rekap Teks</a>

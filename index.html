@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Preview WhatsApp - Grid 20 Toko Auto Frame</title>
+<title>Preview WhatsApp - Master Grid 20 Toko</title>
 <style>
 :root {
   --primary: #1677ff;
@@ -95,7 +95,7 @@ h3.title {
   background: #eee;
   position: relative;
 }
-.toko-card canvas {
+.toko-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -187,7 +187,7 @@ select, input[type="file"] {
 
 <div class="box">
   <h3 class="title">💬 Preview WhatsApp</h3>
-  <div class="sub-desc">Grid selalu berisi 20 toko. Foto yang di-upload otomatis tersusun rapi dalam 1 frame grid per toko.</div>
+  <div class="sub-desc">Grid 20 Toko otomatis merakit master gambar untuk dikirim ke WhatsApp.</div>
 
   <!-- Kotak Statistik Atas -->
   <div class="stats-container">
@@ -243,9 +243,9 @@ select, input[type="file"] {
 
   <!-- Tombol Aksi Bawah -->
   <div class="action-buttons">
-    <button class="btn btn-primary" onclick="renderGridVisual()">🔄 Buat / Refresh Grid</button>
-    <a href="#" id="btn-wa-grid" target="_blank" class="btn btn-wa">💬 Kirim Grid ke WA</a>
-    <button class="btn btn-success" onclick="alert('Grid 20 Toko siap dibagikan')">📥 Simpan Grid</button>
+    <button class="btn btn-primary" onclick="renderGridVisual()">🔄 Refresh Grid</button>
+    <button class="btn btn-wa" onclick="generateAndSendMasterGrid()">💬 Kirim Grid ke WhatsApp</button>
+    <button class="btn btn-success" onclick="downloadMasterGrid()">📥 Simpan Gambar Master</button>
     <a href="#" id="btn-wa-rekap" target="_blank" class="btn btn-dark">📋 Kirim Rekap Teks</a>
   </div>
 </div>
@@ -277,19 +277,17 @@ function simpanPilihanToko() {
   if (val) localStorage.setItem("last_selected_toko", val);
 }
 
-// Fungsi membuat kolase gambar dalam 1 canvas kecil untuk tiap toko
+// Fungsi membuat kolase thumbnail per toko
 async function buatKolaseThumbnail(base64List) {
   return new Promise((resolve) => {
     if (!base64List || base64List.length === 0) {
       resolve("");
       return;
     }
-
     const canvas = document.createElement("canvas");
     canvas.width = 300;
     canvas.height = 300;
     const ctx = canvas.getContext("2d");
-
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, 300, 300);
 
@@ -303,8 +301,8 @@ async function buatKolaseThumbnail(base64List) {
         imgObjects[idx] = img;
         loadedCount++;
         if (loadedCount === base64List.length) {
-          gambarKeCanvas(ctx, imgObjects, canvas);
-          resolve(canvas.toDataURL("image/jpeg", 0.6));
+          gambarKeCanvas(ctx, imgObjects);
+          resolve(canvas.toDataURL("image/jpeg", 0.7));
         }
       };
       img.onerror = () => {
@@ -315,7 +313,7 @@ async function buatKolaseThumbnail(base64List) {
   });
 }
 
-function gambarKeCanvas(ctx, imgs, canvas) {
+function gambarKeCanvas(ctx, imgs) {
   const len = imgs.filter(Boolean).length;
   if (len === 1) {
     ctx.drawImage(imgs[0], 0, 0, 300, 300);
@@ -330,7 +328,6 @@ function gambarKeCanvas(ctx, imgs, canvas) {
       ctx.drawImage(img, x, y, w, h);
     });
   } else {
-    // 5 atau lebih (dibagi grid 3x3)
     let w = 100, h = 100;
     imgs.forEach((img, i) => {
       if (i < 9) {
@@ -349,7 +346,7 @@ function renderGridVisual() {
 
   let totalSudah = 0;
   let totalFoto = 0;
-  let rekapTeksWA = `📊 *REKAP FOTO 20 TOKO*\n📅 ${new Date().toLocaleDateString("id-ID")}\n\n`;
+  let rekapTeksWA = `📊 *REKAP 20 TOKO – AREA TRIYANTO*\n📅 ${new Date().toLocaleDateString("id-ID")}\n\n`;
 
   listTokoData.forEach(toko => {
     const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum", jumlah: 0, collageImg: "", links: [] };
@@ -367,9 +364,7 @@ function renderGridVisual() {
         imgWrapperHtml = `<img src="${dataUpload.collageImg}" alt="Kolase">`;
       }
       statusText = `LENGKAP • ${dataUpload.jumlah} Foto`;
-
-      rekapTeksWA += `✅ *${toko.id}. ${toko.kode}/${toko.nama}* (${dataUpload.jumlah} Foto):\n`;
-      dataUpload.links.forEach(l => { rekapTeksWA += `   🔗 ${l}\n`; });
+      rekapTeksWA += `✅ *${toko.id}. ${toko.kode}/${toko.nama}* (${dataUpload.jumlah} Foto)\n`;
     } else {
       rekapTeksWA += `⏳ *${toko.id}. ${toko.kode}/${toko.nama}*: Belum Kirim\n`;
     }
@@ -384,16 +379,122 @@ function renderGridVisual() {
     container.appendChild(card);
   });
 
-  // Update Statistik
+  const progress = Math.round((totalSudah / 20) * 100);
+
+  // Update Statistik Atas
   document.getElementById("st-total").textContent = "20";
   document.getElementById("st-sudah").textContent = totalSudah;
   document.getElementById("st-belum").textContent = 20 - totalSudah;
   document.getElementById("st-lengkap").textContent = totalSudah;
   document.getElementById("st-foto").textContent = totalFoto;
 
-  // Tombol WhatsApp Rekap & Grid
-  document.getElementById("btn-wa-rekap").href = `https://wa.me/?text=${encodeURIComponent(rekapTeksWA)}`;
-  document.getElementById("btn-wa-grid").href = `https://wa.me/?text=${encodeURIComponent("Berikut rekap kolase visual 20 toko:\n" + rekapTeksWA)}`;
+  // Format Teks WhatsApp sesuai contoh Anda
+  let teksLengkapWAGroup = `📊 *REKAP 20 TOKO – AREA TRIYANTO*\n\n` +
+    `📅 ${new Date().toLocaleDateString("id-ID")} ${new Date().toLocaleTimeString("id-ID", {hour: '2-digit', minute:'2-digit'})}\n\n` +
+    `🏢 Total Toko : 20\n` +
+    `📦 Sudah Kirim : ${totalSudah}\n` +
+    `❌ Belum Kirim : ${20 - totalSudah}\n` +
+    `✅ Lengkap : ${totalSudah}\n` +
+    `⚠️ Belum 3 Foto : 0\n` +
+    `📷 Total Foto : ${totalFoto}\n` +
+    `📈 Progress : ${progress}%\n\n` +
+    `━━━━━━━━━━━━━━━\n` +
+    `*DAFTAR 20 TOKO*\n` + rekapTeksWA;
+
+  document.getElementById("btn-wa-rekap").href = `https://wa.me/?text=${encodeURIComponent(teksLengkapWAGroup)}`;
+}
+
+// Fungsi merakit Master Grid Gabungan 20 Toko menjadi 1 Gambar Besar
+async function buatMasterGridImage() {
+  return new Promise((resolve) => {
+    const canvas = document.createElement("canvas");
+    const cols = 5;
+    const rows = 4;
+    const itemWidth = 300;
+    const itemHeight = 350; // Termasuk ruang untuk teks nama toko di bawahnya
+    
+    canvas.width = cols * itemWidth;
+    canvas.height = rows * itemHeight;
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    let loaded = 0;
+    listTokoData.forEach((toko, index) => {
+      const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { collageImg: "" };
+      const x = (index % cols) * itemWidth;
+      const y = Math.floor(index / cols) * itemHeight;
+
+      if (dataUpload.collageImg) {
+        const img = new Image();
+        img.src = dataUpload.collageImg;
+        img.onload = () => {
+          // Gambar foto kolase
+          ctx.drawImage(img, x + 5, y + 5, itemWidth - 10, itemWidth - 10);
+          
+          // Kotak teks keterangan bawah
+          ctx.fillStyle = "#f9f9f9";
+          ctx.fillRect(x + 5, y + itemWidth, itemWidth - 10, 40);
+          ctx.strokeStyle = "#ddd";
+          ctx.strokeRect(x + 5, y + 5, itemWidth - 10, itemWidth + 35);
+
+          ctx.fillStyle = "#000";
+          ctx.font = "bold 16px Arial";
+          ctx.textAlign = "center";
+          ctx.fillText(`${toko.id}. ${toko.kode}/${toko.nama}`, x + (itemWidth / 2), y + itemWidth + 25);
+
+          loaded++;
+          if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
+        };
+        img.onerror = () => {
+          gambarKotakKosong(ctx, toko, x, y, itemWidth);
+          loaded++;
+          if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
+        };
+      } else {
+        gambarKotakKosong(ctx, toko, x, y, itemWidth);
+        loaded++;
+        if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
+      }
+    });
+  });
+}
+
+function gambarKotakKosong(ctx, toko, x, y, itemWidth) {
+  ctx.fillStyle = "#f0f0f0";
+  ctx.fillRect(x + 5, y + 5, itemWidth - 10, itemWidth - 10);
+  ctx.strokeStyle = "#ddd";
+  ctx.strokeRect(x + 5, y + 5, itemWidth - 10, itemWidth + 35);
+
+  ctx.fillStyle = "#999";
+  ctx.font = "14px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("Belum Ada Foto", x + (itemWidth / 2), y + (itemWidth / 2));
+
+  ctx.fillStyle = "#000";
+  ctx.font = "bold 16px Arial";
+  ctx.fillText(`${toko.id}. ${toko.kode}/${toko.nama}`, x + (itemWidth / 2), y + itemWidth + 25);
+}
+
+// Tombol Kirim Grid ke WhatsApp
+async function generateAndSendMasterGrid() {
+  tampilStatus("⏳ Sedang merakit Master Grid 20 Toko...", "info");
+  const dataUrl = await buatMasterGridImage();
+  
+  // Download otomatis gambar master grid ke HP
+  const a = document.createElement("a");
+  a.href = dataUrl;
+  a.download = `Master_Grid_20_Toko_${Date.now()}.jpg`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  tampilStatus("✅ Master Grid berhasil disimpan! Silakan lampirkan gambar tersebut ke WhatsApp.", "success");
+}
+
+function downloadMasterGrid() {
+  generateAndSendMasterGrid();
 }
 
 // Preview foto di form
@@ -466,10 +567,8 @@ async function kirimFoto() {
   if (gagal === 0) {
     tampilStatus(`✅ Berhasil upload ${sukses} foto toko ${kodeToko}`, "success");
     
-    // Buat kolase otomatis dari semua foto yang di-upload untuk toko ini
     const collageDataUrl = await buatKolaseThumbnail(base64Collection);
 
-    // Simpan ke localStorage
     localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
       status: "Sukses",
       jumlah: sukses,
@@ -477,8 +576,7 @@ async function kirimFoto() {
       links: listLinkDrive
     }));
 
-    renderGridVisual(); // Refresh grid agar frame langsung tampil rapi
-
+    renderGridVisual();
     document.getElementById("foto").value = "";
     document.getElementById("preview-upload").innerHTML = "";
   } else {

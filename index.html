@@ -3,11 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upload Foto Toko Baru</title>
+<title>Upload Foto Toko - WhatsApp</title>
 <style>
 :root {
   --primary: #1677ff;
   --primary-hover: #0958d9;
+  --success: #52c41a;
+  --success-hover: #389e0d;
+  --whatsapp: #25d366;
+  --whatsapp-hover: #1ebe5d;
   --bg-color: #f5f7fa;
   --card-bg: #ffffff;
   --text-main: #333333;
@@ -42,7 +46,7 @@ select, input[type="file"] {
 button {
   width: 100%;
   padding: 15px;
-  margin-top: 20px;
+  margin-top: 15px;
   border: 0;
   border-radius: 10px;
   background: var(--primary);
@@ -52,6 +56,22 @@ button {
   cursor: pointer;
 }
 button:disabled { background: #999; cursor: not-allowed; }
+
+.btn-wa {
+  background: var(--whatsapp);
+  text-decoration: none;
+  display: block;
+  text-align: center;
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 10px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  box-sizing: border-box;
+}
+.btn-wa:hover { background: var(--whatsapp-hover); }
+
 #preview {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -93,6 +113,11 @@ button:disabled { background: #999; cursor: not-allowed; }
 .status-info { background: #e6f4ff; color: #0958d9; border: 1px solid #91caff; display: block; }
 .status-success { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; display: block; }
 .status-error { background: #fff2f0; color: #ff4d4f; border: 1px solid #ffccc7; display: block; }
+
+#wa-container {
+  margin-top: 15px;
+  display: none;
+}
 </style>
 </head>
 <body>
@@ -132,10 +157,14 @@ button:disabled { background: #999; cursor: not-allowed; }
   <div id="status"></div>
 
   <button id="upload" onclick="kirimFoto()">📤 UPLOAD FOTO</button>
+  
+  <!-- Tombol WhatsApp yang akan muncul otomatis saat sukses -->
+  <div id="wa-container">
+    <a id="btn-wa-link" href="#" target="_blank" class="btn-wa">📱 KIRIM LAPORAN KE WHATSAPP</a>
+  </div>
 </div>
 
 <script>
-// URL Google Apps Script yang baru
 const API = "https://script.google.com/macros/s/AKfycbyrCQAcZKf6MEU5KqZnOczBo7-cyjclZ8ZO7wHh_kKLKv-mLb0eZi3QWUzB2J8AJDn2/exec";
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -151,6 +180,7 @@ function simpanPilihanToko() {
 document.getElementById("foto").addEventListener("change", function() {
   const preview = document.getElementById("preview");
   preview.innerHTML = "";
+  document.getElementById("wa-container").style.display = "none"; // Sembunyikan tombol WA jika ganti foto
   for (const file of this.files) {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -174,6 +204,7 @@ async function kirimFoto() {
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
   let sukses = 0, gagal = 0;
+  let linkDriveTerakhir = "";
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
@@ -196,7 +227,12 @@ async function kirimFoto() {
       });
 
       const hasil = await response.json();
-      if (hasil.status === "success") sukses++; else gagal++;
+      if (hasil.status === "success") {
+        sukses++;
+        if (hasil.link) linkDriveTerakhir = hasil.link;
+      } else {
+        gagal++;
+      }
     } catch (error) {
       console.error(error);
       gagal++;
@@ -204,10 +240,27 @@ async function kirimFoto() {
   }
 
   tombol.disabled = false;
+
   if (gagal === 0) {
     tampilStatus(`✅ Berhasil upload ${sukses} foto toko ${kodeToko}`, "success");
+    
+    // Buat format pesan otomatis untuk WhatsApp
+    const tanggalHariIni = new Date().toLocaleDateString("id-ID", {dateStyle: "full"});
+    let pesanWA = `*LAPORAN FOTO TOKO*%0A`;
+    pesanWA += `📅 Tanggal: ${tanggalHariIni}%0A`;
+    pesanWA += `📍 Toko: *${kodeToko} / ${namaToko}*%0A`;
+    pesanWA += `📸 Jumlah Foto: ${sukses} File berhasil diunggah.%0A%0A`;
+    pesanWA += `Status: ✅ Aman & Tersimpan di Cloud.`;
+
+    // Pasang link ke tombol WA
+    const waLink = document.getElementById("btn-wa-link");
+    waLink.href = `https://wa.me/?text=${pesanWA}`;
+    
+    // Munculkan tombol WA di bawah
+    document.getElementById("wa-container").style.display = "block";
+
+    // Reset input file (preview tetap dibiarkan agar user tahu apa yang baru di-upload)
     document.getElementById("foto").value = "";
-    document.getElementById("preview").innerHTML = "";
   } else {
     tampilStatus(`⚠️ Berhasil: ${sukses} | Gagal: ${gagal}`, "error");
   }

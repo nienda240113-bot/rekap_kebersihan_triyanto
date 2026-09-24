@@ -227,7 +227,7 @@ button:disabled { background: #999; cursor: not-allowed; }
   <div class="rekap-container">
     <h3>📋 Daftar 20 Toko & Status Laporan</h3>
     <div id="daftar-toko-list">
-      <!-- Daftar toko akan digenerate otomatis oleh JavaScript -->
+      <!-- Daftar toko akan digenerate otomatis -->
     </div>
   </div>
 </div>
@@ -260,8 +260,8 @@ function simpanPilihanToko() {
   if (val) localStorage.setItem("last_selected_toko", val);
 }
 
-// Render daftar 20 toko ke layar
-function muاتDaftarRekapToko() {
+// Fungsi render daftar 20 toko ke layar
+function muatDaftarRekapToko() {
   const container = document.getElementById("daftar-toko-list");
   container.innerHTML = "";
 
@@ -277,7 +277,6 @@ function muاتDaftarRekapToko() {
     if (historyUpload.status === "Sukses") {
       statusText = `<span style="color: #52c41a; font-weight:bold;">✅ ${historyUpload.jumlah} Foto Terkirim</span>`;
       
-      // Buat pesan WhatsApp per toko
       let pesanToko = `*LAPORAN FOTO TOKO*\n`;
       pesanToko += `📍 Toko: ${toko.kode} / ${toko.nama}\n`;
       pesanToko += `📸 Jumlah Foto: ${historyUpload.jumlah} File\n\n`;
@@ -369,13 +368,13 @@ async function kirimFoto() {
   if (gagal === 0) {
     tampilStatus(`✅ Berhasil upload ${sukses} foto toko ${kodeToko}`, "success");
     
-    // Simpan ke memori browser agar tabel rekap langsung ter-update
+    // Simpan ke memori lokal browser agar langsung tampil di tabel rekap 20 toko
     localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
       status: "Sukses",
       jumlah: sukses,
       links: listLinkDrive
     }));
-    muatDaftarRekapToko();
+    muatDaftarRekapToko(); // Refresh tabel daftar toko otomatis
 
     // Susun format teks laporan untuk WhatsApp
     const tanggalHariIni = new Date().toLocaleDateString("id-ID", {dateStyle: "full"});

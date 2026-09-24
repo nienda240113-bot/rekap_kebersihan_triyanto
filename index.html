@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upload Foto Toko - Rekap 20 Toko</title>
+<title>Preview WhatsApp - Rekap 20 Toko</title>
 <style>
 :root {
   --primary: #1677ff;
@@ -19,240 +19,266 @@ body {
   font-family: Arial, sans-serif;
   background: var(--bg-color);
   margin: 0;
-  padding: 15px;
+  padding: 10px;
   color: var(--text-main);
 }
 .box {
-  max-width: 500px;
-  margin: 20px auto;
+  max-width: 550px;
+  margin: auto;
   background: var(--card-bg);
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
-h2 { text-align: center; color: #1f1f1f; }
-label { display: block; font-weight: bold; margin-top: 15px; margin-bottom: 6px; font-size: 14px; }
-select, input[type="file"] {
-  width: 100%;
-  padding: 12px;
-  box-sizing: border-box;
+h2 {
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+.subtitle {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+/* Statistik Cards */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+.stat-card {
+  background: #fff;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-size: 15px;
+  padding: 8px 2px;
+}
+.stat-num {
+  font-size: 14px;
+  font-weight: bold;
+}
+.stat-label {
+  font-size: 9px;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* Form Upload Utama */
+.form-section {
   background: #fafafa;
-}
-button {
-  width: 100%;
-  padding: 15px;
-  margin-top: 15px;
-  border: 0;
+  border: 1px solid var(--border-color);
+  padding: 12px;
   border-radius: 10px;
-  background: var(--primary);
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
+  margin-bottom: 15px;
 }
-button:disabled { background: #999; cursor: not-allowed; }
-
-.btn-wa {
-  background: var(--whatsapp);
-  text-decoration: none;
+label {
   display: block;
-  text-align: center;
-  padding: 15px;
-  margin-top: 10px;
-  border-radius: 10px;
-  color: white;
-  font-size: 16px;
   font-weight: bold;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+select, input[type="file"] {
+  width: 100%;
+  padding: 10px;
   box-sizing: border-box;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
 }
-.btn-wa:hover { background: var(--whatsapp-hover); }
 
-#preview {
+/* Grid 20 Toko Kartu */
+.grid-box {
+  background: #f0f2f5;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px;
+  max-height: 380px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+}
+.grid-20 {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin-top: 15px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
 }
-.preview-item {
-  position: relative;
-  border-radius: 8px;
+.toko-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
   overflow: hidden;
-  background: #000;
-}
-#preview img {
-  width: 100%;
-  height: 130px;
-  object-fit: cover;
-  display: block;
-}
-.file-name {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  background: rgba(0,0,0,0.6);
-  color: white;
+  text-align: center;
   font-size: 10px;
-  padding: 3px 6px;
+}
+.toko-card-img {
+  width: 100%;
+  height: 45px;
+  background: #e1e4e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 8px;
+  object-fit: cover;
+}
+.toko-card-body {
+  padding: 4px;
+}
+.toko-card-title {
+  font-weight: bold;
+  font-size: 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-#status {
-  margin-top: 15px;
-  padding: 12px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: bold;
-  display: none;
+.toko-card-status {
+  font-size: 8px;
+  color: #666;
+  margin-top: 2px;
 }
-.status-info { background: #e6f4ff; color: #0958d9; border: 1px solid #91caff; display: block; }
-.status-success { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; display: block; }
-.status-error { background: #fff2f0; color: #ff4d4f; border: 1px solid #ffccc7; display: block; }
+.status-sudah { color: #52c41a; font-weight: bold; }
 
-#wa-section {
-  margin-top: 20px;
-  display: none;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  padding: 15px;
-  border-radius: 10px;
-}
-#wa-section h3 {
-  margin-top: 0;
-  font-size: 15px;
-  color: #166534;
-}
-#wa-preview-box {
-  width: 100%;
-  height: 130px;
-  padding: 10px;
-  box-sizing: border-box;
-  border: 1px solid #86efac;
-  border-radius: 8px;
-  font-family: monospace;
-  font-size: 12px;
-  background: #ffffff;
-  resize: vertical;
-}
-
-/* Bagian Tabel Rekap 20 Toko */
-.rekap-container {
-  margin-top: 30px;
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  padding: 15px;
-  border-radius: 12px;
-}
-.rekap-container h3 {
-  margin-top: 0;
-  font-size: 16px;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 8px;
-}
-.toko-row {
+/* Tombol Aksi */
+.action-buttons {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
-.toko-info {
+.btn {
+  flex: 1;
+  min-width: 45%;
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: bold;
-}
-.toko-status {
-  font-size: 12px;
-  color: #888;
-}
-.btn-wa-mini {
-  background: var(--whatsapp);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
   text-decoration: none;
-  font-size: 12px;
-  font-weight: bold;
+  box-sizing: border-box;
+  color: white;
 }
+.btn-primary { background: var(--primary); }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-wa { background: var(--whatsapp); }
+.btn-wa:hover { background: var(--whatsapp-hover); }
+.btn-dark { background: #333; }
+.btn:disabled { background: #ccc; cursor: not-allowed; }
+
+#status-pesan {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: center;
+  display: none;
+}
+.alert-success { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; display: block; }
+.alert-error { background: #fff2f0; color: #ff4d4f; border: 1px solid #ffccc7; display: block; }
+.alert-info { background: #e6f4ff; color: #0958d9; border: 1px solid #91caff; display: block; }
 </style>
 </head>
 <body>
 
 <div class="box">
-  <h2>📸 LAPORAN FOTO TOKO</h2>
+  <h2>📱 Preview WhatsApp</h2>
+  <div class="subtitle">Grid selalu berisi 20 toko. Toko yang belum mengirim foto tetap ditampilkan.</div>
 
-  <label for="toko">Pilih Toko</label>
-  <select id="toko" onchange="simpanPilihanToko()">
-    <option value="">-- Pilih Toko --</option>
-    <option value="C624|RWBT">C624 / RWBT</option>
-    <option value="C560|RAJ">C560 / RAJ</option>
-    <option value="CH81|CDKS">CH81 / CDKS</option>
-    <option value="CG76|SPMM">CG76 / SPMM</option>
-    <option value="C573|GMM">C573 / GMM</option>
-    <option value="CE47|MKRI">CE47 / MKRI</option>
-    <option value="CI30|STTD">CI30 / STTD</option>
-    <option value="CH41|KPMRK">CH41 / KPMRK</option>
-    <option value="CG54|MM2100">CG54 / MM2100</option>
-    <option value="C935|TLJ2">C935 / TLJ2</option>
-    <option value="CA71|WSGN">CA71 / WSGN</option>
-    <option value="C965|CBNU">C965 / CBNU</option>
-    <option value="CG86|JKST">CG86 / JKST</option>
-    <option value="CA94|KPTI">CA94 / KPTI</option>
-    <option value="C574|SKU">C574 / SKU</option>
-    <option value="CI15|RPSU">CI15 / RPSU</option>
-    <option value="CI54|RJLB">CI54 / RJLB</option>
-    <option value="CF50|DNIA">CF50 / DNIA</option>
-    <option value="CC21|KUTN">CC21 / KUTN</option>
-    <option value="CI84|TLKW">CI84 / TLKW</option>
-  </select>
-
-  <label for="foto">Pilih Foto</label>
-  <input type="file" id="foto" accept="image/*" multiple>
-
-  <div id="preview"></div>
-  <div id="status"></div>
-
-  <button id="upload" onclick="kirimFoto()">📤 UPLOAD FOTO</button>
-  
-  <!-- Kotak Preview WhatsApp Terakhir -->
-  <div id="wa-section">
-    <h3>💬 Preview Pesan WhatsApp (Upload Terakhir):</h3>
-    <textarea id="wa-preview-box" readonly></textarea>
-    <a id="btn-wa-link" href="#" target="_blank" class="btn-wa">📱 KIRIM LANGSUNG KE WHATSAPP</a>
+  <!-- Statistik Header -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <div id="stat-total" class="stat-num">20</div>
+      <div class="stat-label">Total Toko</div>
+    </div>
+    <div class="stat-card">
+      <div id="stat-sudah" class="stat-num" style="color:#52c41a;">0</div>
+      <div class="stat-label">Sudah Kirim</div>
+    </div>
+    <div class="stat-card">
+      <div id="stat-belum" class="stat-num" style="color:#faad14;">20</div>
+      <div class="stat-label">Belum Kirim</div>
+    </div>
+    <div class="stat-card">
+      <div id="stat-lengkap" class="stat-num">0</div>
+      <div class="stat-label">Lengkap</div>
+    </div>
+    <div class="stat-card">
+      <div id="stat-foto" class="stat-num">0</div>
+      <div class="stat-label">Total Foto</div>
+    </div>
   </div>
 
-  <!-- Daftar Rekap 20 Toko di Layar -->
-  <div class="rekap-container">
-    <h3>📋 Daftar 20 Toko & Status Laporan</h3>
-    <div id="daftar-toko-list">
-      <!-- Daftar toko akan digenerate otomatis -->
+  <!-- Form Input & Upload -->
+  <div class="form-section">
+    <label for="toko">Pilih Toko Tujuan</label>
+    <select id="toko" onchange="simpanPilihanToko()">
+      <option value="">-- Pilih Toko --</option>
+      <option value="C624|RWBT">C624 / RWBT</option>
+      <option value="C560|RAJ">C560 / RAJ</option>
+      <option value="CH81|CDKS">CH81 / CDKS</option>
+      <option value="CG76|SPMM">CG76 / SPMM</option>
+      <option value="C573|GMM">C573 / GMM</option>
+      <option value="CE47|MKRI">CE47 / MKRI</option>
+      <option value="CI30|STTD">CI30 / STTD</option>
+      <option value="CH41|KPMRK">CH41 / KPMRK</option>
+      <option value="CG54|MM2100">CG54 / MM2100</option>
+      <option value="C935|TLJ2">C935 / TLJ2</option>
+      <option value="CA71|WSGN">CA71 / WSGN</option>
+      <option value="C965|CBNU">C965 / CBNU</option>
+      <option value="CG86|JKST">CG86 / JKST</option>
+      <option value="CA94|KPTI">CA94 / KPTI</option>
+      <option value="C574|SKU">C574 / SKU</option>
+      <option value="CI15|RPSU">CI15 / RPSU</option>
+      <option value="CI54|RJLB">CI54 / RJLB</option>
+      <option value="CF50|DNIA">CF50 / DNIA</option>
+      <option value="CC21|KUTN">CC21 / KUTN</option>
+      <option value="CI84|TLKW">CI84 / TLKW</option>
+    </select>
+
+    <label for="foto">Pilih File Foto (Multiple)</label>
+    <input type="file" id="foto" accept="image/*" multiple>
+  </div>
+
+  <div id="status-pesan"></div>
+
+  <!-- Grid 20 Toko Visual -->
+  <div class="grid-box">
+    <div id="grid-20-container" class="grid-20">
+      <!-- Diisi otomatis oleh JavaScript -->
     </div>
+  </div>
+
+  <!-- Tombol Aksi Bawah -->
+  <div class="action-buttons">
+    <button class="btn btn-primary" onclick="refreshDashboard()">🔄 Refresh Grid</button>
+    <a id="btn-wa-grid" href="#" target="_blank" class="btn btn-wa">📲 Kirim Grid ke WA</a>
+    <button class="btn btn-dark" onclick="salinRekapTeks()">📋 Kirim Rekap Teks</button>
   </div>
 </div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwmae6m05HhR8Wm5NMFyh2Ocq1T15s6LPd1ky5jIH44UQA7cGnkAYggXunmPt7QM6uP/exec";
 
-// Daftar lengkap 20 toko
 const listTokoData = [
-  {kode: "C624", nama: "RWBT"}, {kode: "C560", nama: "RAJ"},
-  {kode: "CH81", nama: "CDKS"}, {kode: "CG76", nama: "SPMM"},
-  {kode: "C573", nama: "GMM"}, {kode: "CE47", nama: "MKRI"},
-  {kode: "CI30", nama: "STTD"}, {kode: "CH41", nama: "KPMRK"},
-  {kode: "CG54", nama: "MM2100"}, {kode: "C935", nama: "TLJ2"},
-  {kode: "CA71", nama: "WSGN"}, {kode: "C965", nama: "CBNU"},
-  {kode: "CG86", nama: "JKST"}, {kode: "CA94", nama: "KPTI"},
-  {kode: "C574", nama: "SKU"}, {kode: "CI15", nama: "RPSU"},
-  {kode: "CI54", nama: "RJLB"}, {kode: "CF50", nama: "DNIA"},
-  {kode: "CC21", nama: "KUTN"}, {kode: "CI84", nama: "TLKW"}
+  {id: 1, kode: "C624", nama: "RWBT"}, {id: 2, kode: "C560", nama: "RAJ"},
+  {id: 3, kode: "CH81", nama: "CDKS"}, {id: 4, kode: "CG76", nama: "SPMM"},
+  {id: 5, kode: "C573", nama: "GMM"}, {id: 6, kode: "CE47", nama: "MKRI"},
+  {id: 7, kode: "CI30", nama: "STTD"}, {id: 8, kode: "CH41", nama: "KPMRK"},
+  {id: 9, kode: "CG54", nama: "MM2100"}, {id: 10, kode: "C935", nama: "TLJ2"},
+  {id: 11, kode: "CA71", nama: "WSGN"}, {id: 12, kode: "C965", nama: "CBNU"},
+  {id: 13, kode: "CG86", nama: "JKST"}, {id: 14, kode: "CA94", nama: "KPTI"},
+  {id: 15, kode: "C574", nama: "SKU"}, {id: 16, kode: "CI15", nama: "RPSU"},
+  {id: 17, kode: "CI54", nama: "RJLB"}, {id: 18, kode: "CF50", nama: "DNIA"},
+  {id: 19, kode: "CC21", nama: "KUTN"}, {id: 20, kode: "CI84", nama: "TLKW"}
 ];
 
 window.addEventListener("DOMContentLoaded", () => {
   const savedToko = localStorage.getItem("last_selected_toko");
   if (savedToko) document.getElementById("toko").value = savedToko;
-  muatDaftarRekapToko();
+  renderGrid20Toko();
 });
 
 function simpanPilihanToko() {
@@ -260,85 +286,116 @@ function simpanPilihanToko() {
   if (val) localStorage.setItem("last_selected_toko", val);
 }
 
-// Fungsi render daftar 20 toko ke layar
-function muatDaftarRekapToko() {
-  const container = document.getElementById("daftar-toko-list");
+// Render 20 Kartu Toko & Statistik di Atas
+function renderGrid20Toko() {
+  const container = document.getElementById("grid-20-container");
   container.innerHTML = "";
 
+  let jumlahSudah = 0;
+  let totalFotoSemua = 0;
+  let teksRekapWA = `*REKAP LAPORAN FOTO 20 TOKO*\n📅 Tanggal: ${new Date().toLocaleDateString("id-ID")}\n\n`;
+
   listTokoData.forEach(toko => {
-    const historyUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum Upload", links: [] };
+    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum", jumlah: 0, thumbnail: "", links: [] };
 
-    const row = document.createElement("div");
-    row.className = "toko-row";
-    
-    let statusText = `<span style="color: #999;">Belum Upload</span>`;
-    let actionBtn = `<span class="toko-status">-</span>`;
+    const card = document.createElement("div");
+    card.className = "toko-card";
 
-    if (historyUpload.status === "Sukses") {
-      statusText = `<span style="color: #52c41a; font-weight:bold;">✅ ${historyUpload.jumlah} Foto Terkirim</span>`;
+    let imgContent = `BELUM ADA FOTO`;
+    let statusLabel = `BELUM KIRIM • 0 FOTO`;
+    let statusClass = "";
+
+    if (dataUpload.status === "Sukses") {
+      jumlahSudah++;
+      totalFotoSemua += dataUpload.jumlah;
+      statusLabel = `<span class="status-sudah">SUDAH • ${dataUpload.jumlah} FOTO</span>`;
       
-      let pesanToko = `*LAPORAN FOTO TOKO*\n`;
-      pesanToko += `📍 Toko: ${toko.kode} / ${toko.nama}\n`;
-      pesanToko += `📸 Jumlah Foto: ${historyUpload.jumlah} File\n\n`;
-      pesanToko += `*Link Arsip Foto:*\n`;
-      historyUpload.links.forEach((l, idx) => {
-        pesanToko += `${idx + 1}. ${l}\n`;
-      });
+      if (dataUpload.thumbnail) {
+        imgContent = `<img src="${dataUpload.thumbnail}" class="toko-card-img" alt="Foto">`;
+      } else {
+        imgContent = `<div class="toko-card-img" style="background:#52c41a; color:#fff;">TERKIRIM</div>`;
+      }
 
-      const encodedMsg = encodeURIComponent(pesanToko);
-      actionBtn = `<a href="https://wa.me/?text=${encodedMsg}" target="_blank" class="btn-wa-mini">📱 Kirim WA</a>`;
+      teksRekapWA += `📍 *${toko.id}. ${toko.kode}/${toko.nama}* (${dataUpload.jumlah} Foto):\n`;
+      dataUpload.links.forEach(l => { teksRekapWA += ` - ${l}\n`; });
+      teksRekapWA += `\n`;
+    } else {
+      teksRekapWA += `📍 *${toko.id}. ${toko.kode}/${toko.nama}*: Belum Kirim ❌\n\n`;
+      imgContent = `<div class="toko-card-img">BELUM ADA FOTO</div>`;
     }
 
-    row.innerHTML = `
-      <div>
-        <div class="toko-info">${toko.kode} / ${toko.nama}</div>
-        <div class="toko-status">${statusText}</div>
+    card.innerHTML = `
+      ${imgContent}
+      <div class="toko-card-body">
+        <div class="toko-card-title">${toko.id}. ${toko.kode}/${toko.nama}</div>
+        <div class="toko-card-status">${statusLabel}</div>
       </div>
-      <div>${actionBtn}</div>
     `;
-    container.appendChild(row);
+    container.appendChild(card);
   });
+
+  // Update Angka Statistik Header
+  document.getElementById("stat-sudah").textContent = jumlahSudah;
+  document.getElementById("stat-belum").textContent = 20 - jumlahSudah;
+  document.getElementById("stat-lengkap").textContent = jumlahSudah;
+  document.getElementById("stat-foto").textContent = totalFotoSemua;
+
+  // Set link tombol WhatsApp
+  teksRekapWA += `📊 Progress: ${jumlahSudah} dari 20 Toko Selesai.`;
+  document.getElementById("btn-wa-grid").href = `https://wa.me/?text=${encodeURIComponent(teksRekapWA)}`;
 }
 
-document.getElementById("foto").addEventListener("change", function() {
-  const preview = document.getElementById("preview");
-  preview.innerHTML = "";
-  document.getElementById("wa-section").style.display = "none";
-  for (const file of this.files) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const container = document.createElement("div");
-      container.className = "preview-item";
-      container.innerHTML = `<img src="${e.target.result}"><div class="file-name">${file.name}</div>`;
-      preview.appendChild(container);
+function refreshDashboard() {
+  renderGrid20Toko();
+  tampilStatus("🔄 Grid berhasil di-refresh!", "info");
+}
+
+function salinRekapTeks() {
+  const tanggalHariIni = new Date().toLocaleDateString("id-ID");
+  let teks = `*REKAP LAPORAN FOTO 20 TOKO*\n📅 Tanggal: ${tanggalHariIni}\n\n`;
+  
+  listTokoData.forEach(toko => {
+    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum", jumlah: 0 };
+    if (dataUpload.status === "Sukses") {
+      teks += `✅ ${toko.id}. ${toko.kode}/${toko.nama} (${dataUpload.jumlah} Foto)\n`;
+    } else {
+      teks += `❌ ${toko.id}. ${toko.kode}/${toko.nama} (Belum)\n`;
     }
-    reader.readAsDataURL(file);
-  }
-});
+  });
 
-async function kirimFoto() {
+  navigator.clipboard.writeText(teks);
+  alert("📋 Ringkasan rekap teks berhasil disalin ke clipboard!");
+}
+
+// Proses Upload Foto Saat Tombol Dipilih / Otomatis
+document.getElementById("foto").addEventListener("change", async function() {
   const tokoVal = document.getElementById("toko").value;
-  const files = document.getElementById("foto").files;
-  const tombol = document.getElementById("upload");
+  const files = this.files;
 
-  if (!tokoVal) { tampilStatus("⚠️ Pilih toko terlebih dahulu", "error"); return; }
-  if (files.length === 0) { tampilStatus("⚠️ Pilih foto terlebih dahulu", "error"); return; }
+  if (!tokoVal) {
+    tampilStatus("⚠️ Pilih toko tujuan di atas terlebih dahulu!", "error");
+    this.value = "";
+    return;
+  }
+
+  if (files.length === 0) return;
 
   const [kodeToko, namaToko] = tokoVal.split("|");
-  tombol.disabled = true;
-  let sukses = 0, gagal = 0;
+  tampilStatus(`⏳ Mengompres & Mengupload ${files.length} foto untuk ${kodeToko}...`, "info");
+
+  let sukses = 0;
   let listLinkDrive = [];
+  let thumbnailPertama = "";
 
   for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    tampilStatus(`⏳ Mengompres & Mengupload (${i + 1}/${files.length})...`, "info");
-
     try {
-      const base64Compressed = await kompresDanUbahKeBase64(file, 900, 0.5);
+      const base64Compressed = await kompresDanUbahKeBase64(files[i], 800, 0.5);
+      if (i === 0) thumbnailPertama = `data:image/jpeg;base64,${base64Compressed}`;
+
       const payload = {
         kodeToko: kodeToko,
         namaToko: namaToko,
-        namaFile: `${kodeToko}_${Date.now()}_${file.name}`,
+        namaFile: `${kodeToko}_${Date.now()}_${files[i].name}`,
         mimeType: "image/jpeg",
         foto: base64Compressed
       };
@@ -348,56 +405,32 @@ async function kirimFoto() {
         body: JSON.stringify(payload)
       });
 
-      const textRes = await response.text();
-      let hasil = JSON.parse(textRes);
-
+      const hasil = await response.json();
       if (hasil.status === "success") {
         sukses++;
         if (hasil.link) listLinkDrive.push(hasil.link);
-      } else {
-        gagal++;
       }
-    } catch (error) {
-      console.error(error);
-      gagal++;
+    } catch (err) {
+      console.error(err);
     }
   }
 
-  tombol.disabled = false;
-
-  if (gagal === 0) {
-    tampilStatus(`✅ Berhasil upload ${sukses} foto toko ${kodeToko}`, "success");
-    
-    // Simpan ke memori lokal browser agar langsung tampil di tabel rekap 20 toko
+  if (sukses > 0) {
+    // Simpan ke memori lokal browser
     localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
       status: "Sukses",
       jumlah: sukses,
+      thumbnail: thumbnailPertama,
       links: listLinkDrive
     }));
-    muatDaftarRekapToko(); // Refresh tabel daftar toko otomatis
 
-    // Susun format teks laporan untuk WhatsApp
-    const tanggalHariIni = new Date().toLocaleDateString("id-ID", {dateStyle: "full"});
-    let teksPesan = `*LAPORAN FOTO TOKO*\n`;
-    teksPesan += `📅 Tanggal: ${tanggalHariIni}\n`;
-    teksPesan += `📍 Toko: ${kodeToko} / ${namaToko}\n`;
-    teksPesan += `📸 Jumlah Foto: ${sukses} File\n\n`;
-    teksPesan += `*Link Arsip Foto:*\n`;
-    listLinkDrive.forEach((link, idx) => {
-      teksPesan += `${idx + 1}. ${link}\n`;
-    });
-    teksPesan += `\nStatus: ✅ Sukses & Terkirim`;
-
-    document.getElementById("wa-preview-box").value = teksPesan;
-    const waLink = document.getElementById("btn-wa-link");
-    waLink.href = `https://wa.me/?text=${encodeURIComponent(teksPesan)}`;
-    
-    document.getElementById("wa-section").style.display = "block";
-    document.getElementById("foto").value = "";
+    tampilStatus(`✅ Berhasil mengupload ${sukses} foto untuk toko ${kodeToko}!`, "success");
+    renderGrid20Toko();
+    this.value = ""; // Reset input file
   } else {
-    tampilStatus(`⚠️ Berhasil: ${sukses} | Gagal: ${gagal}`, "error");
+    tampilStatus("⚠️ Gagal mengupload foto. Periksa koneksi atau Google Apps Script.", "error");
   }
-}
+});
 
 function kompresDanUbahKeBase64(file, maxWidth, quality) {
   return new Promise((resolve, reject) => {
@@ -425,9 +458,10 @@ function kompresDanUbahKeBase64(file, maxWidth, quality) {
 }
 
 function tampilStatus(pesan, jenis) {
-  const status = document.getElementById("status");
-  status.className = `status-${jenis}`;
+  const status = document.getElementById("status-pesan");
+  status.className = `alert-${jenis}`;
   status.innerHTML = pesan;
+  status.style.display = "block";
 }
 </script>
 

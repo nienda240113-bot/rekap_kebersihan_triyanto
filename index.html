@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upload Foto Toko - Preview WA</title>
+<title>Upload Foto Toko - Rekap 20 Toko</title>
 <style>
 :root {
   --primary: #1677ff;
@@ -127,7 +127,7 @@ button:disabled { background: #999; cursor: not-allowed; }
 }
 #wa-preview-box {
   width: 100%;
-  height: 140px;
+  height: 130px;
   padding: 10px;
   box-sizing: border-box;
   border: 1px solid #86efac;
@@ -136,6 +136,45 @@ button:disabled { background: #999; cursor: not-allowed; }
   font-size: 12px;
   background: #ffffff;
   resize: vertical;
+}
+
+/* Bagian Tabel Rekap 20 Toko */
+.rekap-container {
+  margin-top: 30px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  padding: 15px;
+  border-radius: 12px;
+}
+.rekap-container h3 {
+  margin-top: 0;
+  font-size: 16px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 8px;
+}
+.toko-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+.toko-info {
+  font-weight: bold;
+}
+.toko-status {
+  font-size: 12px;
+  color: #888;
+}
+.btn-wa-mini {
+  background: var(--whatsapp);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: bold;
 }
 </style>
 </head>
@@ -177,26 +216,89 @@ button:disabled { background: #999; cursor: not-allowed; }
 
   <button id="upload" onclick="kirimFoto()">📤 UPLOAD FOTO</button>
   
-  <!-- Kotak Preview WhatsApp -->
+  <!-- Kotak Preview WhatsApp Terakhir -->
   <div id="wa-section">
-    <h3>💬 Preview Pesan WhatsApp:</h3>
+    <h3>💬 Preview Pesan WhatsApp (Upload Terakhir):</h3>
     <textarea id="wa-preview-box" readonly></textarea>
     <a id="btn-wa-link" href="#" target="_blank" class="btn-wa">📱 KIRIM LANGSUNG KE WHATSAPP</a>
+  </div>
+
+  <!-- Daftar Rekap 20 Toko di Layar -->
+  <div class="rekap-container">
+    <h3>📋 Daftar 20 Toko & Status Laporan</h3>
+    <div id="daftar-toko-list">
+      <!-- Daftar toko akan digenerate otomatis oleh JavaScript -->
+    </div>
   </div>
 </div>
 
 <script>
-// URL Google Apps Script terbaru Anda
 const API = "https://script.google.com/macros/s/AKfycbwmae6m05HhR8Wm5NMFyh2Ocq1T15s6LPd1ky5jIH44UQA7cGnkAYggXunmPt7QM6uP/exec";
+
+// Daftar lengkap 20 toko
+const listTokoData = [
+  {kode: "C624", nama: "RWBT"}, {kode: "C560", nama: "RAJ"},
+  {kode: "CH81", nama: "CDKS"}, {kode: "CG76", nama: "SPMM"},
+  {kode: "C573", nama: "GMM"}, {kode: "CE47", nama: "MKRI"},
+  {kode: "CI30", nama: "STTD"}, {kode: "CH41", nama: "KPMRK"},
+  {kode: "CG54", nama: "MM2100"}, {kode: "C935", nama: "TLJ2"},
+  {kode: "CA71", nama: "WSGN"}, {kode: "C965", nama: "CBNU"},
+  {kode: "CG86", nama: "JKST"}, {kode: "CA94", nama: "KPTI"},
+  {kode: "C574", nama: "SKU"}, {kode: "CI15", nama: "RPSU"},
+  {kode: "CI54", nama: "RJLB"}, {kode: "CF50", nama: "DNIA"},
+  {kode: "CC21", nama: "KUTN"}, {kode: "CI84", nama: "TLKW"}
+];
 
 window.addEventListener("DOMContentLoaded", () => {
   const savedToko = localStorage.getItem("last_selected_toko");
   if (savedToko) document.getElementById("toko").value = savedToko;
+  muatDaftarRekapToko();
 });
 
 function simpanPilihanToko() {
   const val = document.getElementById("toko").value;
   if (val) localStorage.setItem("last_selected_toko", val);
+}
+
+// Render daftar 20 toko ke layar
+function muاتDaftarRekapToko() {
+  const container = document.getElementById("daftar-toko-list");
+  container.innerHTML = "";
+
+  listTokoData.forEach(toko => {
+    const historyUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum Upload", links: [] };
+
+    const row = document.createElement("div");
+    row.className = "toko-row";
+    
+    let statusText = `<span style="color: #999;">Belum Upload</span>`;
+    let actionBtn = `<span class="toko-status">-</span>`;
+
+    if (historyUpload.status === "Sukses") {
+      statusText = `<span style="color: #52c41a; font-weight:bold;">✅ ${historyUpload.jumlah} Foto Terkirim</span>`;
+      
+      // Buat pesan WhatsApp per toko
+      let pesanToko = `*LAPORAN FOTO TOKO*\n`;
+      pesanToko += `📍 Toko: ${toko.kode} / ${toko.nama}\n`;
+      pesanToko += `📸 Jumlah Foto: ${historyUpload.jumlah} File\n\n`;
+      pesanToko += `*Link Arsip Foto:*\n`;
+      historyUpload.links.forEach((l, idx) => {
+        pesanToko += `${idx + 1}. ${l}\n`;
+      });
+
+      const encodedMsg = encodeURIComponent(pesanToko);
+      actionBtn = `<a href="https://wa.me/?text=${encodedMsg}" target="_blank" class="btn-wa-mini">📱 Kirim WA</a>`;
+    }
+
+    row.innerHTML = `
+      <div>
+        <div class="toko-info">${toko.kode} / ${toko.nama}</div>
+        <div class="toko-status">${statusText}</div>
+      </div>
+      <div>${actionBtn}</div>
+    `;
+    container.appendChild(row);
+  });
 }
 
 document.getElementById("foto").addEventListener("change", function() {
@@ -267,6 +369,14 @@ async function kirimFoto() {
   if (gagal === 0) {
     tampilStatus(`✅ Berhasil upload ${sukses} foto toko ${kodeToko}`, "success");
     
+    // Simpan ke memori browser agar tabel rekap langsung ter-update
+    localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
+      status: "Sukses",
+      jumlah: sukses,
+      links: listLinkDrive
+    }));
+    muatDaftarRekapToko();
+
     // Susun format teks laporan untuk WhatsApp
     const tanggalHariIni = new Date().toLocaleDateString("id-ID", {dateStyle: "full"});
     let teksPesan = `*LAPORAN FOTO TOKO*\n`;
@@ -274,21 +384,12 @@ async function kirimFoto() {
     teksPesan += `📍 Toko: ${kodeToko} / ${namaToko}\n`;
     teksPesan += `📸 Jumlah Foto: ${sukses} File\n\n`;
     teksPesan += `*Link Arsip Foto:*\n`;
-    
-    if (listLinkDrive.length > 0) {
-      listLinkDrive.forEach((link, idx) => {
-        teksPesan += `${idx + 1}. ${link}\n`;
-      });
-    } else {
-      teksPesan += `_(Tersimpan di Google Spreadsheet)_\n`;
-    }
-
+    listLinkDrive.forEach((link, idx) => {
+      teksPesan += `${idx + 1}. ${link}\n`;
+    });
     teksPesan += `\nStatus: ✅ Sukses & Terkirim`;
 
-    // Tampilkan di kotak preview layar
     document.getElementById("wa-preview-box").value = teksPesan;
-
-    // Pasang tautan kirim WhatsApp
     const waLink = document.getElementById("btn-wa-link");
     waLink.href = `https://wa.me/?text=${encodeURIComponent(teksPesan)}`;
     

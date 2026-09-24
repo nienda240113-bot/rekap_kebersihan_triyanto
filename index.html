@@ -50,7 +50,7 @@ h3.title {
   text-align: center;
 }
 
-/* Kotak Statistik Atas */
+/* Kotak Statistik */
 .stats-container {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -202,7 +202,7 @@ select, input[type="file"] {
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
   <div class="sub-desc">Upload kilat foto toko, grid Ultra HD otomatis, & auto-reset harian.</div>
 
-  <!-- Form Upload Toko Aktif (Dipindah ke Atas) -->
+  <!-- Form Upload Toko (Di Atas) -->
   <label for="toko">Pilih Toko untuk Upload Foto</label>
   <select id="toko" onchange="simpanPilihanToko()">
     <option value="">-- Pilih Toko --</option>
@@ -243,7 +243,7 @@ select, input[type="file"] {
 
   <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
 
-  <!-- Kotak Statistik & Tampilan Visual Grid 20 Toko (Dipindah ke Bawah) -->
+  <!-- Kotak Statistik & Grid 20 Toko (Di Bawah) -->
   <div class="stats-container">
     <div class="stat-box"><div class="stat-num" id="st-total">20</div><div class="stat-label">Total Toko</div></div>
     <div class="stat-box"><div class="stat-num" id="st-sudah">0</div><div class="stat-label">Sudah Kirim</div></div>
@@ -256,7 +256,7 @@ select, input[type="file"] {
     <div id="grid-visual-20" class="grid-20-preview"></div>
   </div>
 
-  <!-- Tombol Tersembunyi -->
+  <!-- Fungsi Pendukung Tersembunyi -->
   <div style="display:none;">
     <button class="btn btn-primary hidden-btn" onclick="renderGridVisual()">🔄 Refresh Grid</button>
     <button class="btn btn-success hidden-btn" onclick="downloadMasterGrid()">📥 Simpan Gambar Master</button>

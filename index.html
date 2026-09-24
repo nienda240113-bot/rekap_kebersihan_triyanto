@@ -162,8 +162,8 @@ button:disabled { background: #999; cursor: not-allowed; }
 </div>
 
 <script>
-// URL Google Apps Script yang baru terpasang
-const API = "https://script.google.com/macros/s/AKfycbyrCQAcZKf6MEU5KqZnOczBo7-cyjclZ8ZO7wHh_kKLKv-mLb0eZi3QWUzB2J8AJDn2/exec";
+// URL Google Apps Script yang baru
+const API = "https://script.google.com/macros/s/AKfycbwmae6m05HhR8Wm5NMFyh2Ocq1T15s6LPd1ky5jIH44UQA7cGnkAYggXunmPt7QM6uP/exec";
 
 window.addEventListener("DOMContentLoaded", () => {
   const savedToko = localStorage.getItem("last_selected_toko");
@@ -247,7 +247,7 @@ async function kirimFoto() {
   if (gagal === 0) {
     tampilStatus(`✅ Berhasil upload ${sukses} foto toko ${kodeToko}`, "success");
     
-    // Siapkan teks pesan otomatis untuk dikirim ke WhatsApp
+    // Siapkan pesan otomatis untuk WhatsApp
     const tanggalHariIni = new Date().toLocaleDateString("id-ID", {dateStyle: "full"});
     let pesanWA = `*LAPORAN FOTO TOKO*%0A`;
     pesanWA += `📅 Tanggal: ${tanggalHariIni}%0A`;

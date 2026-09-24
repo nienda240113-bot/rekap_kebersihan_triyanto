@@ -177,7 +177,7 @@ button:disabled { background: #999; cursor: not-allowed; }
 
   <button id="upload" onclick="kirimFoto()">📤 UPLOAD FOTO</button>
   
-  <!-- Bagian Preview Pesan WhatsApp di Layar -->
+  <!-- Kotak Preview WhatsApp -->
   <div id="wa-section">
     <h3>💬 Preview Pesan WhatsApp:</h3>
     <textarea id="wa-preview-box" readonly></textarea>
@@ -186,6 +186,7 @@ button:disabled { background: #999; cursor: not-allowed; }
 </div>
 
 <script>
+// URL Google Apps Script terbaru Anda
 const API = "https://script.google.com/macros/s/AKfycbwmae6m05HhR8Wm5NMFyh2Ocq1T15s6LPd1ky5jIH44UQA7cGnkAYggXunmPt7QM6uP/exec";
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -284,16 +285,14 @@ async function kirimFoto() {
 
     teksPesan += `\nStatus: ✅ Sukses & Terkirim`;
 
-    // Masukkan ke kotak preview di layar
+    // Tampilkan di kotak preview layar
     document.getElementById("wa-preview-box").value = teksPesan;
 
     // Pasang tautan kirim WhatsApp
     const waLink = document.getElementById("btn-wa-link");
     waLink.href = `https://wa.me/?text=${encodeURIComponent(teksPesan)}`;
     
-    // Tampilkan bagian kotak preview & tombol WA
     document.getElementById("wa-section").style.display = "block";
-
     document.getElementById("foto").value = "";
   } else {
     tampilStatus(`⚠️ Berhasil: ${sukses} | Gagal: ${gagal}`, "error");

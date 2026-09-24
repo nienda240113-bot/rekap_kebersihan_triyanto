@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Preview WhatsApp - Grid 20 Toko</title>
+<title>Preview WhatsApp - Grid 20 Toko Auto Frame</title>
 <style>
 :root {
   --primary: #1677ff;
@@ -87,13 +87,19 @@ h3.title {
   background: #fff;
   font-size: 9px;
   text-align: center;
+  position: relative;
 }
-.toko-card img {
+.toko-card .canvas-wrapper {
   width: 100%;
-  height: 50px;
+  height: 55px;
+  background: #eee;
+  position: relative;
+}
+.toko-card canvas {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
-  background: #eee;
 }
 .toko-card .info {
   padding: 3px 2px;
@@ -181,7 +187,7 @@ select, input[type="file"] {
 
 <div class="box">
   <h3 class="title">💬 Preview WhatsApp</h3>
-  <div class="sub-desc">Grid selalu berisi 20 toko. Toko yang belum mengirim foto tetap ditampilkan.</div>
+  <div class="sub-desc">Grid selalu berisi 20 toko. Foto yang di-upload otomatis tersusun rapi dalam 1 frame grid per toko.</div>
 
   <!-- Kotak Statistik Atas -->
   <div class="stats-container">
@@ -227,19 +233,19 @@ select, input[type="file"] {
     <option value="CI84|TLKW">20. CI84 / TLKW</option>
   </select>
 
-  <label for="foto">Pilih Foto (Bisa Banyak)</label>
+  <label for="foto">Pilih Foto (Bisa Banyak, Otomatis Jadi 1 Frame Kolase)</label>
   <input type="file" id="foto" accept="image/*" multiple>
 
   <div id="preview-upload"></div>
   <div id="status"></div>
 
-  <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:12px;">📤 UPLOAD FOTO KE CLOUD</button>
+  <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:12px;">📤 UPLOAD FOTO & GENERATE FRAME</button>
 
   <!-- Tombol Aksi Bawah -->
   <div class="action-buttons">
     <button class="btn btn-primary" onclick="renderGridVisual()">🔄 Buat / Refresh Grid</button>
     <a href="#" id="btn-wa-grid" target="_blank" class="btn btn-wa">💬 Kirim Grid ke WA</a>
-    <button class="btn btn-success" onclick="alert('Fitur simpan grid aktif')">📥 Simpan Grid</button>
+    <button class="btn btn-success" onclick="alert('Grid 20 Toko siap dibagikan')">📥 Simpan Grid</button>
     <a href="#" id="btn-wa-rekap" target="_blank" class="btn btn-dark">📋 Kirim Rekap Teks</a>
   </div>
 </div>
@@ -271,6 +277,71 @@ function simpanPilihanToko() {
   if (val) localStorage.setItem("last_selected_toko", val);
 }
 
+// Fungsi membuat kolase gambar dalam 1 canvas kecil untuk tiap toko
+async function buatKolaseThumbnail(base64List) {
+  return new Promise((resolve) => {
+    if (!base64List || base64List.length === 0) {
+      resolve("");
+      return;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 300;
+    canvas.height = 300;
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, 300, 300);
+
+    let loadedCount = 0;
+    const imgObjects = [];
+
+    base64List.forEach((b64, idx) => {
+      const img = new Image();
+      img.src = b64;
+      img.onload = () => {
+        imgObjects[idx] = img;
+        loadedCount++;
+        if (loadedCount === base64List.length) {
+          gambarKeCanvas(ctx, imgObjects, canvas);
+          resolve(canvas.toDataURL("image/jpeg", 0.6));
+        }
+      };
+      img.onerror = () => {
+        loadedCount++;
+        if (loadedCount === base64List.length) resolve("");
+      };
+    });
+  });
+}
+
+function gambarKeCanvas(ctx, imgs, canvas) {
+  const len = imgs.filter(Boolean).length;
+  if (len === 1) {
+    ctx.drawImage(imgs[0], 0, 0, 300, 300);
+  } else if (len === 2) {
+    ctx.drawImage(imgs[0], 0, 0, 150, 300);
+    ctx.drawImage(imgs[1], 150, 0, 150, 300);
+  } else if (len <= 4) {
+    let w = 150, h = 150;
+    imgs.forEach((img, i) => {
+      let x = (i % 2) * w;
+      let y = Math.floor(i / 2) * h;
+      ctx.drawImage(img, x, y, w, h);
+    });
+  } else {
+    // 5 atau lebih (dibagi grid 3x3)
+    let w = 100, h = 100;
+    imgs.forEach((img, i) => {
+      if (i < 9) {
+        let x = (i % 3) * w;
+        let y = Math.floor(i / 3) * h;
+        ctx.drawImage(img, x, y, w, h);
+      }
+    });
+  }
+}
+
 // Render Grid 20 Toko di Layar
 function renderGridVisual() {
   const container = document.getElementById("grid-visual-20");
@@ -278,34 +349,33 @@ function renderGridVisual() {
 
   let totalSudah = 0;
   let totalFoto = 0;
-
   let rekapTeksWA = `📊 *REKAP FOTO 20 TOKO*\n📅 ${new Date().toLocaleDateString("id-ID")}\n\n`;
 
   listTokoData.forEach(toko => {
-    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum", jumlah: 0, previewImg: "", links: [] };
+    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum", jumlah: 0, collageImg: "", links: [] };
 
     const card = document.createElement("div");
     card.className = "toko-card";
 
-    let imgTag = `<div style="height:50px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; font-size:8px; color:#aaa;">No Foto</div>`;
+    let imgWrapperHtml = `<div style="height:55px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; font-size:8px; color:#aaa;">No Foto</div>`;
     let statusText = `<span style="color:#faad14;">Belum</span>`;
 
     if (dataUpload.status === "Sukses") {
       totalSudah++;
       totalFoto += dataUpload.jumlah;
-      if (dataUpload.previewImg) {
-        imgTag = `<img src="${dataUpload.previewImg}" alt="Foto">`;
+      if (dataUpload.collageImg) {
+        imgWrapperHtml = `<img src="${dataUpload.collageImg}" alt="Kolase">`;
       }
       statusText = `LENGKAP • ${dataUpload.jumlah} Foto`;
 
-      rekapTeksWA += `✅ *${toko.id}. ${toko.kode}/${toko.nama}* (${dataUpload.jumlah} Foto)\n`;
+      rekapTeksWA += `✅ *${toko.id}. ${toko.kode}/${toko.nama}* (${dataUpload.jumlah} Foto):\n`;
       dataUpload.links.forEach(l => { rekapTeksWA += `   🔗 ${l}\n`; });
     } else {
       rekapTeksWA += `⏳ *${toko.id}. ${toko.kode}/${toko.nama}*: Belum Kirim\n`;
     }
 
     card.innerHTML = `
-      ${imgTag}
+      <div class="canvas-wrapper">${imgWrapperHtml}</div>
       <div class="info">
         <div class="name">${toko.id}. ${toko.kode}/${toko.nama}</div>
         <div class="status">${statusText}</div>
@@ -314,19 +384,19 @@ function renderGridVisual() {
     container.appendChild(card);
   });
 
-  // Perbarui Statistik Atas
+  // Update Statistik
   document.getElementById("st-total").textContent = "20";
   document.getElementById("st-sudah").textContent = totalSudah;
   document.getElementById("st-belum").textContent = 20 - totalSudah;
   document.getElementById("st-lengkap").textContent = totalSudah;
   document.getElementById("st-foto").textContent = totalFoto;
 
-  // Set link WhatsApp Rekap Teks
+  // Tombol WhatsApp Rekap & Grid
   document.getElementById("btn-wa-rekap").href = `https://wa.me/?text=${encodeURIComponent(rekapTeksWA)}`;
-  document.getElementById("btn-wa-grid").href = `https://wa.me/?text=${encodeURIComponent("Berikut rekap visual 20 toko:\n" + rekapTeksWA)}`;
+  document.getElementById("btn-wa-grid").href = `https://wa.me/?text=${encodeURIComponent("Berikut rekap kolase visual 20 toko:\n" + rekapTeksWA)}`;
 }
 
-// Preview foto yang dipilih di form
+// Preview foto di form
 document.getElementById("foto").addEventListener("change", function() {
   const preview = document.getElementById("preview-upload");
   preview.innerHTML = "";
@@ -341,7 +411,6 @@ document.getElementById("foto").addEventListener("change", function() {
   }
 });
 
-// Proses Upload Foto ke Server & Simpan State Grid
 async function kirimFoto() {
   const tokoVal = document.getElementById("toko").value;
   const files = document.getElementById("foto").files;
@@ -354,15 +423,15 @@ async function kirimFoto() {
   tombol.disabled = true;
   let sukses = 0, gagal = 0;
   let listLinkDrive = [];
-  let thumbnailPertama = "";
+  let base64Collection = [];
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     tampilStatus(`⏳ Mengompres & Mengupload (${i + 1}/${files.length})...`, "info");
 
     try {
-      const base64Compressed = await kompresDanUbahKeBase64(file, 800, 0.5);
-      if (i === 0) thumbnailPertama = `data:image/jpeg;base64,${base64Compressed}`;
+      const base64Compressed = await kompresDanUbahKeBase64(file, 900, 0.5);
+      base64Collection.push(`data:image/jpeg;base64,${base64Compressed}`);
 
       const payload = {
         kodeToko: kodeToko,
@@ -397,15 +466,19 @@ async function kirimFoto() {
   if (gagal === 0) {
     tampilStatus(`✅ Berhasil upload ${sukses} foto toko ${kodeToko}`, "success");
     
-    // Simpan ke memori lokal browser agar grid otomatis terisi kotak gambarnya
+    // Buat kolase otomatis dari semua foto yang di-upload untuk toko ini
+    const collageDataUrl = await buatKolaseThumbnail(base64Collection);
+
+    // Simpan ke localStorage
     localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
       status: "Sukses",
       jumlah: sukses,
-      previewImg: thumbnailPertama,
+      collageImg: collageDataUrl,
       links: listLinkDrive
     }));
 
-    renderGridVisual(); // Refresh tampilan grid 20 toko di atas
+    renderGridVisual(); // Refresh grid agar frame langsung tampil rapi
+
     document.getElementById("foto").value = "";
     document.getElementById("preview-upload").innerHTML = "";
   } else {

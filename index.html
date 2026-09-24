@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Preview WhatsApp - Master Grid 20 Toko</title>
+<title>Preview WhatsApp - Share Grid 1 Tap</title>
 <style>
 :root {
   --primary: #1677ff;
@@ -187,7 +187,7 @@ select, input[type="file"] {
 
 <div class="box">
   <h3 class="title">💬 Preview WhatsApp</h3>
-  <div class="sub-desc">Grid 20 Toko otomatis merakit master gambar untuk dikirim ke WhatsApp.</div>
+  <div class="sub-desc">Tekan tombol Kirim Grid untuk langsung membagikan foto master grid & teks rekap ke WhatsApp.</div>
 
   <!-- Kotak Statistik Atas -->
   <div class="stats-container">
@@ -200,9 +200,7 @@ select, input[type="file"] {
 
   <!-- Tampilan Visual Grid 20 Toko -->
   <div class="grid-preview-box">
-    <div id="grid-visual-20" class="grid-20-preview">
-      <!-- Diisi otomatis oleh JavaScript -->
-    </div>
+    <div id="grid-visual-20" class="grid-20-preview"></div>
   </div>
 
   <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
@@ -244,7 +242,7 @@ select, input[type="file"] {
   <!-- Tombol Aksi Bawah -->
   <div class="action-buttons">
     <button class="btn btn-primary" onclick="renderGridVisual()">🔄 Refresh Grid</button>
-    <button class="btn btn-wa" onclick="generateAndSendMasterGrid()">💬 Kirim Grid ke WhatsApp</button>
+    <button class="btn btn-wa" onclick="shareMasterGridDirectly()">💬 Kirim Grid ke WhatsApp</button>
     <button class="btn btn-success" onclick="downloadMasterGrid()">📥 Simpan Gambar Master</button>
     <a href="#" id="btn-wa-rekap" target="_blank" class="btn btn-dark">📋 Kirim Rekap Teks</a>
   </div>
@@ -277,16 +275,11 @@ function simpanPilihanToko() {
   if (val) localStorage.setItem("last_selected_toko", val);
 }
 
-// Fungsi membuat kolase thumbnail per toko
 async function buatKolaseThumbnail(base64List) {
   return new Promise((resolve) => {
-    if (!base64List || base64List.length === 0) {
-      resolve("");
-      return;
-    }
+    if (!base64List || base64List.length === 0) { resolve(""); return; }
     const canvas = document.createElement("canvas");
-    canvas.width = 300;
-    canvas.height = 300;
+    canvas.width = 300; canvas.height = 300;
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, 300, 300);
@@ -339,17 +332,16 @@ function gambarKeCanvas(ctx, imgs) {
   }
 }
 
-// Render Grid 20 Toko di Layar
 function renderGridVisual() {
   const container = document.getElementById("grid-visual-20");
   container.innerHTML = "";
 
   let totalSudah = 0;
   let totalFoto = 0;
-  let rekapTeksWA = `📊 *REKAP 20 TOKO – AREA TRIYANTO*\n📅 ${new Date().toLocaleDateString("id-ID")}\n\n`;
+  let rekapTeksWA = "";
 
   listTokoData.forEach(toko => {
-    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum", jumlah: 0, collageImg: "", links: [] };
+    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum", jumlah: 0, collageImg: "" };
 
     const card = document.createElement("div");
     card.className = "toko-card";
@@ -381,15 +373,13 @@ function renderGridVisual() {
 
   const progress = Math.round((totalSudah / 20) * 100);
 
-  // Update Statistik Atas
   document.getElementById("st-total").textContent = "20";
   document.getElementById("st-sudah").textContent = totalSudah;
   document.getElementById("st-belum").textContent = 20 - totalSudah;
   document.getElementById("st-lengkap").textContent = totalSudah;
   document.getElementById("st-foto").textContent = totalFoto;
 
-  // Format Teks WhatsApp sesuai contoh Anda
-  let teksLengkapWAGroup = `📊 *REKAP 20 TOKO – AREA TRIYANTO*\n\n` +
+  window.teksLaporanFinal = `📊 *REKAP 20 TOKO – AREA TRIYANTO*\n\n` +
     `📅 ${new Date().toLocaleDateString("id-ID")} ${new Date().toLocaleTimeString("id-ID", {hour: '2-digit', minute:'2-digit'})}\n\n` +
     `🏢 Total Toko : 20\n` +
     `📦 Sudah Kirim : ${totalSudah}\n` +
@@ -401,17 +391,14 @@ function renderGridVisual() {
     `━━━━━━━━━━━━━━━\n` +
     `*DAFTAR 20 TOKO*\n` + rekapTeksWA;
 
-  document.getElementById("btn-wa-rekap").href = `https://wa.me/?text=${encodeURIComponent(teksLengkapWAGroup)}`;
+  document.getElementById("btn-wa-rekap").href = `https://wa.me/?text=${encodeURIComponent(window.teksLaporanFinal)}`;
 }
 
-// Fungsi merakit Master Grid Gabungan 20 Toko menjadi 1 Gambar Besar
 async function buatMasterGridImage() {
   return new Promise((resolve) => {
     const canvas = document.createElement("canvas");
-    const cols = 5;
-    const rows = 4;
-    const itemWidth = 300;
-    const itemHeight = 350; // Termasuk ruang untuk teks nama toko di bawahnya
+    const cols = 5; const rows = 4;
+    const itemWidth = 300; const itemHeight = 350;
     
     canvas.width = cols * itemWidth;
     canvas.height = rows * itemHeight;
@@ -430,10 +417,7 @@ async function buatMasterGridImage() {
         const img = new Image();
         img.src = dataUpload.collageImg;
         img.onload = () => {
-          // Gambar foto kolase
           ctx.drawImage(img, x + 5, y + 5, itemWidth - 10, itemWidth - 10);
-          
-          // Kotak teks keterangan bawah
           ctx.fillStyle = "#f9f9f9";
           ctx.fillRect(x + 5, y + itemWidth, itemWidth - 10, 40);
           ctx.strokeStyle = "#ddd";
@@ -477,27 +461,49 @@ function gambarKotakKosong(ctx, toko, x, y, itemWidth) {
   ctx.fillText(`${toko.id}. ${toko.kode}/${toko.nama}`, x + (itemWidth / 2), y + itemWidth + 25);
 }
 
-// Tombol Kirim Grid ke WhatsApp
-async function generateAndSendMasterGrid() {
-  tampilStatus("⏳ Sedang merakit Master Grid 20 Toko...", "info");
+// Fungsi utama: Kirim Gambar Grid + Teks Sekaligus via Web Share API
+async function shareMasterGridDirectly() {
+  tampilStatus("⏳ Merakit Master Grid 20 Toko...", "info");
   const dataUrl = await buatMasterGridImage();
-  
-  // Download otomatis gambar master grid ke HP
+
+  // Ubah DataURL ke File Blob
+  const blob = await (await fetch(dataUrl)).blob();
+  const file = new File([blob], `Rekap_20_Toko_${Date.now()}.jpg`, { type: "image/jpeg" });
+
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        title: 'Rekap 20 Toko',
+        text: window.teksLaporanFinal || 'Berikut rekap laporan 20 toko.',
+        files: [file]
+      });
+      tampilStatus("✅ Berhasil membagikan grid ke WhatsApp!", "success");
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error(err);
+        downloadMasterGridFallback(dataUrl);
+      }
+    }
+  } else {
+    // Fallback jika browser HP tidak mendukung share file langsung
+    downloadMasterGridFallback(dataUrl);
+  }
+}
+
+function downloadMasterGridFallback(dataUrl) {
   const a = document.createElement("a");
   a.href = dataUrl;
   a.download = `Master_Grid_20_Toko_${Date.now()}.jpg`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-
-  tampilStatus("✅ Master Grid berhasil disimpan! Silakan lampirkan gambar tersebut ke WhatsApp.", "success");
+  tampilStatus("⚠️ Perangkat Anda mendownload gambar. Silakan kirim ke WA beserta teks rekap.", "success");
 }
 
 function downloadMasterGrid() {
-  generateAndSendMasterGrid();
+  shareMasterGridDirectly();
 }
 
-// Preview foto di form
 document.getElementById("foto").addEventListener("change", function() {
   const preview = document.getElementById("preview-upload");
   preview.innerHTML = "";

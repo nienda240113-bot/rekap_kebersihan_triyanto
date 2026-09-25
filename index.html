@@ -30,16 +30,17 @@ body {
   padding: 16px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  position: relative;
 }
 h3.title {
   margin-top: 0;
   font-size: 15px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  text-align: center;
   justify-content: center;
+  gap: 8px;
   color: #1a1a1a;
+  text-align: center;
 }
 .sub-desc {
   font-size: 11px;
@@ -168,10 +169,75 @@ select, input[type="file"] {
   justify-content: center;
   gap: 6px;
   color: white;
+  position: relative;
 }
 .btn-primary { background: var(--primary); }
 .btn-wa { background: var(--whatsapp); font-size: 14px; padding: 15px; }
 .btn-wa:hover { background: var(--whatsapp-hover); }
+
+/* Tombol Bantuan Mengambang */
+.btn-help {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Efek Animasi Sorot & Panah Panduan */
+.highlight-target {
+  position: relative;
+  z-index: 999;
+  box-shadow: 0 0 0 4px #1677ff, 0 0 15px rgba(22, 119, 255, 0.6) !important;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: #fff !important;
+}
+
+/* Tooltip & Panah Animasi */
+#tour-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 998;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.tour-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 320px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  animation: popIn 0.3s ease;
+  z-index: 1000;
+}
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.tour-title { font-weight: bold; font-size: 15px; color: #1677ff; margin-bottom: 8px; }
+.tour-text { font-size: 13px; color: #444; margin-bottom: 15px; line-height: 1.4; }
+.tour-buttons { display: flex; gap: 8px; justify-content: center; }
+.tour-btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; }
+.tour-btn-next { background: #1677ff; color: white; }
+.tour-btn-skip { background: #f0f0f0; color: #666; }
 
 #status {
   margin-top: 10px;
@@ -190,44 +256,51 @@ select, input[type="file"] {
 <body>
 
 <div class="box">
+  <button class="btn-help" onclick="mulaiPanduan()" title="Panduan Aplikasi">?</button>
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
   <div class="sub-desc">Min 1 & Max 6 Foto | Auto-Reset Harian & Real-Time Sync.</div>
 
   <!-- Form Upload Toko -->
-  <label for="toko">Pilih Toko untuk Upload Foto</label>
-  <select id="toko" onchange="simpanPilihanToko()">
-    <option value="">-- Pilih Toko --</option>
-    <option value="C624|RWBT">1. C624 / RWBT</option>
-    <option value="C560|RAJ">2. C560 / RAJ</option>
-    <option value="CH81|CDKS">3. CH81 / CDKS</option>
-    <option value="CG76|SPMM">4. CG76 / SPMM</option>
-    <option value="C573|GMM">5. C573 / GMM</option>
-    <option value="CE47|MKRI">6. CE47 / MKRI</option>
-    <option value="CI30|STTD">7. CI30 / STTD</option>
-    <option value="CH41|KPMRK">8. CH41 / KPMRK</option>
-    <option value="CG54|MM2100">9. CG54 / MM2100</option>
-    <option value="C935|TLJ2">10. C935 / TLJ2</option>
-    <option value="CA71|WSGN">11. CA71 / WSGN</option>
-    <option value="C965|CBNU">12. C965 / CBNU</option>
-    <option value="CG86|JKST">13. CG86 / JKST</option>
-    <option value="CA94|KPTI">14. CA94 / KPTI</option>
-    <option value="C574|SKU">15. C574 / SKU</option>
-    <option value="CI15|RPSU">16. CI15 / RPSU</option>
-    <option value="CI54|RJLB">17. CI54 / RJLB</option>
-    <option value="CF50|DNIA">18. CF50 / DNIA</option>
-    <option value="CC21|KUTN">19. CC21 / KUTN</option>
-    <option value="CI84|TLKW">20. CI84 / TLKW</option>
-  </select>
+  <div id="step-1-container">
+    <label for="toko">Pilih Toko untuk Upload Foto</label>
+    <select id="toko" onchange="simpanPilihanToko()">
+      <option value="">-- Pilih Toko --</option>
+      <option value="C624|RWBT">1. C624 / RWBT</option>
+      <option value="C560|RAJ">2. C560 / RAJ</option>
+      <option value="CH81|CDKS">3. CH81 / CDKS</option>
+      <option value="CG76|SPMM">4. CG76 / SPMM</option>
+      <option value="C573|GMM">5. C573 / GMM</option>
+      <option value="CE47|MKRI">6. CE47 / MKRI</option>
+      <option value="CI30|STTD">7. CI30 / STTD</option>
+      <option value="CH41|KPMRK">8. CH41 / KPMRK</option>
+      <option value="CG54|MM2100">9. CG54 / MM2100</option>
+      <option value="C935|TLJ2">10. C935 / TLJ2</option>
+      <option value="CA71|WSGN">11. CA71 / WSGN</option>
+      <option value="C965|CBNU">12. C965 / CBNU</option>
+      <option value="CG86|JKST">13. CG86 / JKST</option>
+      <option value="CA94|KPTI">14. CA94 / KPTI</option>
+      <option value="C574|SKU">15. C574 / SKU</option>
+      <option value="CI15|RPSU">16. CI15 / RPSU</option>
+      <option value="CI54|RJLB">17. CI54 / RJLB</option>
+      <option value="CF50|DNIA">18. CF50 / DNIA</option>
+      <option value="CC21|KUTN">19. CC21 / KUTN</option>
+      <option value="CI84|TLKW">20. CI84 / TLKW</option>
+    </select>
+  </div>
 
-  <label for="foto">Pilih Foto (Minimal 1, Maksimal 6 Foto)</label>
-  <input type="file" id="foto" accept="image/*" multiple>
+  <div id="step-2-container">
+    <label for="foto">Pilih Foto (Minimal 1, Maksimal 6 Foto)</label>
+    <input type="file" id="foto" accept="image/*" multiple>
+  </div>
 
   <div id="preview-upload"></div>
   <div id="status"></div>
 
-  <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:12px;">⚡ UPLOAD KILAT & GENERATE GRID</button>
+  <div id="step-3-container">
+    <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:12px;">⚡ UPLOAD KILAT & GENERATE GRID</button>
+  </div>
 
-  <div class="action-buttons" style="margin-top: 12px;">
+  <div class="action-buttons" style="margin-top: 12px;" id="step-4-container">
     <button class="btn btn-wa" onclick="shareMasterGridDirectly()">💬 Kirim Grid Ultra HD ke WhatsApp</button>
   </div>
 
@@ -244,6 +317,18 @@ select, input[type="file"] {
 
   <div class="grid-preview-box">
     <div id="grid-visual-20" class="grid-20-preview"></div>
+  </div>
+</div>
+
+<!-- Overlay Panduan Interaktif -->
+<div id="tour-overlay">
+  <div class="tour-card">
+    <div class="tour-title" id="tour-title">Judul Panduan</div>
+    <div class="tour-text" id="tour-text">Keterangan panduan...</div>
+    <div class="tour-buttons">
+      <button class="tour-btn tour-btn-skip" onclick="tutupPanduan()">Lewati</button>
+      <button class="tour-btn tour-btn-next" id="tour-next-btn" onclick="lanjutPanduan()">Lanjut ➔</button>
+    </div>
   </div>
 </div>
 
@@ -268,7 +353,72 @@ window.addEventListener("DOMContentLoaded", () => {
   if (savedToko) document.getElementById("toko").value = savedToko;
   
   cekDanResetOtomatisTanggal();
+
+  // Munculkan panduan otomatis jika baru pertama kali buka hari ini
+  if (!localStorage.getItem("sudah_panduan_hari_ini")) {
+    setTimeout(mulaiPanduan, 1000);
+  }
 });
+
+// Sistem Tour Guide Animasi
+let currentStep = 0;
+const tourSteps = [
+  { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Ketuk menu pilihan ini dan cari atau pilih nama/kode toko Anda sebelum mengupload foto." },
+  { element: "step-2-container", title: "Langkah 2: Pilih Foto 📷", text: "Pilih foto aktivitas/rak toko Anda. Ketentuan: Minimal 1 foto dan Maksimal 6 foto." },
+  { element: "step-3-container", title: "Langkah 3: Upload Kilat ⚡", text: "Ketuk tombol ini untuk memproses dan mengupload foto secara instan ke Cloud & Server pusat." },
+  { element: "step-4-container", title: "Langkah 4: Kirim ke WhatsApp 💬", text: "Setelah semua toko lengkap, ketuk tombol hijau ini untuk membagikan rekap Master Grid Ultra HD ke grup WhatsApp!" }
+];
+
+function mulaiPanduan() {
+  currentStep = 0;
+  document.getElementById("tour-overlay").style.display = "flex";
+  tampilLangkahTour();
+}
+
+function tampilLangkahTour() {
+  // Bersihkan highlight sebelumnya
+  tourSteps.forEach(step => {
+    const el = document.getElementById(step.element);
+    if (el) el.classList.remove("highlight-target");
+  });
+
+  if (currentStep >= tourSteps.length) {
+    tutupPanduan();
+    localStorage.setItem("sudah_panduan_hari_ini", "true");
+    return;
+  }
+
+  const step = tourSteps[currentStep];
+  const targetEl = document.getElementById(step.element);
+  if (targetEl) {
+    targetEl.classList.add("highlight-target");
+    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  document.getElementById("tour-title").textContent = step.title;
+  document.getElementById("tour-text").textContent = step.text;
+  
+  const nextBtn = document.getElementById("tour-next-btn");
+  if (currentStep === tourSteps.length - 1) {
+    nextBtn.textContent = "Selesai ✓";
+  } else {
+    nextBtn.textContent = "Lanjut ➔";
+  }
+}
+
+function lanjutPanduan() {
+  currentStep++;
+  tampilLangkahTour();
+}
+
+function tutupPanduan() {
+  tourSteps.forEach(step => {
+    const el = document.getElementById(step.element);
+    if (el) el.classList.remove("highlight-target");
+  });
+  document.getElementById("tour-overlay").style.display = "none";
+  localStorage.setItem("sudah_panduan_hari_ini", "true");
+}
 
 async function cekDanResetOtomatisTanggal() {
   const tanggalHariIni = new Date().toISOString().split('T')[0];
@@ -678,7 +828,7 @@ function kompresDanUbahKeBase64(file, maxWidth, quality) {
         const ctx = canvas.getContext("2d");
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0, width, height);
+        ctx.drawImage(img, (width - width)/2, 0, width, height); // Perbaikan posisi render
         resolve(canvas.toDataURL("image/jpeg", quality).split(",")[1]);
       };
       img.onerror = reject;

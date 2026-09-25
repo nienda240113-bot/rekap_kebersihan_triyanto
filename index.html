@@ -174,6 +174,7 @@ select, input[type="file"] {
 .btn-primary { background: var(--primary); }
 .btn-wa { background: var(--whatsapp); font-size: 14px; padding: 15px; }
 .btn-wa:hover { background: var(--whatsapp-hover); }
+.btn:disabled { background: #d9d9d9 !important; cursor: not-allowed; color: #888; }
 
 /* Tombol Bantuan Mengambang */
 .btn-help {
@@ -195,13 +196,12 @@ select, input[type="file"] {
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* Efek Animasi Sorot & Panah Panduan */
+/* Efek Animasi Sorot */
 .highlight-target {
   position: relative;
   z-index: 999;
   box-shadow: 0 0 0 4px #1677ff, 0 0 15px rgba(22, 119, 255, 0.6) !important;
   border-radius: 8px;
-  transition: all 0.3s ease;
   background: #fff !important;
 }
 
@@ -258,13 +258,13 @@ select, input[type="file"] {
 <div class="box">
   <button class="btn-help" onclick="mulaiPanduan()" title="Panduan Aplikasi">?</button>
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
-  <div class="sub-desc">Min 1 & Max 6 Foto | Auto-Reset Harian & Real-Time Sync.</div>
+  <div class="sub-desc">Panduan Ketat & Validasi Berurutan Sesuai SOP.</div>
 
   <!-- Form Upload Toko -->
   <div id="step-1-container">
-    <label for="toko">Pilih Toko untuk Upload Foto</label>
-    <select id="toko" onchange="simpanPilihanToko()">
-      <option value="">-- Pilih Toko --</option>
+    <label for="toko">1️⃣ Pilih Toko untuk Upload Foto</label>
+    <select id="toko" onchange="validasiPilihToko()">
+      <option value="">-- Pilih Toko Terlebih Dahulu --</option>
       <option value="C624|RWBT">1. C624 / RWBT</option>
       <option value="C560|RAJ">2. C560 / RAJ</option>
       <option value="CH81|CDKS">3. CH81 / CDKS</option>
@@ -289,19 +289,19 @@ select, input[type="file"] {
   </div>
 
   <div id="step-2-container">
-    <label for="foto">Pilih Foto (Minimal 1, Maksimal 6 Foto)</label>
-    <input type="file" id="foto" accept="image/*" multiple>
+    <label for="foto">2️⃣ Pilih Foto (Minimal 1, Maksimal 6 Foto)</label>
+    <input type="file" id="foto" accept="image/*" multiple disabled onchange="validasiPilihFoto()">
   </div>
 
   <div id="preview-upload"></div>
   <div id="status"></div>
 
   <div id="step-3-container">
-    <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:12px;">⚡ UPLOAD KILAT & GENERATE GRID</button>
+    <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:12px;" disabled>⚡ 3️⃣ UPLOAD KILAT & GENERATE GRID</button>
   </div>
 
   <div class="action-buttons" style="margin-top: 12px;" id="step-4-container">
-    <button class="btn btn-wa" onclick="shareMasterGridDirectly()">💬 Kirim Grid Ultra HD ke WhatsApp</button>
+    <button class="btn btn-wa" onclick="shareMasterGridDirectly()">💬 4️⃣ Kirim Grid Ultra HD ke WhatsApp</button>
   </div>
 
   <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
@@ -350,23 +350,81 @@ const listTokoData = [
 
 window.addEventListener("DOMContentLoaded", () => {
   const savedToko = localStorage.getItem("last_selected_toko");
-  if (savedToko) document.getElementById("toko").value = savedToko;
+  if (savedToko) {
+    document.getElementById("toko").value = savedToko;
+    document.getElementById("foto").disabled = false; // Buka tahap 2 jika toko sudah terpilih
+  }
   
   cekDanResetOtomatisTanggal();
-
-  // Munculkan panduan otomatis jika baru pertama kali buka hari ini
-  if (!localStorage.getItem("sudah_panduan_hari_ini")) {
-    setTimeout(mulaiPanduan, 1000);
-  }
 });
+
+// VALIDASI TAHAP 1: PILIH TOKO
+function validasiPilihToko() {
+  const val = document.getElementById("toko").value;
+  const inputFoto = document.getElementById("foto");
+  
+  if (!val) {
+    inputFoto.disabled = true;
+    tampilStatus("⚠️ PERHATIAN: Silakan pilih Nama Toko terlebih dahulu pada Langkah 1!", "error");
+  } else {
+    inputFoto.disabled = false;
+    localStorage.setItem("last_selected_toko", val);
+    tampilStatus("✅ Toko terpilih. Silakan lanjutkan ke Langkah 2: Pilih Foto (Min 1, Max 6).", "success");
+    setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
+  }
+}
+
+// VALIDASI TAHAP 2: PILIH FOTO
+function validasiPilihFoto() {
+  const tokoVal = document.getElementById("toko").value;
+  const inputFoto = document.getElementById("foto");
+  const btnUpload = document.getElementById("btn-upload");
+  const preview = document.getElementById("preview-upload");
+  preview.innerHTML = "";
+
+  if (!tokoVal) {
+    tampilStatus("❌ ERROR: Anda belum memilih Toko! Silakan pilih Toko di Langkah 1.", "error");
+    inputFoto.value = "";
+    inputFoto.disabled = true;
+    return;
+  }
+
+  const jumlahFile = inputFoto.files.length;
+  if (jumlahFile < 1) {
+    btnUpload.disabled = true;
+    tampilStatus("⚠️ Peringatan: Pilih minimal 1 foto!", "error");
+    return;
+  }
+  if (jumlahFile > 6) {
+    btnUpload.disabled = true;
+    tampilStatus("❌ Peringatan: Maksimal hanya boleh 6 foto! Silakan ulangi pilihan foto.", "error");
+    inputFoto.value = "";
+    return;
+  }
+
+  // Jika lolos validasi langkah 1 & 2
+  btnUpload.disabled = false;
+  tampilStatus("✅ Foto sesuai ketentuan (1-6 foto). Silakan tekan tombol Upload Kilat di Langkah 3.", "success");
+  setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2500);
+
+  for (const file of inputFoto.files) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = document.createElement("img");
+      img.src = e.target.result;
+      preview.appendChild(img);
+    }
+    reader.readAsDataURL(file);
+  }
+}
 
 // Sistem Tour Guide Animasi
 let currentStep = 0;
 const tourSteps = [
-  { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Ketuk menu pilihan ini dan cari atau pilih nama/kode toko Anda sebelum mengupload foto." },
-  { element: "step-2-container", title: "Langkah 2: Pilih Foto 📷", text: "Pilih foto aktivitas/rak toko Anda. Ketentuan: Minimal 1 foto dan Maksimal 6 foto." },
-  { element: "step-3-container", title: "Langkah 3: Upload Kilat ⚡", text: "Ketuk tombol ini untuk memproses dan mengupload foto secara instan ke Cloud & Server pusat." },
-  { element: "step-4-container", title: "Langkah 4: Kirim ke WhatsApp 💬", text: "Setelah semua toko lengkap, ketuk tombol hijau ini untuk membagikan rekap Master Grid Ultra HD ke grup WhatsApp!" }
+  { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Wajib pilih toko terlebih dahulu! Jika belum dipilih, kotak pilih foto akan terkunci." },
+  { element: "step-2-container", title: "Langkah 2: Pilih Foto 📷", text: "Pilih 1 sampai 6 foto aktivitas toko. Tombol upload akan terkunci jika foto kurang atau lebih." },
+  { element: "step-3-container", title: "Langkah 3: Upload Kilat ⚡", text: "Ketuk untuk mengirim foto ke Cloud. Setelah sukses, grid toko di bawah akan otomatis terisi." },
+  { element: "step-4-container", title: "Langkah 4: Kirim ke WhatsApp 💬", text: "Jika seluruh toko sudah lengkap terisi, ketuk tombol hijau ini untuk membagikan rekap ke WhatsApp." }
 ];
 
 function mulaiPanduan() {
@@ -376,7 +434,6 @@ function mulaiPanduan() {
 }
 
 function tampilLangkahTour() {
-  // Bersihkan highlight sebelumnya
   tourSteps.forEach(step => {
     const el = document.getElementById(step.element);
     if (el) el.classList.remove("highlight-target");
@@ -384,7 +441,6 @@ function tampilLangkahTour() {
 
   if (currentStep >= tourSteps.length) {
     tutupPanduan();
-    localStorage.setItem("sudah_panduan_hari_ini", "true");
     return;
   }
 
@@ -399,11 +455,7 @@ function tampilLangkahTour() {
   document.getElementById("tour-text").textContent = step.text;
   
   const nextBtn = document.getElementById("tour-next-btn");
-  if (currentStep === tourSteps.length - 1) {
-    nextBtn.textContent = "Selesai ✓";
-  } else {
-    nextBtn.textContent = "Lanjut ➔";
-  }
+  nextBtn.textContent = (currentStep === tourSteps.length - 1) ? "Selesai ✓" : "Lanjut ➔";
 }
 
 function lanjutPanduan() {
@@ -417,7 +469,6 @@ function tutupPanduan() {
     if (el) el.classList.remove("highlight-target");
   });
   document.getElementById("tour-overlay").style.display = "none";
-  localStorage.setItem("sudah_panduan_hari_ini", "true");
 }
 
 async function cekDanResetOtomatisTanggal() {
@@ -467,11 +518,6 @@ async function sinkronisasiDataServer() {
     console.error("Sinkronisasi gagal:", error);
     renderGridVisual();
   }
-}
-
-function simpanPilihanToko() {
-  const val = document.getElementById("toko").value;
-  if (val) localStorage.setItem("last_selected_toko", val);
 }
 
 async function buatKolaseThumbnail(base64List) {
@@ -704,42 +750,19 @@ function downloadMasterGridFallback(dataUrl) {
   tampilStatus("⚠️ Gambar terunduh. Silakan kirim ke WA beserta teks rekap.", "success");
 }
 
-document.getElementById("foto").addEventListener("change", function() {
-  const preview = document.getElementById("preview-upload");
-  preview.innerHTML = "";
-  
-  if (this.files.length < 1) {
-    tampilStatus("⚠️ Minimal pilih 1 foto!", "error");
-    return;
-  }
-  if (this.files.length > 6) {
-    tampilStatus("⚠️ Maksimal pilih 6 foto!", "error");
-    this.value = "";
-    return;
-  }
-  
-  tampilStatus("", "info");
-  document.getElementById("status").style.display = "none";
-
-  for (const file of this.files) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const img = document.createElement("img");
-      img.src = e.target.result;
-      preview.appendChild(img);
-    }
-    reader.readAsDataURL(file);
-  }
-});
-
 async function kirimFoto() {
   const tokoVal = document.getElementById("toko").value;
   const files = document.getElementById("foto").files;
   const tombol = document.getElementById("btn-upload");
 
-  if (!tokoVal) { tampilStatus("⚠️ Pilih toko terlebih dahulu", "error"); return; }
-  if (files.length < 1) { tampilStatus("⚠️ Minimal harus memilih 1 foto!", "error"); return; }
-  if (files.length > 6) { tampilStatus("⚠️ Maksimal hanya boleh memilih 6 foto!", "error"); return; }
+  if (!tokoVal) { 
+    tampilStatus("❌ PERINGATAN: Langkah 1 belum dikerjakan! Pilih Toko terlebih dahulu.", "error"); 
+    return; 
+  }
+  if (files.length < 1 || files.length > 6) { 
+    tampilStatus("❌ PERINGATAN: Langkah 2 tidak sesuai! Pilih minimal 1 dan maksimal 6 foto.", "error"); 
+    return; 
+  }
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
@@ -805,6 +828,7 @@ async function kirimFoto() {
     renderGridVisual();
     document.getElementById("foto").value = "";
     document.getElementById("preview-upload").innerHTML = "";
+    document.getElementById("btn-upload").disabled = true; // Kunci kembali sampai pilih toko/foto baru
   } else {
     tampilStatus(`⚠️ Berhasil: ${sukses} | Gagal: ${gagal}`, "error");
   }
@@ -828,7 +852,7 @@ function kompresDanUbahKeBase64(file, maxWidth, quality) {
         const ctx = canvas.getContext("2d");
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, (width - width)/2, 0, width, height); // Perbaikan posisi render
+        ctx.drawImage(img, 0, 0, width, height);
         resolve(canvas.toDataURL("image/jpeg", quality).split(",")[1]);
       };
       img.onerror = reject;

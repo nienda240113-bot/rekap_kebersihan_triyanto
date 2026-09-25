@@ -258,7 +258,7 @@ select, input[type="file"] {
 <div class="box">
   <button class="btn-help" onclick="mulaiPanduan()" title="Panduan Aplikasi">?</button>
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
-  <div class="sub-desc">Panduan Ketat & Validasi Berurutan Sesuai SOP.</div>
+  <div class="sub-desc">Panduan SOP Ketat & Validasi Berurutan.</div>
 
   <!-- Form Upload Toko -->
   <div id="step-1-container">
@@ -301,7 +301,7 @@ select, input[type="file"] {
   </div>
 
   <div class="action-buttons" style="margin-top: 12px;" id="step-4-container">
-    <button class="btn btn-wa" onclick="shareMasterGridDirectly()">💬 4️⃣ Kirim Grid Ultra HD ke WhatsApp</button>
+    <button class="btn btn-wa" onclick="shareMasterGridDirectly()" id="btn-wa" disabled>💬 4️⃣ Kirim Grid Ultra HD ke WhatsApp</button>
   </div>
 
   <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
@@ -352,7 +352,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const savedToko = localStorage.getItem("last_selected_toko");
   if (savedToko) {
     document.getElementById("toko").value = savedToko;
-    document.getElementById("foto").disabled = false; // Buka tahap 2 jika toko sudah terpilih
+    document.getElementById("foto").disabled = false;
   }
   
   cekDanResetOtomatisTanggal();
@@ -402,7 +402,6 @@ function validasiPilihFoto() {
     return;
   }
 
-  // Jika lolos validasi langkah 1 & 2
   btnUpload.disabled = false;
   tampilStatus("✅ Foto sesuai ketentuan (1-6 foto). Silakan tekan tombol Upload Kilat di Langkah 3.", "success");
   setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2500);
@@ -423,8 +422,8 @@ let currentStep = 0;
 const tourSteps = [
   { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Wajib pilih toko terlebih dahulu! Jika belum dipilih, kotak pilih foto akan terkunci." },
   { element: "step-2-container", title: "Langkah 2: Pilih Foto 📷", text: "Pilih 1 sampai 6 foto aktivitas toko. Tombol upload akan terkunci jika foto kurang atau lebih." },
-  { element: "step-3-container", title: "Langkah 3: Upload Kilat ⚡", text: "Ketuk untuk mengirim foto ke Cloud. Setelah sukses, grid toko di bawah akan otomatis terisi." },
-  { element: "step-4-container", title: "Langkah 4: Kirim ke WhatsApp 💬", text: "Jika seluruh toko sudah lengkap terisi, ketuk tombol hijau ini untuk membagikan rekap ke WhatsApp." }
+  { element: "step-3-container", title: "Langkah 3: Upload Kilat ⚡", text: "Ketuk untuk mengirim foto ke Cloud. Setelah sukses, grid toko di bawah akan otomatis terisi dan membuka Langkah 4." },
+  { element: "step-4-container", title: "Langkah 4: Kirim ke WhatsApp 💬", text: "Tombol ini terkunci dan baru bisa diklik setelah proses upload foto di Langkah 3 selesai!" }
 ];
 
 function mulaiPanduan() {
@@ -622,6 +621,13 @@ function renderGridVisual() {
 
   const progress = Math.round((totalSudah / 20) * 100);
 
+  // Jika ada setidaknya 1 toko yang sudah terkirim/upload, aktifkan tombol Langkah 4 (Kirim WA)
+  if (totalSudah > 0) {
+    document.getElementById("btn-wa").disabled = false;
+  } else {
+    document.getElementById("btn-wa").disabled = true;
+  }
+
   document.getElementById("st-total").textContent = "20";
   document.getElementById("st-sudah").textContent = totalSudah;
   document.getElementById("st-belum").textContent = 20 - totalSudah;
@@ -715,6 +721,12 @@ function gambarKotakKosongUltra(ctx, toko, x, y, itemWidth) {
 }
 
 async function shareMasterGridDirectly() {
+  const btnWa = document.getElementById("btn-wa");
+  if (btnWa.disabled) {
+    tampilStatus("❌ PEMBERITAHUAN: Tombol kirim WhatsApp terkunci! Selesaikan minimal 1 upload toko terlebih dahulu.", "error");
+    return;
+  }
+
   tampilStatus("⏳ Merakit Master Grid Ultra HD...", "info");
   const dataUrl = await buatMasterGridImageUltraHD();
 
@@ -815,7 +827,7 @@ async function kirimFoto() {
   tombol.disabled = false;
 
   if (gagal === 0) {
-    tampilStatus(`✅ Sukses! ${sukses} Foto berhasil di-upload kilat ke Cloud.`, "success");
+    tampilStatus(`✅ Sukses! ${sukses} Foto berhasil di-upload kilat ke Cloud. Langkah 4 Terbuka!`, "success");
     
     const finalCollage = await buatKolaseThumbnail(base64Collection);
     localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
@@ -828,7 +840,7 @@ async function kirimFoto() {
     renderGridVisual();
     document.getElementById("foto").value = "";
     document.getElementById("preview-upload").innerHTML = "";
-    document.getElementById("btn-upload").disabled = true; // Kunci kembali sampai pilih toko/foto baru
+    document.getElementById("btn-upload").disabled = true;
   } else {
     tampilStatus(`⚠️ Berhasil: ${sukses} | Gagal: ${gagal}`, "error");
   }

@@ -11,8 +11,6 @@
   --primary: #1677ff;
   --whatsapp: #25d366;
   --whatsapp-hover: #1ebe5d;
-  --danger: #ff4d4f;
-  --danger-hover: #d9363e;
   --bg-color: #f5f7fa;
   --card-bg: #ffffff;
   --text-main: #333333;
@@ -171,11 +169,9 @@ select, input[type="file"] {
   gap: 6px;
   color: white;
 }
-.btn-primary { background: #1677ff; }
+.btn-primary { background: var(--primary); }
 .btn-wa { background: var(--whatsapp); font-size: 14px; padding: 15px; }
 .btn-wa:hover { background: var(--whatsapp-hover); }
-.btn-danger { background: var(--danger); }
-.btn-danger:hover { background: var(--danger-hover); }
 
 #status {
   margin-top: 10px;
@@ -195,7 +191,7 @@ select, input[type="file"] {
 
 <div class="box">
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
-  <div class="sub-desc">Sinkronisasi Real-Time & Real-Time Reset Laporan 20 Toko.</div>
+  <div class="sub-desc">Min 2 & Max 8 Foto | Auto-Reset Harian & Real-Time Sync.</div>
 
   <!-- Form Upload Toko -->
   <label for="toko">Pilih Toko untuk Upload Foto</label>
@@ -223,7 +219,7 @@ select, input[type="file"] {
     <option value="CI84|TLKW">20. CI84 / TLKW</option>
   </select>
 
-  <label for="foto">Pilih Foto (Bisa Banyak Sekaligus)</label>
+  <label for="foto">Pilih Foto (Minimal 2, Maksimal 8 Foto)</label>
   <input type="file" id="foto" accept="image/*" multiple>
 
   <div id="preview-upload"></div>
@@ -233,7 +229,6 @@ select, input[type="file"] {
 
   <div class="action-buttons" style="margin-top: 12px;">
     <button class="btn btn-wa" onclick="shareMasterGridDirectly()">💬 Kirim Grid Ultra HD ke WhatsApp</button>
-    <button class="btn btn-danger" onclick="resetSemuaGridRealtime()">🗑️ Reset / Hapus Semua Grid (Real-Time)</button>
   </div>
 
   <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
@@ -272,9 +267,36 @@ window.addEventListener("DOMContentLoaded", () => {
   const savedToko = localStorage.getItem("last_selected_toko");
   if (savedToko) document.getElementById("toko").value = savedToko;
   
-  // Sinkronisasi data real-time dengan server Google Sheet saat pertama kali dibuka
-  sinkronisasiDataServer();
+  // Periksa pergantian hari secara otomatis
+  cekDanResetOtomatisTanggal();
 });
+
+// Cek tanggal aktif: Jika hari sudah berganti, data lokal & server otomatis dibersihkan
+async function cekDanResetOtomatisTanggal() {
+  const tanggalHariIni = new Date().toISOString().split('T')[0];
+  const tanggalTersimpan = localStorage.getItem("app_tanggal_aktif");
+
+  if (tanggalTersimpan !== tanggalHariIni) {
+    // Hari baru terdeteksi! Bersihkan penyimpanan lokal
+    listTokoData.forEach(toko => {
+      localStorage.removeItem(`upload_${toko.kode}`);
+    });
+    localStorage.setItem("app_tanggal_aktif", tanggalHariIni);
+
+    // Kirim sinyal reset otomatis ke server pusat agar data kemarin ikut bersih
+    try {
+      await fetch(API, {
+        method: "POST",
+        body: JSON.stringify({ action: "reset" })
+      });
+    } catch (err) {
+      console.error("Gagal reset otomatis ke server:", err);
+    }
+  }
+
+  // Lanjutkan sinkronisasi data real-time hari ini
+  sinkronisasiDataServer();
+}
 
 async function sinkronisasiDataServer() {
   tampilStatus("⏳ Menyinkronkan data real-time...", "info");
@@ -282,8 +304,6 @@ async function sinkronisasiDataServer() {
     const response = await fetch(API);
     const result = await response.json();
     if (result.status === "success") {
-      listTokoData.forEach(toko => localStorage.removeItem(`upload_${toko.kode}`));
-
       if (result.data && result.data.length > 0) {
         result.data.forEach(item => {
           localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
@@ -301,29 +321,6 @@ async function sinkronisasiDataServer() {
   } catch (error) {
     console.error("Sinkronisasi gagal:", error);
     renderGridVisual();
-  }
-}
-
-async function resetSemuaGridRealtime() {
-  if (confirm("⚠️ Yakin ingin menghapus seluruh data grid hari ini secara real-time di semua perangkat?")) {
-    tampilStatus("🗑️ Mengosongkan data di server pusat...", "info");
-    
-    listTokoData.forEach(toko => {
-      localStorage.removeItem(`upload_${toko.kode}`);
-    });
-
-    try {
-      await fetch(API, {
-        method: "POST",
-        body: JSON.stringify({ action: "reset" })
-      });
-    } catch (err) {
-      console.error(err);
-    }
-
-    renderGridVisual();
-    tampilStatus("✅ Semua data grid berhasil dikosongkan secara real-time.", "success");
-    setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
 }
 
@@ -446,7 +443,7 @@ function renderGridVisual() {
     `📦 Sudah Kirim : ${totalSudah}\n` +
     `❌ Belum Kirim : ${20 - totalSudah}\n` +
     `✅ Lengkap : ${totalSudah}\n` +
-    `⚠️ Belum 3 Foto : 0\n` +
+    `⚠️ Belum Sesuai : 0\n` +
     `📷 Total Foto : ${totalFoto}\n` +
     `📈 Progress : ${progress}%\n\n` +
     `━━━━━━━━━━━━━━━\n` +
@@ -565,6 +562,20 @@ function downloadMasterGridFallback(dataUrl) {
 document.getElementById("foto").addEventListener("change", function() {
   const preview = document.getElementById("preview-upload");
   preview.innerHTML = "";
+  
+  if (this.files.length < 2) {
+    tampilStatus("⚠️ Minimal pilih 2 foto!", "error");
+    return;
+  }
+  if (this.files.length > 8) {
+    tampilStatus("⚠️ Maksimal pilih 8 foto!", "error");
+    this.value = "";
+    return;
+  }
+  
+  tampilStatus("", "info");
+  document.getElementById("status").style.display = "none";
+
   for (const file of this.files) {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -582,7 +593,8 @@ async function kirimFoto() {
   const tombol = document.getElementById("btn-upload");
 
   if (!tokoVal) { tampilStatus("⚠️ Pilih toko terlebih dahulu", "error"); return; }
-  if (files.length === 0) { tampilStatus("⚠️ Pilih foto terlebih dahulu", "error"); return; }
+  if (files.length < 2) { tampilStatus("⚠️ Minimal harus memilih 2 foto!", "error"); return; }
+  if (files.length > 8) { tampilStatus("⚠️ Maksimal hanya boleh memilih 8 foto!", "error"); return; }
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;

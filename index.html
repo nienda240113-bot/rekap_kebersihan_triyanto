@@ -11,6 +11,8 @@
   --primary: #1677ff;
   --whatsapp: #25d366;
   --whatsapp-hover: #1ebe5d;
+  --danger: #ff4d4f;
+  --danger-hover: #d9363e;
   --bg-color: #f5f7fa;
   --card-bg: #ffffff;
   --text-main: #333333;
@@ -174,6 +176,8 @@ select, input[type="file"] {
 .btn-primary { background: var(--primary); }
 .btn-wa { background: var(--whatsapp); font-size: 14px; padding: 15px; }
 .btn-wa:hover { background: var(--whatsapp-hover); }
+.btn-danger { background: var(--danger); font-size: 12px; padding: 12px; margin-top: 20px; width: 100%; }
+.btn-danger:hover { background: var(--danger-hover); }
 .btn:disabled { background: #d9d9d9 !important; cursor: not-allowed; color: #888; }
 
 /* Tombol Bantuan Mengambang */
@@ -318,6 +322,9 @@ select, input[type="file"] {
   <div class="grid-preview-box">
     <div id="grid-visual-20" class="grid-20-preview"></div>
   </div>
+
+  <!-- Tombol Hapus Hasil Upload (Di Bagian Paling Bawah Layar) -->
+  <button class="btn btn-danger" onclick="resetSemuaGridRealtime()">🗑️ Reset / Hapus Semua Hasil Upload Hari Ini</button>
 </div>
 
 <!-- Overlay Panduan Interaktif -->
@@ -414,6 +421,30 @@ function validasiPilihFoto() {
       preview.appendChild(img);
     }
     reader.readAsDataURL(file);
+  }
+}
+
+// FUNGSI RESET / HAPUS SEMUA GRID REAL-TIME
+async function resetSemuaGridRealtime() {
+  if (confirm("⚠️ Yakin ingin menghapus seluruh data hasil upload hari ini secara real-time di semua perangkat?")) {
+    tampilStatus("🗑️ Mengosongkan data di server pusat...", "info");
+    
+    listTokoData.forEach(toko => {
+      localStorage.removeItem(`upload_${toko.kode}`);
+    });
+
+    try {
+      await fetch(API, {
+        method: "POST",
+        body: JSON.stringify({ action: "reset" })
+      });
+    } catch (err) {
+      console.error(err);
+    }
+
+    renderGridVisual();
+    tampilStatus("✅ Semua data grid berhasil dikosongkan secara real-time.", "success");
+    setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
 }
 
@@ -621,7 +652,6 @@ function renderGridVisual() {
 
   const progress = Math.round((totalSudah / 20) * 100);
 
-  // Jika ada setidaknya 1 toko yang sudah terkirim/upload, aktifkan tombol Langkah 4 (Kirim WA)
   if (totalSudah > 0) {
     document.getElementById("btn-wa").disabled = false;
   } else {

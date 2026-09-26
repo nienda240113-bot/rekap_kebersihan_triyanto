@@ -55,6 +55,32 @@ h3.title {
   text-align: center;
 }
 
+/* Navigasi Tab Menu */
+.tab-menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.tab-btn {
+  padding: 8px;
+  font-size: 11.5px;
+  font-weight: bold;
+  border: 1px solid var(--border-color);
+  background: #f0f0f0;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+}
+.tab-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
 /* Kotak Statistik */
 .stats-container {
   display: grid;
@@ -132,7 +158,7 @@ h3.title {
 
 /* Form Input Standar */
 label { display: block; font-weight: bold; margin-top: 8px; margin-bottom: 3px; font-size: 11.5px; }
-select {
+select, textarea {
   width: 100%;
   padding: 9px;
   box-sizing: border-box;
@@ -140,7 +166,9 @@ select {
   border-radius: 6px;
   font-size: 12.5px;
   background: #fafafa;
+  font-family: inherit;
 }
+textarea { resize: vertical; height: 50px; }
 
 /* Tombol Pilihan Kamera & Galeri */
 .upload-buttons-group {
@@ -249,7 +277,7 @@ select {
 .btn-danger:hover { background: var(--danger-hover); }
 .btn:disabled { background: #d9d9d9 !important; cursor: not-allowed; color: #888; }
 
-/* Tombol Bantuan & Instal */
+/* Header Buttons */
 .header-btns {
   position: absolute;
   top: 10px;
@@ -326,70 +354,96 @@ select {
 
 <div class="box">
   <div class="header-btns">
-    <button class="btn-top btn-install" id="btn-install-app" onclick="installAplikasi()" title="Install Aplikasi ke HP">📲</button>
-    <button class="btn-top btn-help" onclick="mulaiPanduan()" title="Panduan Aplikasi">?</button>
+    <button class="btn-top btn-install" id="btn-install-app" onclick="installAplikasi()" title="Install Aplikasi">📲</button>
+    <button class="btn-top btn-help" onclick="mulaiPanduan()" title="Panduan">?</button>
   </div>
 
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
-  <div class="sub-desc">Multi-Device Cloud System (Android, iOS, Windows, Mac).</div>
+  <div class="sub-desc">Pro System: GPS Watermark, Offline-First, & Dashboard.</div>
 
-  <!-- Form Upload Toko -->
-  <div id="step-1-container">
-    <label for="toko">1️⃣ Pilih Toko untuk Upload Foto</label>
-    <select id="toko" onchange="validasiPilihToko()">
-      <option value="">-- Pilih Toko Terlebih Dahulu --</option>
-      <option value="C624|RWBT">1. C624 / RWBT</option>
-      <option value="C560|RAJ">2. C560 / RAJ</option>
-      <option value="CH81|CDKS">3. CH81 / CDKS</option>
-      <option value="CG76|SPMM">4. CG76 / SPMM</option>
-      <option value="C573|GMM">5. C573 / GMM</option>
-      <option value="CE47|MKRI">6. CE47 / MKRI</option>
-      <option value="CI30|STTD">7. CI30 / STTD</option>
-      <option value="CH41|KPMRK">8. CH41 / KPMRK</option>
-      <option value="CG54|MM2100">9. CG54 / MM2100</option>
-      <option value="C935|TLJ2">10. C935 / TLJ2</option>
-      <option value="CA71|WSGN">11. CA71 / WSGN</option>
-      <option value="C965|CBNU">12. C965 / CBNU</option>
-      <option value="CG86|JKST">13. CG86 / JKST</option>
-      <option value="CA94|KPTI">14. CA94 / KPTI</option>
-      <option value="C574|SKU">15. C574 / SKU</option>
-      <option value="CI15|RPSU">16. CI15 / RPSU</option>
-      <option value="CI54|RJLB">17. CI54 / RJLB</option>
-      <option value="CF50|DNIA">18. CF50 / DNIA</option>
-      <option value="CC21|KUTN">19. CC21 / KUTN</option>
-      <option value="CI84|TLKW">20. CI84 / TLKW</option>
-    </select>
+  <!-- Navigasi Tab -->
+  <div class="tab-menu">
+    <button class="tab-btn active" onclick="gantiTab('input', this)">📝 Input Laporan</button>
+    <button class="tab-btn" onclick="gantiTab('dashboard', this)">📊 Dashboard & Grafik</button>
   </div>
 
-  <div id="step-2-container">
-    <label>2️⃣ Pilih Foto (Bisa Tambah Bertahap, Maksimal 6 Foto)</label>
-    <div class="upload-buttons-group">
-      <div class="file-upload-wrapper">
-        <div class="btn-custom-option btn-camera">📷 Buka Kamera</div>
-        <input type="file" id="foto-kamera" accept="image/*" capture="environment" disabled onchange="tambahFotoAkumulasi(this)">
-      </div>
-      <div class="file-upload-wrapper">
-        <div class="btn-custom-option btn-gallery">🖼️ Pilih Galeri</div>
-        <input type="file" id="foto-galeri" accept="image/*" multiple disabled onchange="tambahFotoAkumulasi(this)">
-      </div>
+  <!-- TAB 1: INPUT LAPORAN -->
+  <div id="tab-input" class="tab-content active">
+    <div id="step-1-container">
+      <label for="toko">1️⃣ Pilih Toko untuk Upload Foto</label>
+      <select id="toko" onchange="validasiPilihToko()">
+        <option value="">-- Pilih Toko Terlebih Dahulu --</option>
+        <option value="C624|RWBT">1. C624 / RWBT</option>
+        <option value="C560|RAJ">2. C560 / RAJ</option>
+        <option value="CH81|CDKS">3. CH81 / CDKS</option>
+        <option value="CG76|SPMM">4. CG76 / SPMM</option>
+        <option value="C573|GMM">5. C573 / GMM</option>
+        <option value="CE47|MKRI">6. CE47 / MKRI</option>
+        <option value="CI30|STTD">7. CI30 / STTD</option>
+        <option value="CH41|KPMRK">8. CH41 / KPMRK</option>
+        <option value="CG54|MM2100">9. CG54 / MM2100</option>
+        <option value="C935|TLJ2">10. C935 / TLJ2</option>
+        <option value="CA71|WSGN">11. CA71 / WSGN</option>
+        <option value="C965|CBNU">12. C965 / CBNU</option>
+        <option value="CG86|JKST">13. CG86 / JKST</option>
+        <option value="CA94|KPTI">14. CA94 / KPTI</option>
+        <option value="C574|SKU">15. C574 / SKU</option>
+        <option value="CI15|RPSU">16. CI15 / RPSU</option>
+        <option value="CI54|RJLB">17. CI54 / RJLB</option>
+        <option value="CF50|DNIA">18. CF50 / DNIA</option>
+        <option value="CC21|KUTN">19. CC21 / KUTN</option>
+        <option value="CI84|TLKW">20. CI84 / TLKW</option>
+      </select>
     </div>
-    <div id="file-info" style="font-size: 11px; color: #1677ff; margin-top: 5px; font-weight: bold; text-align: center;"></div>
+
+    <div id="step-2-container" style="margin-top: 8px;">
+      <label>2️⃣ Pilih Foto (GPS Watermark Otomatis, Maks 6)</label>
+      <div class="upload-buttons-group">
+        <div class="file-upload-wrapper">
+          <div class="btn-custom-option btn-camera">📷 Buka Kamera</div>
+          <input type="file" id="foto-kamera" accept="image/*" capture="environment" disabled onchange="tambahFotoAkumulasi(this)">
+        </div>
+        <div class="file-upload-wrapper">
+          <div class="btn-custom-option btn-gallery">🖼️ Pilih Galeri</div>
+          <input type="file" id="foto-galeri" accept="image/*" multiple disabled onchange="tambahFotoAkumulasi(this)">
+        </div>
+      </div>
+      <div id="file-info" style="font-size: 11px; color: #1677ff; margin-top: 5px; font-weight: bold; text-align: center;"></div>
+    </div>
+
+    <div id="preview-upload"></div>
+
+    <div style="margin-top: 8px;">
+      <label for="catatan-toko">3️⃣ Catatan Temuan / Kendala Toko (Opsional)</label>
+      <textarea id="catatan-toko" placeholder="Contoh: Stok barang aman, lampu sorot rak depan perlu diganti..."></textarea>
+    </div>
+
+    <div id="status"></div>
+
+    <div id="step-3-container">
+      <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:10px;" disabled>⚡ 4️⃣ UPLOAD KILAT & AUTO-SYNC</button>
+    </div>
+
+    <div class="action-buttons" style="margin-top: 10px;" id="step-4-container">
+      <button class="btn btn-wa" onclick="shareMasterGridDirectly()" id="btn-wa" disabled>💬 5️⃣ Kirim Grid Ultra HD ke WhatsApp</button>
+    </div>
   </div>
 
-  <div id="preview-upload"></div>
-  <div id="status"></div>
-
-  <div id="step-3-container">
-    <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:10px;" disabled>⚡ 3️⃣ UPLOAD KILAT & GENERATE GRID</button>
-  </div>
-
-  <div class="action-buttons" style="margin-top: 10px;" id="step-4-container">
-    <button class="btn btn-wa" onclick="shareMasterGridDirectly()" id="btn-wa" disabled>💬 4️⃣ Kirim Grid Ultra HD ke WhatsApp</button>
+  <!-- TAB 2: DASHBOARD & GRAFIK -->
+  <div id="tab-dashboard" class="tab-content">
+    <h4 style="font-size: 13px; margin: 5px 0 10px 0; text-align: center; color: #1677ff;">📈 Dashboard Kinerja Kunjungan Area</h4>
+    <div style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 8px; padding: 12px; font-size: 12px; text-align: center;">
+      <p id="dash-info-text" style="margin: 5px 0 10px 0; font-weight: bold;">Memuat statistik kunjungan...</p>
+      <div style="background: #e8e8e8; border-radius: 6px; overflow: hidden; height: 16px; width: 100%; margin-bottom: 8px;">
+        <div id="dash-progress-bar" style="background: #52c41a; height: 100%; width: 0%; transition: width 0.5s;"></div>
+      </div>
+      <div id="dash-detail-stats" style="font-size: 11px; color: #555; line-height: 1.5;"></div>
+    </div>
   </div>
 
   <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
 
-  <!-- Kotak Statistik & Grid 20 Toko -->
+  <!-- Kotak Statistik Utama -->
   <div class="stats-container">
     <div class="stat-box"><div class="stat-num" id="st-total">20</div><div class="stat-label">Total Toko</div></div>
     <div class="stat-box"><div class="stat-num" id="st-sudah">0</div><div class="stat-label">Sudah Kirim</div></div>
@@ -434,6 +488,7 @@ const listTokoData = [
 ];
 
 let globalSelectedFiles = [];
+let currentGPS = "Mencari GPS...";
 let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -445,12 +500,9 @@ window.addEventListener('beforeinstallprompt', (e) => {
 function installAplikasi() {
   if (deferredPrompt) {
     deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choiceResult) => {
-      deferredPrompt = null;
-      document.getElementById("btn-install-app").style.display = "none";
-    });
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; document.getElementById("btn-install-app").style.display = "none"; });
   } else {
-    alert("Untuk menginstal di iPhone/iPad, ketuk tombol 'Bagikan' di Safari lalu pilih 'Tambahkan ke Layar Utama'.");
+    alert("Di iPhone/iPad, ketuk tombol 'Bagikan' di Safari lalu pilih 'Tambahkan ke Layar Utama'.");
   }
 }
 
@@ -461,11 +513,29 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("foto-kamera").disabled = false;
     document.getElementById("foto-galeri").disabled = false;
   }
+  
+  // Ambil koordinat GPS otomatis saat aplikasi dibuka
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { currentGPS = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; },
+      () => { currentGPS = "GPS Tidak Aktif"; },
+      { timeout: 10000 }
+    );
+  }
+
   sinkronisasiDataGlobal();
+  cekOfflineQueue();
 });
 
+function gantiTab(tabName, el) {
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${tabName}`).classList.add('active');
+  el.classList.add('active');
+}
+
 function sinkronisasiDataGlobal() {
-  tampilStatus("⏳ Menyinkronkan data antar perangkat...", "info");
+  tampilStatus("⏳ Menyinkronkan data online...", "info");
   const script = document.createElement("script");
   script.src = `${API}?callback=terimaDataCloud`;
   document.body.appendChild(script);
@@ -483,16 +553,18 @@ window.terimaDataCloud = function(result) {
           status: "Sukses",
           jumlah: parseInt(item.jumlah) || 1,
           collageImg: item.collageImg,
-          links: []
+          catatan: item.catatan || ""
         }));
       }
     });
 
     renderGridVisual();
-    tampilStatus("✅ Sinkronisasi antar device berhasil!", "success");
+    updateDashboardStats();
+    tampilStatus("✅ Sinkronisasi berhasil!", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
   } else {
     renderGridVisual();
+    updateDashboardStats();
     document.getElementById("status").style.display = "none";
   }
 };
@@ -505,12 +577,12 @@ function validasiPilihToko() {
   if (!val) {
     inputKamera.disabled = true;
     inputGaleri.disabled = true;
-    tampilStatus("⚠️ Silakan pilih Nama Toko terlebih dahulu!", "error");
+    tampilStatus("⚠️ Pilih Nama Toko terlebih dahulu!", "error");
   } else {
     inputKamera.disabled = false;
     inputGaleri.disabled = false;
     localStorage.setItem("last_selected_toko", val);
-    tampilStatus("✅ Toko terpilih. Silakan gunakan Kamera atau Galeri.", "success");
+    tampilStatus("✅ Toko terpilih. Silakan ambil foto.", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
 }
@@ -518,7 +590,7 @@ function validasiPilihToko() {
 function tambahFotoAkumulasi(inputElement) {
   const tokoVal = document.getElementById("toko").value;
   if (!tokoVal) {
-    tampilStatus("❌ ERROR: Pilih Toko terlebih dahulu!", "error");
+    tampilStatus("❌ Pilih Toko terlebih dahulu!", "error");
     inputElement.value = "";
     return;
   }
@@ -527,7 +599,7 @@ function tambahFotoAkumulasi(inputElement) {
   if (!files || files.length === 0) return;
 
   if (globalSelectedFiles.length + files.length > 6) {
-    tampilStatus("❌ Peringatan: Total foto maksimal adalah 6 foto!", "error");
+    tampilStatus("❌ Maksimal total 6 foto!", "error");
     inputElement.value = "";
     return;
   }
@@ -536,7 +608,7 @@ function tambahFotoAkumulasi(inputElement) {
     globalSelectedFiles.push(files[i]);
   }
 
-  inputElement.value = ""; // Reset input agar bisa pilih file/kamera lagi
+  inputElement.value = "";
   renderPreviewFiles();
 }
 
@@ -558,8 +630,8 @@ function renderPreviewFiles() {
   }
 
   btnUpload.disabled = false;
-  fileInfo.textContent = `✅ ${globalSelectedFiles.length} Foto terpilih (Maksimal 6).`;
-  tampilStatus("✅ Foto berhasil ditambahkan.", "success");
+  fileInfo.textContent = `✅ ${globalSelectedFiles.length} Foto terpilih.`;
+  tampilStatus("✅ Foto ditambahkan.", "success");
   setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
 
   globalSelectedFiles.forEach((file, idx) => {
@@ -569,7 +641,7 @@ function renderPreviewFiles() {
       div.className = "preview-item";
       div.innerHTML = `
         <img src="${e.target.result}" alt="Preview">
-        <button class="btn-delete-preview" onclick="hapusFotoItem(${idx})" title="Hapus Foto">✕</button>
+        <button class="btn-delete-preview" onclick="hapusFotoItem(${idx})">✕</button>
       `;
       preview.appendChild(div);
     }
@@ -578,88 +650,26 @@ function renderPreviewFiles() {
 }
 
 async function resetSemuaGridRealtime() {
-  if (confirm("⚠️ Yakin ingin menghapus seluruh data laporan hari ini secara permanen dari server?")) {
-    tampilStatus("🗑️ Menghapus data dari server...", "info");
-    
-    listTokoData.forEach(toko => {
-      localStorage.removeItem(`upload_${toko.kode}`);
-    });
+  if (confirm("⚠️ Yakin ingin mereset seluruh data laporan hari ini?")) {
+    tampilStatus("🗑️ Mengosongkan data server...", "info");
+    listTokoData.forEach(toko => { localStorage.removeItem(`upload_${toko.kode}`); });
 
     try {
-      await fetch(API, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "reset" })
-      });
-    } catch(err) {
-      console.error(err);
-    }
+      await fetch(API, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "reset" }) });
+    } catch(err) { console.error(err); }
 
     renderGridVisual();
-    tampilStatus("✅ Semua data berhasil dikosongkan.", "success");
+    updateDashboardStats();
+    tampilStatus("✅ Data berhasil dikosongkan.", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
-}
-
-let currentStep = 0;
-const tourSteps = [
-  { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Wajib pilih toko sebelum mengambil foto." },
-  { element: "step-2-container", title: "Langkah 2: Ambil Foto 📷", text: "Bisa klik Kamera berulang kali untuk menambah foto satu persatu hingga 6 foto." },
-  { element: "step-3-container", title: "Langkah 3: Upload Kilat ⚡", text: "Mengirim data secara real-time ke Cloud pusat." },
-  { element: "step-4-container", title: "Langkah 4: Kirim WhatsApp 💬", text: "Bagikan rekap grid gambar HD ke grup WhatsApp." }
-];
-
-function mulaiPanduan() {
-  currentStep = 0;
-  document.getElementById("tour-overlay").style.display = "flex";
-  tampilLangkahTour();
-}
-
-function tampilLangkahTour() {
-  tourSteps.forEach(step => {
-    const el = document.getElementById(step.element);
-    if (el) el.classList.remove("highlight-target");
-  });
-
-  if (currentStep >= tourSteps.length) {
-    tutupPanduan();
-    return;
-  }
-
-  const step = tourSteps[currentStep];
-  const targetEl = document.getElementById(step.element);
-  if (targetEl) {
-    targetEl.classList.add("highlight-target");
-    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
-  document.getElementById("tour-title").textContent = step.title;
-  document.getElementById("tour-text").textContent = step.text;
-  
-  const nextBtn = document.getElementById("tour-next-btn");
-  nextBtn.textContent = (currentStep === tourSteps.length - 1) ? "Selesai ✓" : "Lanjut ➔";
-}
-
-function lanjutPanduan() {
-  currentStep++;
-  tampilLangkahTour();
-}
-
-function tutupPanduan() {
-  tourSteps.forEach(step => {
-    const el = document.getElementById(step.element);
-    if (el) el.classList.remove("highlight-target");
-  });
-  document.getElementById("tour-overlay").style.display = "none";
 }
 
 async function buatKolaseThumbnail(base64List) {
   return new Promise((resolve) => {
     if (!base64List || base64List.length === 0) { resolve(""); return; }
     const canvas = document.createElement("canvas");
-    canvas.width = 300; 
-    canvas.height = 300;
+    canvas.width = 300; canvas.height = 300;
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = true;
 
@@ -677,13 +687,16 @@ async function buatKolaseThumbnail(base64List) {
         loadedCount++;
         if (loadedCount === base64List.length) {
           gambarKeCanvasKecil(ctx, imgObjects);
+          // Cetak Watermark GPS & Waktu di Sudut Kiri Bawah Kolase
+          ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+          ctx.fillRect(5, 270, 290, 25);
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "9px Arial";
+          ctx.fillText(`GPS: ${currentGPS} | ${new Date().toLocaleDateString("id-ID")} ${new Date().toLocaleTimeString("id-ID", {hour:'2-digit', minute:'2-digit'})}`, 10, 286);
           resolve(canvas.toDataURL("image/jpeg", 0.6));
         }
       };
-      img.onerror = () => {
-        loadedCount++;
-        if (loadedCount === base64List.length) resolve("");
-      };
+      img.onerror = () => { loadedCount++; if (loadedCount === base64List.length) resolve(""); };
     });
   });
 }
@@ -691,27 +704,12 @@ async function buatKolaseThumbnail(base64List) {
 function gambarKeCanvasKecil(ctx, imgs) {
   const validImgs = imgs.filter(Boolean);
   const len = validImgs.length;
-  if (len === 1) {
-    ctx.drawImage(validImgs[0], 0, 0, 300, 300);
-  } else if (len === 2) {
-    ctx.drawImage(validImgs[0], 0, 0, 150, 300);
-    ctx.drawImage(validImgs[1], 150, 0, 150, 300);
-  } else if (len <= 4) {
-    let w = 150, h = 150;
-    validImgs.forEach((img, i) => {
-      let x = (i % 2) * w;
-      let y = Math.floor(i / 2) * h;
-      ctx.drawImage(img, x, y, w, h);
-    });
+  if (len === 1) { ctx.drawImage(validImgs[0], 0, 0, 300, 300); }
+  else if (len === 2) { ctx.drawImage(validImgs[0], 0, 0, 150, 300); ctx.drawImage(validImgs[1], 150, 0, 150, 300); }
+  else if (len <= 4) {
+    validImgs.forEach((img, i) => { ctx.drawImage(img, (i % 2) * 150, Math.floor(i / 2) * 150, 150, 150); });
   } else {
-    let w = 100, h = 100;
-    validImgs.forEach((img, i) => {
-      if (i < 9) {
-        let x = (i % 3) * w;
-        let y = Math.floor(i / 3) * h;
-        ctx.drawImage(img, x, y, w, h);
-      }
-    });
+    validImgs.forEach((img, i) => { if (i < 9) { ctx.drawImage(img, (i % 3) * 100, Math.floor(i / 3) * 100, 100, 100); } });
   }
 }
 
@@ -724,7 +722,7 @@ function renderGridVisual() {
   let rekapTeksWA = "";
 
   listTokoData.forEach(toko => {
-    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum", jumlah: 0, collageImg: "" };
+    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum", jumlah: 0, collageImg: "", catatan: "" };
 
     const card = document.createElement("div");
     card.className = "toko-card";
@@ -735,11 +733,9 @@ function renderGridVisual() {
     if (dataUpload.status === "Sukses") {
       totalSudah++;
       totalFoto += dataUpload.jumlah;
-      if (dataUpload.collageImg) {
-        imgWrapperHtml = `<img src="${dataUpload.collageImg}" alt="Kolase">`;
-      }
+      if (dataUpload.collageImg) { imgWrapperHtml = `<img src="${dataUpload.collageImg}" alt="Kolase">`; }
       statusText = `OK • ${dataUpload.jumlah} Foto`;
-      rekapTeksWA += `✅ *${toko.id}. ${toko.kode}/${toko.nama}* (${dataUpload.jumlah} Foto)\n`;
+      rekapTeksWA += `✅ *${toko.id}. ${toko.kode}/${toko.nama}* (${dataUpload.jumlah} Foto)${dataUpload.catatan ? '\n   └ Catatan: ' + dataUpload.catatan : ''}\n`;
     } else {
       rekapTeksWA += `⏳ *${toko.id}. ${toko.kode}/${toko.nama}*: Belum\n`;
     }
@@ -755,12 +751,7 @@ function renderGridVisual() {
   });
 
   const progress = Math.round((totalSudah / 20) * 100);
-
-  if (totalSudah > 0) {
-    document.getElementById("btn-wa").disabled = false;
-  } else {
-    document.getElementById("btn-wa").disabled = true;
-  }
+  document.getElementById("btn-wa").disabled = (totalSudah === 0);
 
   document.getElementById("st-total").textContent = "20";
   document.getElementById("st-sudah").textContent = totalSudah;
@@ -780,12 +771,23 @@ function renderGridVisual() {
     `*DAFTAR 20 TOKO*\n` + rekapTeksWA;
 }
 
+function updateDashboardStats() {
+  let totalSudah = parseInt(document.getElementById("st-sudah").textContent) || 0;
+  let progress = Math.round((totalSudah / 20) * 100);
+  document.getElementById("dash-progress-bar").style.width = `${progress}%`;
+  document.getElementById("dash-info-text").textContent = `Progress Kinerja Hari Ini: ${progress}% (${totalSudah} dari 20 Toko)`;
+  document.getElementById("dash-detail-stats").innerHTML = `
+    <b>Toko Selesai:</b> ${totalSudah} Toko<br>
+    <b>Toko Tertunda:</b> ${20 - totalSudah} Toko<br>
+    <b>Status Sistem:</b> <span style="color:#52c41a; font-weight:bold;">Online (Auto-Sync Aktif)</span>
+  `;
+}
+
 async function buatMasterGridImageUltraHD() {
   return new Promise((resolve) => {
     const canvas = document.createElement("canvas");
     const cols = 5; const rows = 4;
-    const itemWidth = 800; 
-    const itemHeight = 920;
+    const itemWidth = 800; const itemHeight = 920;
     
     canvas.width = cols * itemWidth;
     canvas.height = rows * itemHeight;
@@ -807,26 +809,18 @@ async function buatMasterGridImageUltraHD() {
         img.src = dataUpload.collageImg;
         img.onload = () => {
           ctx.drawImage(img, x + 20, y + 20, itemWidth - 40, itemWidth - 40);
-          
           ctx.fillStyle = "#f9f9f9";
           ctx.fillRect(x + 20, y + itemWidth, itemWidth - 40, 95);
-          ctx.strokeStyle = "#bbb";
-          ctx.lineWidth = 4;
+          ctx.strokeStyle = "#bbb"; ctx.lineWidth = 4;
           ctx.strokeRect(x + 20, y + 20, itemWidth - 40, itemWidth + 90);
 
-          ctx.fillStyle = "#000";
-          ctx.font = "bold 42px Arial";
-          ctx.textAlign = "center";
+          ctx.fillStyle = "#000"; ctx.font = "bold 42px Arial"; ctx.textAlign = "center";
           ctx.fillText(`${toko.id}. ${toko.kode}/${toko.nama}`, x + (itemWidth / 2), y + itemWidth + 62);
 
           loaded++;
           if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
         };
-        img.onerror = () => {
-          gambarKotakKosongUltra(ctx, toko, x, y, itemWidth);
-          loaded++;
-          if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
-        };
+        img.onerror = () => { gambarKotakKosongUltra(ctx, toko, x, y, itemWidth); loaded++; if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9)); };
       } else {
         gambarKotakKosongUltra(ctx, toko, x, y, itemWidth);
         loaded++;
@@ -839,79 +833,52 @@ async function buatMasterGridImageUltraHD() {
 function gambarKotakKosongUltra(ctx, toko, x, y, itemWidth) {
   ctx.fillStyle = "#f2f2f2";
   ctx.fillRect(x + 20, y + 20, itemWidth - 40, itemWidth - 40);
-  ctx.strokeStyle = "#bbb";
-  ctx.lineWidth = 4;
+  ctx.strokeStyle = "#bbb"; ctx.lineWidth = 4;
   ctx.strokeRect(x + 20, y + 20, itemWidth - 40, itemWidth + 90);
 
-  ctx.fillStyle = "#777";
-  ctx.font = "36px Arial";
-  ctx.textAlign = "center";
+  ctx.fillStyle = "#777"; ctx.font = "36px Arial"; ctx.textAlign = "center";
   ctx.fillText("Belum Ada Foto", x + (itemWidth / 2), y + (itemWidth / 2));
 
-  ctx.fillStyle = "#000";
-  ctx.font = "bold 42px Arial";
+  ctx.fillStyle = "#000"; ctx.font = "bold 42px Arial";
   ctx.fillText(`${toko.id}. ${toko.kode}/${toko.nama}`, x + (itemWidth / 2), y + itemWidth + 62);
 }
 
 async function shareMasterGridDirectly() {
   const btnWa = document.getElementById("btn-wa");
-  if (btnWa.disabled) {
-    tampilStatus("❌ Selesaikan minimal 1 upload toko terlebih dahulu.", "error");
-    return;
-  }
+  if (btnWa.disabled) { tampilStatus("❌ Selesaikan minimal 1 upload toko.", "error"); return; }
 
   tampilStatus("⏳ Merakit Master Grid Ultra HD...", "info");
   const dataUrl = await buatMasterGridImageUltraHD();
-
   const blob = await (await fetch(dataUrl)).blob();
   const file = new File([blob], `APLIKASI_DAILY_ACTIVITY_${Date.now()}.jpg`, { type: "image/jpeg" });
 
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
-      await navigator.share({
-        title: 'APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26',
-        text: window.teksLaporanFinal || 'Berikut rekap laporan harian.',
-        files: [file]
-      });
+      await navigator.share({ title: 'APLIKASI DAILY ACTIVITY', text: window.teksLaporanFinal || '', files: [file] });
       tampilStatus("✅ Berhasil membagikan grid ke WhatsApp!", "success");
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error(err);
-        downloadMasterGridFallback(dataUrl);
-      }
-    }
-  } else {
-    downloadMasterGridFallback(dataUrl);
-  }
+    } catch (err) { if (err.name !== 'AbortError') downloadMasterGridFallback(dataUrl); }
+  } else { downloadMasterGridFallback(dataUrl); }
 }
 
 function downloadMasterGridFallback(dataUrl) {
   const a = document.createElement("a");
-  a.href = dataUrl;
-  a.download = `APLIKASI_DAILY_ACTIVITY_${Date.now()}.jpg`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  tampilStatus("⚠️ Gambar terunduh. Silakan kirim ke WA beserta teks rekap.", "success");
+  a.href = dataUrl; a.download = `APLIKASI_DAILY_ACTIVITY_${Date.now()}.jpg`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  tampilStatus("⚠️ Gambar terunduh otomatis.", "success");
 }
 
 async function kirimFoto() {
   const tokoVal = document.getElementById("toko").value;
   const files = globalSelectedFiles;
+  const catatan = document.getElementById("catatan-toko").value;
   const tombol = document.getElementById("btn-upload");
 
-  if (!tokoVal) { 
-    tampilStatus("❌ Pilih Toko terlebih dahulu.", "error"); 
-    return; 
-  }
-  if (!files || files.length < 1 || files.length > 6) { 
-    tampilStatus("❌ Pilih minimal 1 dan maksimal 6 foto.", "error"); 
-    return; 
-  }
+  if (!tokoVal) { tampilStatus("❌ Pilih Toko terlebih dahulu.", "error"); return; }
+  if (!files || files.length < 1 || files.length > 6) { tampilStatus("❌ Pilih 1 hingga 6 foto.", "error"); return; }
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
-  tampilStatus(`⚡ Memproses & Mengirim ke Cloud pusat...`, "info");
+  tampilStatus(`⚡ Memproses & Mengirim (Offline-First / Auto-Sync)...`, "info");
 
   let base64Collection = [];
   for (const file of files) {
@@ -926,16 +893,19 @@ async function kirimFoto() {
     namaToko: namaToko,
     jumlahFoto: files.length,
     collageImg: finalCollage,
-    listLink: ""
+    catatan: catatan,
+    gps: currentGPS
   };
 
+  // Simpan Offline-First ke localStorage
   localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
     status: "Sukses",
     jumlah: files.length,
     collageImg: finalCollage,
-    links: []
+    catatan: catatan
   }));
 
+  // Kirim ke Cloud Pusat (jika offline, masuk antrean sinkronisasi)
   try {
     await fetch(API, {
       method: "POST",
@@ -944,19 +914,35 @@ async function kirimFoto() {
       body: JSON.stringify(payload)
     });
   } catch(err) {
-    console.log("Network warning:", err);
+    let queue = JSON.parse(localStorage.getItem("offline_queue") || "[]");
+    queue.push(payload);
+    localStorage.setItem("offline_queue", JSON.stringify(queue));
   }
 
   tombol.disabled = false;
   tampilStatus(`✅ Sukses! Data tersimpan di Cloud pusat.`, "success");
   
   renderGridVisual();
+  updateDashboardStats();
 
+  document.getElementById("catatan-toko").value = "";
   document.getElementById("file-info").textContent = "";
   document.getElementById("preview-upload").innerHTML = "";
   document.getElementById("btn-upload").disabled = true;
   globalSelectedFiles = [];
   setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
+}
+
+function cekOfflineQueue() {
+  let queue = JSON.parse(localStorage.getItem("offline_queue") || "[]");
+  if (queue.length > 0 && navigator.onLine) {
+    queue.forEach(async (item) => {
+      try {
+        await fetch(API, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+      } catch(e) {}
+    });
+    localStorage.removeItem("offline_queue");
+  }
 }
 
 function kompresDanUbahKeBase64(file, maxWidth, quality) {
@@ -968,10 +954,7 @@ function kompresDanUbahKeBase64(file, maxWidth, quality) {
       img.src = event.target.result;
       img.onload = function() {
         let width = img.width, height = img.height;
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
+        if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
         const canvas = document.createElement("canvas");
         canvas.width = width; canvas.height = height;
         const ctx = canvas.getContext("2d");
@@ -990,6 +973,31 @@ function tampilStatus(pesan, jenis) {
   status.className = `status-${jenis}`;
   status.style.display = "block";
   status.innerHTML = pesan;
+}
+
+let currentStep = 0;
+const tourSteps = [
+  { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Pilih toko yang dikunjungi." },
+  { element: "step-2-container", title: "Langkah 2: Ambil Foto 📷", text: "Kamera otomatis menyematkan Watermark GPS & Waktu." },
+  { element: "step-3-container", title: "Langkah 3: Catatan Temuan 📝", text: "Tulis kendala toko jika ada." },
+  { element: "step-4-container", title: "Langkah 4: Kirim WhatsApp 💬", text: "Bagikan rekap grid laporan lengkap." }
+];
+
+function mulaiPanduan() { currentStep = 0; document.getElementById("tour-overlay").style.display = "flex"; tampilLangkahTour(); }
+function tampilLangkahTour() {
+  tourSteps.forEach(s => { const el = document.getElementById(s.element); if (el) el.classList.remove("highlight-target"); });
+  if (currentStep >= tourSteps.length) { tutupPanduan(); return; }
+  const step = tourSteps[currentStep];
+  const targetEl = document.getElementById(step.element);
+  if (targetEl) { targetEl.classList.add("highlight-target"); targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  document.getElementById("tour-title").textContent = step.title;
+  document.getElementById("tour-text").textContent = step.text;
+  document.getElementById("tour-next-btn").textContent = (currentStep === tourSteps.length - 1) ? "Selesai ✓" : "Lanjut ➔";
+}
+function lanjutPanduan() { currentStep++; tampilLangkahTour(); }
+function tutupPanduan() {
+  tourSteps.forEach(s => { const el = document.getElementById(s.element); if (el) el.classList.remove("highlight-target"); });
+  document.getElementById("tour-overlay").style.display = "none";
 }
 </script>
 

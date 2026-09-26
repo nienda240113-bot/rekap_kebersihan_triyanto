@@ -262,7 +262,7 @@ select, input[type="file"] {
 <div class="box">
   <button class="btn-help" onclick="mulaiPanduan()" title="Panduan Aplikasi">?</button>
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
-  <div class="sub-desc">Panduan SOP Ketat & Validasi Berurutan.</div>
+  <div class="sub-desc">Sinkronisasi Cloud Real-Time Antar Perangkat.</div>
 
   <!-- Form Upload Toko -->
   <div id="step-1-container">
@@ -424,6 +424,62 @@ function validasiPilihFoto() {
   }
 }
 
+// SINKRONISASI REAL-TIME DARI SERVER PUSAT
+async function sinkronisasiDataServer() {
+  tampilStatus("⏳ Menyinkronkan data dari server pusat...", "info");
+  try {
+    const response = await fetch(API);
+    const result = await response.json();
+    if (result.status === "success") {
+      // Bersihkan cache lokal lama agar murni dari server
+      listTokoData.forEach(toko => {
+        localStorage.removeItem(`upload_${toko.kode}`);
+      });
+
+      if (result.data && result.data.length > 0) {
+        result.data.forEach(item => {
+          localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
+            status: "Sukses",
+            jumlah: parseInt(item.jumlah) || 1,
+            collageImg: item.collageImg || "",
+            links: item.links ? item.links.split(",") : []
+          }));
+        });
+      }
+      renderGridVisual();
+      tampilStatus("✅ Data berhasil disinkronkan ke semua perangkat.", "success");
+      setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
+    }
+  } catch (error) {
+    console.error("Sinkronisasi gagal:", error);
+    renderGridVisual();
+  }
+}
+
+// CEK & RESET OTOMATIS BERDASARKAN TANGGAL SERVER/LOKAL
+async function cekDanResetOtomatisTanggal() {
+  const tanggalHariIni = new Date().toISOString().split('T')[0];
+  const tanggalTersimpan = localStorage.getItem("app_tanggal_aktif");
+
+  if (tanggalTersimpan !== tanggalHariIni) {
+    listTokoData.forEach(toko => {
+      localStorage.removeItem(`upload_${toko.kode}`);
+    });
+    localStorage.setItem("app_tanggal_aktif", tanggalHariIni);
+
+    try {
+      await fetch(API, {
+        method: "POST",
+        body: JSON.stringify({ action: "reset" })
+      });
+    } catch (err) {
+      console.error("Gagal reset otomatis ke server:", err);
+    }
+  }
+
+  sinkronisasiDataServer();
+}
+
 // FUNGSI RESET / HAPUS SEMUA GRID REAL-TIME
 async function resetSemuaGridRealtime() {
   if (confirm("⚠️ Yakin ingin menghapus seluruh data hasil upload hari ini secara real-time di semua perangkat?")) {
@@ -499,55 +555,6 @@ function tutupPanduan() {
     if (el) el.classList.remove("highlight-target");
   });
   document.getElementById("tour-overlay").style.display = "none";
-}
-
-async function cekDanResetOtomatisTanggal() {
-  const tanggalHariIni = new Date().toISOString().split('T')[0];
-  const tanggalTersimpan = localStorage.getItem("app_tanggal_aktif");
-
-  if (tanggalTersimpan !== tanggalHariIni) {
-    listTokoData.forEach(toko => {
-      localStorage.removeItem(`upload_${toko.kode}`);
-    });
-    localStorage.setItem("app_tanggal_aktif", tanggalHariIni);
-
-    try {
-      await fetch(API, {
-        method: "POST",
-        body: JSON.stringify({ action: "reset" })
-      });
-    } catch (err) {
-      console.error("Gagal reset otomatis ke server:", err);
-    }
-  }
-
-  sinkronisasiDataServer();
-}
-
-async function sinkronisasiDataServer() {
-  tampilStatus("⏳ Menyinkronkan data real-time...", "info");
-  try {
-    const response = await fetch(API);
-    const result = await response.json();
-    if (result.status === "success") {
-      if (result.data && result.data.length > 0) {
-        result.data.forEach(item => {
-          localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
-            status: "Sukses",
-            jumlah: parseInt(item.jumlah) || 1,
-            collageImg: item.collageImg || "",
-            links: item.links ? item.links.split(",") : []
-          }));
-        });
-      }
-      renderGridVisual();
-      tampilStatus("✅ Data tersinkron secara real-time.", "success");
-      setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
-    }
-  } catch (error) {
-    console.error("Sinkronisasi gagal:", error);
-    renderGridVisual();
-  }
 }
 
 async function buatKolaseThumbnail(base64List) {
@@ -857,7 +864,7 @@ async function kirimFoto() {
   tombol.disabled = false;
 
   if (gagal === 0) {
-    tampilStatus(`✅ Sukses! ${sukses} Foto berhasil di-upload kilat ke Cloud. Langkah 4 Terbuka!`, "success");
+    tampilStatus(`✅ Sukses! ${sukses} Foto berhasil di-upload ke server pusat.`, "success");
     
     const finalCollage = await buatKolaseThumbnail(base64Collection);
     localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
@@ -867,7 +874,9 @@ async function kirimFoto() {
       links: listLinkDrive
     }));
 
-    renderGridVisual();
+    // Sinkronkan ulang dari server agar perangkat lain langsung mendeteksi
+    await sinkronisasiDataServer();
+
     document.getElementById("foto").value = "";
     document.getElementById("preview-upload").innerHTML = "";
     document.getElementById("btn-upload").disabled = true;

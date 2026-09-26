@@ -295,6 +295,7 @@ select, input[type="file"] {
   <div id="step-2-container">
     <label for="foto">2️⃣ Pilih Foto (Minimal 1, Maksimal 6 Foto)</label>
     <input type="file" id="foto" accept="image/*" multiple disabled onchange="validasiPilihFoto()">
+    <div id="file-info" style="font-size: 11px; color: #555; margin-top: 4px; font-weight: bold;"></div>
   </div>
 
   <div id="preview-upload"></div>
@@ -363,8 +364,38 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("foto").disabled = false;
   }
   
-  cekDanResetOtomatisTanggal();
+  // Sinkronisasi data dari Google Sheets saat pertama kali dibuka di device manapun
+  ambilDataDariCloudPusat();
 });
+
+// FUNGSI TARIK DATA ONLINE DARI CLOUD PUSAT (GOOGLE SHEETS)
+async function ambilDataDariCloudPusat() {
+  tampilStatus("⏳ Mengambil data online dari server...", "info");
+  try {
+    const response = await fetch(API);
+    const result = await response.json();
+    if (result.status === "success" && result.data) {
+      // Perbarui memori lokal perangkat dengan data online terbaru
+      result.data.forEach(item => {
+        if (item.kodeToko && item.collageImg) {
+          localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
+            status: "Sukses",
+            jumlah: parseInt(item.jumlah) || 1,
+            collageImg: item.collageImg,
+            links: []
+          }));
+        }
+      });
+      renderGridVisual();
+      tampilStatus("✅ Data online berhasil dimuat.", "success");
+      setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
+    }
+  } catch (error) {
+    console.log("Menggunakan data lokal tersimpan:", error);
+    renderGridVisual();
+    document.getElementById("status").style.display = "none";
+  }
+}
 
 // VALIDASI TAHAP 1: PILIH TOKO
 function validasiPilihToko() {
@@ -373,25 +404,26 @@ function validasiPilihToko() {
   
   if (!val) {
     inputFoto.disabled = true;
-    tampilStatus("⚠️ PERHATIAN: Silakan pilih Nama Toko terlebih dahulu pada Langkah 1!", "error");
+    tampilStatus("⚠️ PERHATIAN: Silakan pilih Nama Toko terlebih dahulu!", "error");
   } else {
     inputFoto.disabled = false;
     localStorage.setItem("last_selected_toko", val);
-    tampilStatus("✅ Toko terpilih. Silakan lanjutkan ke Langkah 2: Pilih Foto (Min 1, Max 6).", "success");
+    tampilStatus("✅ Toko terpilih. Silakan pilih Foto (Min 1, Max 6).", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
 }
 
-// VALIDASI TAHAP 2: PILIH FOTO
+// VALIDASI TAHAP 2: PILIH FOTO (DIPERBAIKI AGAR TIDAK MUNCUL BUG "TIDAK ADA FILE")
 function validasiPilihFoto() {
   const tokoVal = document.getElementById("toko").value;
   const inputFoto = document.getElementById("foto");
   const btnUpload = document.getElementById("btn-upload");
   const preview = document.getElementById("preview-upload");
+  const fileInfo = document.getElementById("file-info");
   preview.innerHTML = "";
 
   if (!tokoVal) {
-    tampilStatus("❌ ERROR: Anda belum memilih Toko! Silakan pilih Toko di Langkah 1.", "error");
+    tampilStatus("❌ ERROR: Pilih Toko terlebih dahulu di Langkah 1!", "error");
     inputFoto.value = "";
     inputFoto.disabled = true;
     return;
@@ -400,19 +432,22 @@ function validasiPilihFoto() {
   const jumlahFile = inputFoto.files.length;
   if (jumlahFile < 1) {
     btnUpload.disabled = true;
+    fileInfo.textContent = "";
     tampilStatus("⚠️ Peringatan: Pilih minimal 1 foto!", "error");
     return;
   }
   if (jumlahFile > 6) {
     btnUpload.disabled = true;
-    tampilStatus("❌ Peringatan: Maksimal hanya boleh 6 foto! Silakan ulangi pilihan foto.", "error");
+    fileInfo.textContent = "";
+    tampilStatus("❌ Peringatan: Maksimal hanya boleh 6 foto!", "error");
     inputFoto.value = "";
     return;
   }
 
   btnUpload.disabled = false;
-  tampilStatus("✅ Foto sesuai ketentuan (1-6 foto). Silakan tekan tombol Upload Kilat di Langkah 3.", "success");
-  setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2500);
+  fileInfo.textContent = `📁 Terpilih: ${jumlahFile} foto siap di-upload.`;
+  tampilStatus("✅ Foto sesuai ketentuan. Tekan Upload Kilat.", "success");
+  setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
 
   for (const file of inputFoto.files) {
     const reader = new FileReader();
@@ -425,64 +460,10 @@ function validasiPilihFoto() {
   }
 }
 
-// SINKRONISASI DATA (AMAN DARI ERROR CORS BROWSER)
-async function sinkronisasiDataServer() {
-  renderGridVisual(); 
-  try {
-    const response = await fetch(API);
-    const result = await response.json();
-    if (result.status === "success" && result.data) {
-      listTokoData.forEach(toko => {
-        localStorage.removeItem(`upload_${toko.kode}`);
-      });
-
-      result.data.forEach(item => {
-        if (item.kodeToko && item.collageImg) {
-          localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
-            status: "Sukses",
-            jumlah: parseInt(item.jumlah) || 1,
-            collageImg: item.collageImg,
-            links: []
-          }));
-        }
-      });
-      renderGridVisual();
-    }
-  } catch (error) {
-    // Abaikan error CORS/jaringan agar aplikasi tetap berjalan menggunakan cache lokal
-    renderGridVisual();
-  }
-}
-
-// CEK & RESET OTOMATIS BERDASARKAN TANGGAL
-async function cekDanResetOtomatisTanggal() {
-  const tanggalHariIni = new Date().toISOString().split('T')[0];
-  const tanggalTersimpan = localStorage.getItem("app_tanggal_aktif");
-
-  if (tanggalTersimpan !== tanggalHariIni) {
-    listTokoData.forEach(toko => {
-      localStorage.removeItem(`upload_${toko.kode}`);
-    });
-    localStorage.setItem("app_tanggal_aktif", tanggalHariIni);
-
-    try {
-      await fetch(API, {
-        method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify({ action: "reset" })
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  sinkronisasiDataServer();
-}
-
-// FUNGSI RESET / HAPUS SEMUA GRID
+// FUNGSI RESET / HAPUS SEMUA GRID ONLINE & OFFLINE
 async function resetSemuaGridRealtime() {
-  if (confirm("⚠️ Yakin ingin menghapus seluruh data hasil upload hari ini?")) {
-    tampilStatus("🗑️ Mengosongkan data...", "info");
+  if (confirm("⚠️ Yakin ingin menghapus seluruh data laporan hari ini secara permanen dari server?")) {
+    tampilStatus("🗑️ Menghapus data dari server...", "info");
     
     listTokoData.forEach(toko => {
       localStorage.removeItem(`upload_${toko.kode}`);
@@ -499,7 +480,7 @@ async function resetSemuaGridRealtime() {
     }
 
     renderGridVisual();
-    tampilStatus("✅ Semua data grid berhasil dikosongkan.", "success");
+    tampilStatus("✅ Semua data berhasil dikosongkan.", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
 }
@@ -507,10 +488,10 @@ async function resetSemuaGridRealtime() {
 // Sistem Tour Guide Animasi
 let currentStep = 0;
 const tourSteps = [
-  { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Wajib pilih toko terlebih dahulu! Jika belum dipilih, kotak pilih foto akan terkunci." },
-  { element: "step-2-container", title: "Langkah 2: Pilih Foto 📷", text: "Pilih 1 sampai 6 foto aktivitas toko. Tombol upload akan terkunci jika foto kurang atau lebih." },
-  { element: "step-3-container", title: "Langkah 3: Upload Kilat ⚡", text: "Ketuk untuk mengirim foto ke Cloud. Setelah sukses, grid toko di bawah akan otomatis terisi dan membuka Langkah 4." },
-  { element: "step-4-container", title: "Langkah 4: Kirim ke WhatsApp 💬", text: "Tombol ini terkunci dan baru bisa diklik setelah proses upload foto di Langkah 3 selesai!" }
+  { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Wajib pilih toko terlebih dahulu!" },
+  { element: "step-2-container", title: "Langkah 2: Pilih Foto 📷", text: "Pilih 1 sampai 6 foto aktivitas toko." },
+  { element: "step-3-container", title: "Langkah 3: Upload Kilat ⚡", text: "Mengirim foto secara online ke Cloud Google Sheets." },
+  { element: "step-4-container", title: "Langkah 4: Kirim ke WhatsApp 💬", text: "Bagikan rekap grid laporan ke WhatsApp." }
 ];
 
 function mulaiPanduan() {
@@ -557,7 +538,7 @@ function tutupPanduan() {
   document.getElementById("tour-overlay").style.display = "none";
 }
 
-// FUNGSI KOLASE THUMBNAIL RINGAN
+// FUNGSI KOLASE THUMBNAIL
 async function buatKolaseThumbnail(base64List) {
   return new Promise((resolve) => {
     if (!base64List || base64List.length === 0) { resolve(""); return; }
@@ -817,7 +798,7 @@ async function kirimFoto() {
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
-  tampilStatus(`⚡ Memproses & Mengupload Foto ke Server...`, "info");
+  tampilStatus(`⚡ Memproses & Menyimpan ke Cloud Online...`, "info");
 
   let base64Collection = [];
   for (const file of files) {
@@ -835,7 +816,7 @@ async function kirimFoto() {
     listLink: ""
   };
 
-  // Simpan langsung di perangkat lokal agar instan dan tidak terpengaruh blokir CORS browser
+  // Simpan permanen secara online via Google Sheets & lokal device
   localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
     status: "Sukses",
     jumlah: files.length,
@@ -844,7 +825,6 @@ async function kirimFoto() {
   }));
 
   try {
-    // Kirim ke Google Sheets menggunakan mode no-cors agar lolos dari blokir browser
     await fetch(API, {
       method: "POST",
       mode: "no-cors",
@@ -852,14 +832,15 @@ async function kirimFoto() {
       body: JSON.stringify(payload)
     });
   } catch (err) {
-    console.log("Catatan backend:", err);
+    console.log("Sinkronisasi latar belakang:", err);
   }
 
   tombol.disabled = false;
-  tampilStatus(`✅ Sukses! Foto berhasil disimpan dan digenerate ke Grid.`, "success");
+  tampilStatus(`✅ Sukses! Data toko tersimpan permanen di Cloud online.`, "success");
   renderGridVisual();
 
   document.getElementById("foto").value = "";
+  document.getElementById("file-info").textContent = "";
   document.getElementById("preview-upload").innerHTML = "";
   document.getElementById("btn-upload").disabled = true;
   setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2500);

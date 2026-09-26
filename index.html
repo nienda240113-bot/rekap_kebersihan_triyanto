@@ -126,9 +126,9 @@ h3.title {
   margin-top: 1px;
 }
 
-/* Form Input Standar */
+/* Form Input Standar & Tombol Pilih File Kustom */
 label { display: block; font-weight: bold; margin-top: 10px; margin-bottom: 4px; font-size: 12px; }
-select, input[type="file"] {
+select {
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
@@ -137,6 +137,38 @@ select, input[type="file"] {
   font-size: 13px;
   background: #fafafa;
 }
+
+/* Gaya Tombol Pilih Foto Kustom (Anti "Tidak Ada File") */
+.file-upload-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: 100%;
+}
+.file-upload-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.btn-file-custom {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #fafafa;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  box-sizing: border-box;
+}
+
 #preview-upload {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -293,9 +325,11 @@ select, input[type="file"] {
   </div>
 
   <div id="step-2-container">
-    <label for="foto">2️⃣ Pilih Foto (Minimal 1, Maksimal 6 Foto)</label>
-    <input type="file" id="foto" accept="image/*" multiple disabled onchange="validasiPilihFoto()">
-    <div id="file-info" style="font-size: 11px; color: #1677ff; margin-top: 4px; font-weight: bold;"></div>
+    <label>2️⃣ Pilih Foto (Minimal 1, Maksimal 6 Foto)</label>
+    <div class="file-upload-wrapper">
+      <div class="btn-file-custom" id="file-label-text">📁 Ketuk di Sini untuk Pilih / Ambil Foto</div>
+      <input type="file" id="foto" accept="image/*" multiple disabled onchange="validasiPilihFoto()">
+    </div>
   </div>
 
   <div id="preview-upload"></div>
@@ -364,40 +398,42 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("foto").disabled = false;
   }
   
-  // Ambil data online dari Google Sheets agar sinkron di semua device
-  ambilDataDariCloudPusat();
+  sinkronisasiDataGlobal();
 });
 
-// TARIK DATA DARI CLOUD PUSAT (GOOGLE SHEETS)
-async function ambilDataDariCloudPusat() {
-  tampilStatus("⏳ Memuat data online dari server...", "info");
-  try {
-    const response = await fetch(API);
-    const result = await response.json();
-    if (result.status === "success" && result.data) {
-      listTokoData.forEach(toko => {
-        localStorage.removeItem(`upload_${toko.kode}`);
-      });
+// SINKRONISASI DATA DARI CLOUD PUSAT
+function sinkronisasiDataGlobal() {
+  tampilStatus("⏳ Menyinkronkan data antar perangkat...", "info");
+  const script = document.createElement("script");
+  script.src = `${API}?callback=terimaDataCloud`;
+  document.body.appendChild(script);
+}
 
-      result.data.forEach(item => {
-        if (item.kodeToko && item.collageImg) {
-          localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
-            status: "Sukses",
-            jumlah: parseInt(item.jumlah) || 1,
-            collageImg: item.collageImg,
-            links: []
-          }));
-        }
-      });
-      renderGridVisual();
-      document.getElementById("status").style.display = "none";
-    }
-  } catch (error) {
-    console.log("Menggunakan cache lokal:", error);
+window.terimaDataCloud = function(result) {
+  if (result && result.status === "success" && result.data) {
+    listTokoData.forEach(toko => {
+      localStorage.removeItem(`upload_${toko.kode}`);
+    });
+
+    result.data.forEach(item => {
+      if (item.kodeToko && item.collageImg) {
+        localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
+          status: "Sukses",
+          jumlah: parseInt(item.jumlah) || 1,
+          collageImg: item.collageImg,
+          links: []
+        }));
+      }
+    });
+
+    renderGridVisual();
+    tampilStatus("✅ Sinkronisasi cloud berhasil!", "success");
+    setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
+  } else {
     renderGridVisual();
     document.getElementById("status").style.display = "none";
   }
-}
+};
 
 // VALIDASI TAHAP 1: PILIH TOKO
 function validasiPilihToko() {
@@ -415,13 +451,13 @@ function validasiPilihToko() {
   }
 }
 
-// VALIDASI TAHAP 2: PILIH FOTO (DIOPTIMASI AGAR KOMPATIBEL DI SEMUA HP)
+// VALIDASI TAHAP 2: PILIH FOTO (MENGGUNAKAN LABEL KUSTOM)
 function validasiPilihFoto() {
   const tokoVal = document.getElementById("toko").value;
   const inputFoto = document.getElementById("foto");
   const btnUpload = document.getElementById("btn-upload");
   const preview = document.getElementById("preview-upload");
-  const fileInfo = document.getElementById("file-info");
+  const fileLabelText = document.getElementById("file-label-text");
   preview.innerHTML = "";
 
   if (!tokoVal) {
@@ -434,19 +470,19 @@ function validasiPilihFoto() {
   const jumlahFile = inputFoto.files.length;
   if (jumlahFile < 1) {
     btnUpload.disabled = true;
-    fileInfo.textContent = "";
+    fileLabelText.textContent = "📁 Ketuk di Sini untuk Pilih / Ambil Foto";
     return;
   }
   if (jumlahFile > 6) {
     btnUpload.disabled = true;
-    fileInfo.textContent = "";
+    fileLabelText.textContent = "❌ Maksimal hanya 6 foto!";
     tampilStatus("❌ Peringatan: Maksimal hanya boleh 6 foto!", "error");
     inputFoto.value = "";
     return;
   }
 
   btnUpload.disabled = false;
-  fileInfo.textContent = `✅ ${jumlahFile} foto berhasil dipilih dan siap di-upload.`;
+  fileLabelText.textContent = `✅ Terpilih ${jumlahFile} Foto (Siap Upload)`;
   tampilStatus("✅ Foto siap di-upload ke Cloud.", "success");
   setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
 
@@ -539,12 +575,12 @@ function tutupPanduan() {
   document.getElementById("tour-overlay").style.display = "none";
 }
 
-// KOLASE THUMBNAIL SUPER CEPAT & RINGAN
+// KOLASE THUMBNAIL
 async function buatKolaseThumbnail(base64List) {
   return new Promise((resolve) => {
     if (!base64List || base64List.length === 0) { resolve(""); return; }
     const canvas = document.createElement("canvas");
-    canvas.width = 300; // Ukuran diperkecil agar proses sangat cepat dan ringan
+    canvas.width = 300; 
     canvas.height = 300;
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = true;
@@ -816,7 +852,7 @@ async function kirimFoto() {
     listLink: ""
   };
 
-  // Simpan instan di perangkat lokal
+  // Simpan lokal device
   localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
     status: "Sukses",
     jumlah: files.length,
@@ -824,7 +860,7 @@ async function kirimFoto() {
     links: []
   }));
 
-  // Kirim latar belakang secara instan tanpa menunggu balasan (mencegah lemot)
+  // Kirim ke cloud
   fetch(API, {
     method: "POST",
     mode: "no-cors",
@@ -837,7 +873,7 @@ async function kirimFoto() {
   renderGridVisual();
 
   document.getElementById("foto").value = "";
-  document.getElementById("file-info").textContent = "";
+  document.getElementById("file-label-text").textContent = "📁 Ketuk di Sini untuk Pilih / Ambil Foto";
   document.getElementById("preview-upload").innerHTML = "";
   document.getElementById("btn-upload").disabled = true;
   setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);

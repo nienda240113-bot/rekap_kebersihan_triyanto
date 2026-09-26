@@ -425,34 +425,29 @@ function validasiPilihFoto() {
   }
 }
 
-// SINKRONISASI REAL-TIME DARI SERVER PUSAT
+// SINKRONISASI REAL-TIME DARI SERVER PUSAT (DENGAN PROTEKSI DATA LOKAL)
 async function sinkronisasiDataServer() {
-  tampilStatus("⏳ Menyinkronkan data dari server pusat...", "info");
+  renderGridVisual(); // Render langsung dari data lokal agar instan
   try {
     const response = await fetch(API);
     const result = await response.json();
-    if (result.status === "success") {
-      listTokoData.forEach(toko => {
-        localStorage.removeItem(`upload_${toko.kode}`);
-      });
-
-      if (result.data && result.data.length > 0) {
-        result.data.forEach(item => {
+    if (result.status === "success" && result.data && result.data.length > 0) {
+      result.data.forEach(item => {
+        // Hanya sinkron jika server memiliki data dan lokal belum ada/ingin disamakan
+        const existingLocal = localStorage.getItem(`upload_${item.kodeToko}`);
+        if (!existingLocal && item.collageImg) {
           localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
             status: "Sukses",
             jumlah: parseInt(item.jumlah) || 1,
             collageImg: item.collageImg || "",
             links: item.links ? item.links.split(",") : []
           }));
-        });
-      }
+        }
+      });
       renderGridVisual();
-      tampilStatus("✅ Data berhasil disinkronkan ke semua perangkat.", "success");
-      setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
     }
   } catch (error) {
-    console.error("Sinkronisasi gagal:", error);
-    renderGridVisual();
+    console.error("Sinkronisasi gagal, menggunakan data lokal:", error);
   }
 }
 
@@ -867,6 +862,8 @@ async function kirimFoto() {
     tampilStatus(`✅ Sukses! ${sukses} Foto berhasil di-upload ke server pusat.`, "success");
     
     const finalCollage = await buatKolaseThumbnail(base64Collection);
+    
+    // Simpan permanen di localStorage perangkat agar aman saat direfresh
     localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
       status: "Sukses",
       jumlah: sukses,
@@ -874,7 +871,7 @@ async function kirimFoto() {
       links: listLinkDrive
     }));
 
-    await sinkronisasiDataServer();
+    renderGridVisual();
 
     document.getElementById("foto").value = "";
     document.getElementById("preview-upload").innerHTML = "";

@@ -340,7 +340,8 @@ select, input[type="file"] {
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbzrR02hYWX2lncc1E3uSh712Py6NB5oXiS0No0dzaWFjwyUCNAvvMPBZKicVufV87dE/exec";
+// URL WEB APP BARU YANG TERHUBUNG DENGAN DATABASE SISTEM ANTREAN AMAN
+const API = "https://script.google.com/macros/s/AKfycbxh5t0XFoNVOR6_ItgpM_d-0tcn_dMHFRdRza2yc4-0RIG9IUnMc_Ziivn1XFwdeY-T/exec";
 
 const listTokoData = [
   {id: 1, kode: "C624", nama: "RWBT"}, {id: 2, kode: "C560", nama: "RAJ"},
@@ -431,7 +432,6 @@ async function sinkronisasiDataServer() {
     const response = await fetch(API);
     const result = await response.json();
     if (result.status === "success") {
-      // Bersihkan cache lokal lama agar murni dari server
       listTokoData.forEach(toko => {
         localStorage.removeItem(`upload_${toko.kode}`);
       });
@@ -456,7 +456,7 @@ async function sinkronisasiDataServer() {
   }
 }
 
-// CEK & RESET OTOMATIS BERDASARKAN TANGGAL SERVER/LOKAL
+// CEK & RESET OTOMATIS BERDASARKAN TANGGAL
 async function cekDanResetOtomatisTanggal() {
   const tanggalHariIni = new Date().toISOString().split('T')[0];
   const tanggalTersimpan = localStorage.getItem("app_tanggal_aktif");
@@ -874,7 +874,6 @@ async function kirimFoto() {
       links: listLinkDrive
     }));
 
-    // Sinkronkan ulang dari server agar perangkat lain langsung mendeteksi
     await sinkronisasiDataServer();
 
     document.getElementById("foto").value = "";

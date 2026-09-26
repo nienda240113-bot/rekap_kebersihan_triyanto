@@ -186,14 +186,37 @@ select {
 #preview-upload {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
+  gap: 6px;
   margin-top: 8px;
 }
-#preview-upload img {
-  width: 100%;
-  height: 75px;
-  object-fit: cover;
+.preview-item {
+  position: relative;
   border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+  height: 80px;
+}
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.btn-delete-preview {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(255, 77, 79, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Tombol Aksi */
@@ -339,15 +362,15 @@ select {
   </div>
 
   <div id="step-2-container">
-    <label>2️⃣ Pilih Foto (Minimal 1, Maksimal 6 Foto)</label>
+    <label>2️⃣ Pilih Foto (Bisa Tambah Bertahap, Maksimal 6 Foto)</label>
     <div class="upload-buttons-group">
       <div class="file-upload-wrapper">
         <div class="btn-custom-option btn-camera">📷 Buka Kamera</div>
-        <input type="file" id="foto-kamera" accept="image/*" capture="environment" multiple disabled onchange="prosesPilihFoto(this)">
+        <input type="file" id="foto-kamera" accept="image/*" capture="environment" disabled onchange="tambahFotoAkumulasi(this)">
       </div>
       <div class="file-upload-wrapper">
         <div class="btn-custom-option btn-gallery">🖼️ Pilih Galeri</div>
-        <input type="file" id="foto-galeri" accept="image/*" multiple disabled onchange="prosesPilihFoto(this)">
+        <input type="file" id="foto-galeri" accept="image/*" multiple disabled onchange="tambahFotoAkumulasi(this)">
       </div>
     </div>
     <div id="file-info" style="font-size: 11px; color: #1677ff; margin-top: 5px; font-weight: bold; text-align: center;"></div>
@@ -423,9 +446,6 @@ function installAplikasi() {
   if (deferredPrompt) {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User menginstal aplikasi');
-      }
       deferredPrompt = null;
       document.getElementById("btn-install-app").style.display = "none";
     });
@@ -495,13 +515,8 @@ function validasiPilihToko() {
   }
 }
 
-function prosesPilihFoto(inputElement) {
+function tambahFotoAkumulasi(inputElement) {
   const tokoVal = document.getElementById("toko").value;
-  const btnUpload = document.getElementById("btn-upload");
-  const preview = document.getElementById("preview-upload");
-  const fileInfo = document.getElementById("file-info");
-  preview.innerHTML = "";
-
   if (!tokoVal) {
     tampilStatus("❌ ERROR: Pilih Toko terlebih dahulu!", "error");
     inputElement.value = "";
@@ -509,34 +524,57 @@ function prosesPilihFoto(inputElement) {
   }
 
   const files = inputElement.files;
-  if (files.length < 1) {
-    btnUpload.disabled = true;
-    fileInfo.textContent = "";
-    return;
-  }
-  if (files.length > 6) {
-    btnUpload.disabled = true;
-    fileInfo.textContent = "";
-    tampilStatus("❌ Maksimal hanya boleh 6 foto!", "error");
+  if (!files || files.length === 0) return;
+
+  if (globalSelectedFiles.length + files.length > 6) {
+    tampilStatus("❌ Peringatan: Total foto maksimal adalah 6 foto!", "error");
     inputElement.value = "";
     return;
   }
 
-  globalSelectedFiles = files;
-  btnUpload.disabled = false;
-  fileInfo.textContent = `✅ ${files.length} Foto terpilih dan siap di-upload.`;
-  tampilStatus("✅ Foto siap di-upload.", "success");
-  setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
+  for (let i = 0; i < files.length; i++) {
+    globalSelectedFiles.push(files[i]);
+  }
 
-  for (const file of files) {
+  inputElement.value = ""; // Reset input agar bisa pilih file/kamera lagi
+  renderPreviewFiles();
+}
+
+function hapusFotoItem(index) {
+  globalSelectedFiles.splice(index, 1);
+  renderPreviewFiles();
+}
+
+function renderPreviewFiles() {
+  const preview = document.getElementById("preview-upload");
+  const fileInfo = document.getElementById("file-info");
+  const btnUpload = document.getElementById("btn-upload");
+  preview.innerHTML = "";
+
+  if (globalSelectedFiles.length === 0) {
+    btnUpload.disabled = true;
+    fileInfo.textContent = "";
+    return;
+  }
+
+  btnUpload.disabled = false;
+  fileInfo.textContent = `✅ ${globalSelectedFiles.length} Foto terpilih (Maksimal 6).`;
+  tampilStatus("✅ Foto berhasil ditambahkan.", "success");
+  setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
+
+  globalSelectedFiles.forEach((file, idx) => {
     const reader = new FileReader();
     reader.onload = function(e) {
-      const img = document.createElement("img");
-      img.src = e.target.result;
-      preview.appendChild(img);
+      const div = document.createElement("div");
+      div.className = "preview-item";
+      div.innerHTML = `
+        <img src="${e.target.result}" alt="Preview">
+        <button class="btn-delete-preview" onclick="hapusFotoItem(${idx})" title="Hapus Foto">✕</button>
+      `;
+      preview.appendChild(div);
     }
     reader.readAsDataURL(file);
-  }
+  });
 }
 
 async function resetSemuaGridRealtime() {
@@ -567,7 +605,7 @@ async function resetSemuaGridRealtime() {
 let currentStep = 0;
 const tourSteps = [
   { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Wajib pilih toko sebelum mengambil foto." },
-  { element: "step-2-container", title: "Langkah 2: Ambil Foto 📷", text: "Pilih langsung dari Kamera atau Galeri HP." },
+  { element: "step-2-container", title: "Langkah 2: Ambil Foto 📷", text: "Bisa klik Kamera berulang kali untuk menambah foto satu persatu hingga 6 foto." },
   { element: "step-3-container", title: "Langkah 3: Upload Kilat ⚡", text: "Mengirim data secara real-time ke Cloud pusat." },
   { element: "step-4-container", title: "Langkah 4: Kirim WhatsApp 💬", text: "Bagikan rekap grid gambar HD ke grup WhatsApp." }
 ];
@@ -873,7 +911,7 @@ async function kirimFoto() {
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
-  tampilStatus(`⚡ Memproses & Mengirim ke Cloud Pusat...`, "info");
+  tampilStatus(`⚡ Memproses & Mengirim ke Cloud pusat...`, "info");
 
   let base64Collection = [];
   for (const file of files) {
@@ -914,8 +952,6 @@ async function kirimFoto() {
   
   renderGridVisual();
 
-  document.getElementById("foto-kamera").value = "";
-  document.getElementById("foto-galeri").value = "";
   document.getElementById("file-info").textContent = "";
   document.getElementById("preview-upload").innerHTML = "";
   document.getElementById("btn-upload").disabled = true;

@@ -418,7 +418,6 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("foto-galeri").disabled = false;
   }
   
-  // Sinkronisasi otomatis dari server cloud saat aplikasi dibuka
   sinkronisasiDataGlobal();
 });
 
@@ -431,7 +430,6 @@ function sinkronisasiDataGlobal() {
 
 window.terimaDataCloud = function(result) {
   if (result && result.status === "success" && result.data) {
-    // Bersihkan cache lokal lama agar data digabung murni dari server pusat
     listTokoData.forEach(toko => {
       localStorage.removeItem(`upload_${toko.kode}`);
     });
@@ -864,7 +862,6 @@ async function kirimFoto() {
     listLink: ""
   };
 
-  // Simpan di memori lokal HP pengirim
   localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
     status: "Sukses",
     jumlah: files.length,
@@ -872,7 +869,6 @@ async function kirimFoto() {
     links: []
   }));
 
-  // Kirim data ke Cloud Google Sheets menggunakan JSONP agar tersimpan secara global
   const formBody = encodeURIComponent(JSON.stringify(payload));
   const script = document.createElement("script");
   script.src = `${API}?callback=selesaiUploadCloud&data=${formBody}`;
@@ -884,7 +880,6 @@ window.selesaiUploadCloud = function(res) {
   tombol.disabled = false;
   tampilStatus(`✅ Sukses! Data tersimpan permanen di Cloud pusat.`, "success");
   
-  // Sinkronisasi ulang data terbaru agar gabung dengan data HP lain
   sinkronisasiDataGlobal();
 
   document.getElementById("foto-kamera").value = "";

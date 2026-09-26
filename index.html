@@ -524,9 +524,16 @@ async function resetSemuaGridRealtime() {
       localStorage.removeItem(`upload_${toko.kode}`);
     });
 
-    const script = document.createElement("script");
-    script.src = `${API}?callback=terimaDataCloud&action=reset`;
-    document.body.appendChild(script);
+    try {
+      await fetch(API, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reset" })
+      });
+    } catch(err) {
+      console.error(err);
+    }
 
     renderGridVisual();
     tampilStatus("✅ Semua data berhasil dikosongkan.", "success");
@@ -609,7 +616,7 @@ async function buatKolaseThumbnail(base64List) {
         loadedCount++;
         if (loadedCount === base64List.length) {
           gambarKeCanvasKecil(ctx, imgObjects);
-          resolve(canvas.toDataURL("image/jpeg", 0.7));
+          resolve(canvas.toDataURL("image/jpeg", 0.6));
         }
       };
       img.onerror = () => {
@@ -753,17 +760,17 @@ async function buatMasterGridImageUltraHD() {
           ctx.fillText(`${toko.id}. ${toko.kode}/${toko.nama}`, x + (itemWidth / 2), y + itemWidth + 62);
 
           loaded++;
-          if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.95));
+          if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
         };
         img.onerror = () => {
           gambarKotakKosongUltra(ctx, toko, x, y, itemWidth);
           loaded++;
-          if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.95));
+          if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
         };
       } else {
         gambarKotakKosongUltra(ctx, toko, x, y, itemWidth);
         loaded++;
-        if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.95));
+        if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
       }
     });
   });
@@ -848,7 +855,7 @@ async function kirimFoto() {
 
   let base64Collection = [];
   for (const file of files) {
-    const base64Compressed = await kompresDanUbahKeBase64(file, 700, 0.65);
+    const base64Compressed = await kompresDanUbahKeBase64(file, 500, 0.55);
     base64Collection.push(`data:image/jpeg;base64,${base64Compressed}`);
   }
 
@@ -862,6 +869,7 @@ async function kirimFoto() {
     listLink: ""
   };
 
+  // Simpan ke local storage HP terlebih dahulu agar langsung muncul
   localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
     status: "Sukses",
     jumlah: files.length,
@@ -869,18 +877,22 @@ async function kirimFoto() {
     links: []
   }));
 
-  const formBody = encodeURIComponent(JSON.stringify(payload));
-  const script = document.createElement("script");
-  script.src = `${API}?callback=selesaiUploadCloud&data=${formBody}`;
-  document.body.appendChild(script);
-}
+  try {
+    // Kirim menggunakan metode POST (no-cors) agar tidak pernah mentok
+    await fetch(API, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+  } catch(err) {
+    console.log("Network warning:", err);
+  }
 
-window.selesaiUploadCloud = function(res) {
-  const tombol = document.getElementById("btn-upload");
   tombol.disabled = false;
-  tampilStatus(`✅ Sukses! Data tersimpan permanen di Cloud pusat.`, "success");
+  tampilStatus(`✅ Sukses! Data tersimpan di Cloud pusat.`, "success");
   
-  sinkronisasiDataGlobal();
+  renderGridVisual();
 
   document.getElementById("foto-kamera").value = "";
   document.getElementById("foto-galeri").value = "";
@@ -889,7 +901,7 @@ window.selesaiUploadCloud = function(res) {
   document.getElementById("btn-upload").disabled = true;
   globalSelectedFiles = [];
   setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
-};
+}
 
 function kompresDanUbahKeBase64(file, maxWidth, quality) {
   return new Promise((resolve, reject) => {

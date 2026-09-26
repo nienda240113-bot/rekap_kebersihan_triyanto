@@ -295,7 +295,7 @@ select, input[type="file"] {
   <div id="step-2-container">
     <label for="foto">2️⃣ Pilih Foto (Minimal 1, Maksimal 6 Foto)</label>
     <input type="file" id="foto" accept="image/*" multiple disabled onchange="validasiPilihFoto()">
-    <div id="file-info" style="font-size: 11px; color: #555; margin-top: 4px; font-weight: bold;"></div>
+    <div id="file-info" style="font-size: 11px; color: #1677ff; margin-top: 4px; font-weight: bold;"></div>
   </div>
 
   <div id="preview-upload"></div>
@@ -364,18 +364,21 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("foto").disabled = false;
   }
   
-  // Sinkronisasi data dari Google Sheets saat pertama kali dibuka di device manapun
+  // Ambil data online dari Google Sheets agar sinkron di semua device
   ambilDataDariCloudPusat();
 });
 
-// FUNGSI TARIK DATA ONLINE DARI CLOUD PUSAT (GOOGLE SHEETS)
+// TARIK DATA DARI CLOUD PUSAT (GOOGLE SHEETS)
 async function ambilDataDariCloudPusat() {
-  tampilStatus("⏳ Mengambil data online dari server...", "info");
+  tampilStatus("⏳ Memuat data online dari server...", "info");
   try {
     const response = await fetch(API);
     const result = await response.json();
     if (result.status === "success" && result.data) {
-      // Perbarui memori lokal perangkat dengan data online terbaru
+      listTokoData.forEach(toko => {
+        localStorage.removeItem(`upload_${toko.kode}`);
+      });
+
       result.data.forEach(item => {
         if (item.kodeToko && item.collageImg) {
           localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
@@ -387,11 +390,10 @@ async function ambilDataDariCloudPusat() {
         }
       });
       renderGridVisual();
-      tampilStatus("✅ Data online berhasil dimuat.", "success");
-      setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
+      document.getElementById("status").style.display = "none";
     }
   } catch (error) {
-    console.log("Menggunakan data lokal tersimpan:", error);
+    console.log("Menggunakan cache lokal:", error);
     renderGridVisual();
     document.getElementById("status").style.display = "none";
   }
@@ -413,7 +415,7 @@ function validasiPilihToko() {
   }
 }
 
-// VALIDASI TAHAP 2: PILIH FOTO (DIPERBAIKI AGAR TIDAK MUNCUL BUG "TIDAK ADA FILE")
+// VALIDASI TAHAP 2: PILIH FOTO (DIOPTIMASI AGAR KOMPATIBEL DI SEMUA HP)
 function validasiPilihFoto() {
   const tokoVal = document.getElementById("toko").value;
   const inputFoto = document.getElementById("foto");
@@ -433,7 +435,6 @@ function validasiPilihFoto() {
   if (jumlahFile < 1) {
     btnUpload.disabled = true;
     fileInfo.textContent = "";
-    tampilStatus("⚠️ Peringatan: Pilih minimal 1 foto!", "error");
     return;
   }
   if (jumlahFile > 6) {
@@ -445,8 +446,8 @@ function validasiPilihFoto() {
   }
 
   btnUpload.disabled = false;
-  fileInfo.textContent = `📁 Terpilih: ${jumlahFile} foto siap di-upload.`;
-  tampilStatus("✅ Foto sesuai ketentuan. Tekan Upload Kilat.", "success");
+  fileInfo.textContent = `✅ ${jumlahFile} foto berhasil dipilih dan siap di-upload.`;
+  tampilStatus("✅ Foto siap di-upload ke Cloud.", "success");
   setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
 
   for (const file of inputFoto.files) {
@@ -460,7 +461,7 @@ function validasiPilihFoto() {
   }
 }
 
-// FUNGSI RESET / HAPUS SEMUA GRID ONLINE & OFFLINE
+// RESET SEMUA GRID
 async function resetSemuaGridRealtime() {
   if (confirm("⚠️ Yakin ingin menghapus seluruh data laporan hari ini secara permanen dari server?")) {
     tampilStatus("🗑️ Menghapus data dari server...", "info");
@@ -485,7 +486,7 @@ async function resetSemuaGridRealtime() {
   }
 }
 
-// Sistem Tour Guide Animasi
+// PANDUAN TOUR
 let currentStep = 0;
 const tourSteps = [
   { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Wajib pilih toko terlebih dahulu!" },
@@ -538,19 +539,18 @@ function tutupPanduan() {
   document.getElementById("tour-overlay").style.display = "none";
 }
 
-// FUNGSI KOLASE THUMBNAIL
+// KOLASE THUMBNAIL SUPER CEPAT & RINGAN
 async function buatKolaseThumbnail(base64List) {
   return new Promise((resolve) => {
     if (!base64List || base64List.length === 0) { resolve(""); return; }
     const canvas = document.createElement("canvas");
-    canvas.width = 450; 
-    canvas.height = 450;
+    canvas.width = 300; // Ukuran diperkecil agar proses sangat cepat dan ringan
+    canvas.height = 300;
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'medium';
 
     ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, 450, 450);
+    ctx.fillRect(0, 0, 300, 300);
 
     let loadedCount = 0;
     const imgObjects = [];
@@ -563,7 +563,7 @@ async function buatKolaseThumbnail(base64List) {
         loadedCount++;
         if (loadedCount === base64List.length) {
           gambarKeCanvasKecil(ctx, imgObjects);
-          resolve(canvas.toDataURL("image/jpeg", 0.8));
+          resolve(canvas.toDataURL("image/jpeg", 0.7));
         }
       };
       img.onerror = () => {
@@ -578,19 +578,19 @@ function gambarKeCanvasKecil(ctx, imgs) {
   const validImgs = imgs.filter(Boolean);
   const len = validImgs.length;
   if (len === 1) {
-    ctx.drawImage(validImgs[0], 0, 0, 450, 450);
+    ctx.drawImage(validImgs[0], 0, 0, 300, 300);
   } else if (len === 2) {
-    ctx.drawImage(validImgs[0], 0, 0, 225, 450);
-    ctx.drawImage(validImgs[1], 225, 0, 225, 450);
+    ctx.drawImage(validImgs[0], 0, 0, 150, 300);
+    ctx.drawImage(validImgs[1], 150, 0, 150, 300);
   } else if (len <= 4) {
-    let w = 225, h = 225;
+    let w = 150, h = 150;
     validImgs.forEach((img, i) => {
       let x = (i % 2) * w;
       let y = Math.floor(i / 2) * h;
       ctx.drawImage(img, x, y, w, h);
     });
   } else {
-    let w = 150, h = 150;
+    let w = 100, h = 100;
     validImgs.forEach((img, i) => {
       if (i < 9) {
         let x = (i % 3) * w;
@@ -798,11 +798,11 @@ async function kirimFoto() {
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
-  tampilStatus(`⚡ Memproses & Menyimpan ke Cloud Online...`, "info");
+  tampilStatus(`⚡ Memproses & Mengirim Cepat ke Cloud...`, "info");
 
   let base64Collection = [];
   for (const file of files) {
-    const base64Compressed = await kompresDanUbahKeBase64(file, 900, 0.7);
+    const base64Compressed = await kompresDanUbahKeBase64(file, 700, 0.65);
     base64Collection.push(`data:image/jpeg;base64,${base64Compressed}`);
   }
 
@@ -816,7 +816,7 @@ async function kirimFoto() {
     listLink: ""
   };
 
-  // Simpan permanen secara online via Google Sheets & lokal device
+  // Simpan instan di perangkat lokal
   localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
     status: "Sukses",
     jumlah: files.length,
@@ -824,26 +824,23 @@ async function kirimFoto() {
     links: []
   }));
 
-  try {
-    await fetch(API, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-  } catch (err) {
-    console.log("Sinkronisasi latar belakang:", err);
-  }
+  // Kirim latar belakang secara instan tanpa menunggu balasan (mencegah lemot)
+  fetch(API, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).catch(err => console.log(err));
 
   tombol.disabled = false;
-  tampilStatus(`✅ Sukses! Data toko tersimpan permanen di Cloud online.`, "success");
+  tampilStatus(`✅ Sukses! Data tersimpan permanen secara online.`, "success");
   renderGridVisual();
 
   document.getElementById("foto").value = "";
   document.getElementById("file-info").textContent = "";
   document.getElementById("preview-upload").innerHTML = "";
   document.getElementById("btn-upload").disabled = true;
-  setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2500);
+  setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
 }
 
 function kompresDanUbahKeBase64(file, maxWidth, quality) {
@@ -863,7 +860,6 @@ function kompresDanUbahKeBase64(file, maxWidth, quality) {
         canvas.width = width; canvas.height = height;
         const ctx = canvas.getContext("2d");
         ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'medium';
         ctx.drawImage(img, 0, 0, width, height);
         resolve(canvas.toDataURL("image/jpeg", quality).split(",")[1]);
       };

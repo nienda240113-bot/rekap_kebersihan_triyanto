@@ -2,10 +2,12 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</title>
-<meta name="apple-mobile-web-app-title" content="APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26">
-<meta name="application-name" content="APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Daily Activity">
+<meta name="theme-color" content="#1677ff">
 <style>
 :root {
   --primary: #1677ff;
@@ -14,41 +16,42 @@
   --danger: #ff4d4f;
   --danger-hover: #d9363e;
   --camera-btn: #722ed1;
-  --bg-color: #f5f7fa;
+  --bg-color: #f0f2f5;
   --card-bg: #ffffff;
   --text-main: #333333;
   --border-color: #d9d9d9;
 }
 body {
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: var(--bg-color);
   margin: 0;
-  padding: 10px;
+  padding: 8px;
   color: var(--text-main);
+  -webkit-tap-highlight-color: transparent;
 }
 .box {
-  max-width: 600px;
+  max-width: 650px;
   margin: auto;
   background: var(--card-bg);
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 14px;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   position: relative;
 }
 h3.title {
   margin-top: 0;
-  font-size: 15px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   color: #1a1a1a;
   text-align: center;
 }
 .sub-desc {
   font-size: 11px;
   color: #666;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
@@ -57,22 +60,22 @@ h3.title {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 4px;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   text-align: center;
 }
 .stat-box {
   background: #fafafa;
   border: 1px solid #e8e8e8;
   border-radius: 6px;
-  padding: 6px 2px;
+  padding: 5px 2px;
 }
 .stat-num {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: bold;
   color: #222;
 }
 .stat-label {
-  font-size: 9px;
+  font-size: 8px;
   color: #666;
   margin-top: 2px;
 }
@@ -81,27 +84,27 @@ h3.title {
 .grid-preview-box {
   border: 2px dashed #d9d9d9;
   border-radius: 10px;
-  padding: 10px;
+  padding: 8px;
   background: #fff;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 .grid-20-preview {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
+  gap: 5px;
 }
 .toko-card {
   border: 1px solid #e8e8e8;
   border-radius: 6px;
   overflow: hidden;
   background: #fff;
-  font-size: 9px;
+  font-size: 8px;
   text-align: center;
   position: relative;
 }
 .toko-card .canvas-wrapper {
   width: 100%;
-  height: 55px;
+  height: 50px;
   background: #eee;
   position: relative;
 }
@@ -112,30 +115,30 @@ h3.title {
   display: block;
 }
 .toko-card .info {
-  padding: 3px 2px;
+  padding: 2px;
 }
 .toko-card .name {
   font-weight: bold;
-  font-size: 8px;
+  font-size: 7.5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .toko-card .status {
-  font-size: 7px;
+  font-size: 6.5px;
   color: #52c41a;
   margin-top: 1px;
 }
 
 /* Form Input Standar */
-label { display: block; font-weight: bold; margin-top: 10px; margin-bottom: 4px; font-size: 12px; }
+label { display: block; font-weight: bold; margin-top: 8px; margin-bottom: 3px; font-size: 11.5px; }
 select {
   width: 100%;
-  padding: 10px;
+  padding: 9px;
   box-sizing: border-box;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 12.5px;
   background: #fafafa;
 }
 
@@ -143,8 +146,8 @@ select {
 .upload-buttons-group {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 6px;
+  margin-top: 5px;
 }
 .file-upload-wrapper {
   position: relative;
@@ -165,12 +168,12 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   width: 100%;
-  padding: 12px 8px;
+  padding: 11px 6px;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: bold;
   color: white;
   text-align: center;
@@ -183,12 +186,12 @@ select {
 #preview-upload {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-top: 10px;
+  gap: 5px;
+  margin-top: 8px;
 }
 #preview-upload img {
   width: 100%;
-  height: 80px;
+  height: 75px;
   object-fit: cover;
   border-radius: 6px;
 }
@@ -197,14 +200,14 @@ select {
 .action-buttons {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
-  margin-top: 15px;
+  gap: 6px;
+  margin-top: 12px;
 }
 .btn {
-  padding: 12px;
+  padding: 11px;
   border: 0;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: bold;
   cursor: pointer;
   text-align: center;
@@ -212,47 +215,43 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   color: white;
   position: relative;
 }
 .btn-primary { background: var(--primary); }
-.btn-wa { background: var(--whatsapp); font-size: 14px; padding: 15px; }
+.btn-wa { background: var(--whatsapp); font-size: 13.5px; padding: 13px; }
 .btn-wa:hover { background: var(--whatsapp-hover); }
-.btn-danger { background: var(--danger); font-size: 12px; padding: 12px; margin-top: 20px; width: 100%; }
+.btn-danger { background: var(--danger); font-size: 11.5px; padding: 11px; margin-top: 15px; width: 100%; }
 .btn-danger:hover { background: var(--danger-hover); }
 .btn:disabled { background: #d9d9d9 !important; cursor: not-allowed; color: #888; }
 
-/* Tombol Bantuan Mengambang */
-.btn-help {
+/* Tombol Bantuan & Instal */
+.header-btns {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background: #ff4d4f;
-  color: white;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+}
+.btn-top {
   border: none;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   font-weight: bold;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  color: white;
 }
+.btn-help { background: #ff4d4f; }
+.btn-install { background: #52c41a; display: none; }
 
-/* Efek Animasi Sorot */
-.highlight-target {
-  position: relative;
-  z-index: 999;
-  box-shadow: 0 0 0 4px #1677ff, 0 0 15px rgba(22, 119, 255, 0.6) !important;
-  border-radius: 8px;
-  background: #fff !important;
-}
-
-/* Tooltip & Panah Animasi */
+/* Tooltip & Tour */
 #tour-overlay {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -261,14 +260,14 @@ select {
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 15px;
   box-sizing: border-box;
 }
 .tour-card {
   background: white;
-  padding: 20px;
+  padding: 18px;
   border-radius: 12px;
-  max-width: 320px;
+  max-width: 300px;
   width: 100%;
   text-align: center;
   box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -279,19 +278,19 @@ select {
   0% { transform: scale(0.8); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
-.tour-title { font-weight: bold; font-size: 15px; color: #1677ff; margin-bottom: 8px; }
-.tour-text { font-size: 13px; color: #444; margin-bottom: 15px; line-height: 1.4; }
-.tour-buttons { display: flex; gap: 8px; justify-content: center; }
-.tour-btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; }
+.tour-title { font-weight: bold; font-size: 14px; color: #1677ff; margin-bottom: 6px; }
+.tour-text { font-size: 12px; color: #444; margin-bottom: 12px; line-height: 1.4; }
+.tour-buttons { display: flex; gap: 6px; justify-content: center; }
+.tour-btn { padding: 7px 14px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11.5px; }
 .tour-btn-next { background: #1677ff; color: white; }
 .tour-btn-skip { background: #f0f0f0; color: #666; }
 
 #status {
-  margin-top: 10px;
-  padding: 8px;
+  margin-top: 8px;
+  padding: 7px;
   border-radius: 6px;
   text-align: center;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: bold;
   display: none;
 }
@@ -303,9 +302,13 @@ select {
 <body>
 
 <div class="box">
-  <button class="btn-help" onclick="mulaiPanduan()" title="Panduan Aplikasi">?</button>
+  <div class="header-btns">
+    <button class="btn-top btn-install" id="btn-install-app" onclick="installAplikasi()" title="Install Aplikasi ke HP">📲</button>
+    <button class="btn-top btn-help" onclick="mulaiPanduan()" title="Panduan Aplikasi">?</button>
+  </div>
+
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
-  <div class="sub-desc">Sinkronisasi Cloud Real-Time Antar Perangkat.</div>
+  <div class="sub-desc">Multi-Device Cloud System (Android, iOS, Windows, Mac).</div>
 
   <!-- Form Upload Toko -->
   <div id="step-1-container">
@@ -347,21 +350,21 @@ select {
         <input type="file" id="foto-galeri" accept="image/*" multiple disabled onchange="prosesPilihFoto(this)">
       </div>
     </div>
-    <div id="file-info" style="font-size: 11px; color: #1677ff; margin-top: 6px; font-weight: bold; text-align: center;"></div>
+    <div id="file-info" style="font-size: 11px; color: #1677ff; margin-top: 5px; font-weight: bold; text-align: center;"></div>
   </div>
 
   <div id="preview-upload"></div>
   <div id="status"></div>
 
   <div id="step-3-container">
-    <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:12px;" disabled>⚡ 3️⃣ UPLOAD KILAT & GENERATE GRID</button>
+    <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:10px;" disabled>⚡ 3️⃣ UPLOAD KILAT & GENERATE GRID</button>
   </div>
 
-  <div class="action-buttons" style="margin-top: 12px;" id="step-4-container">
+  <div class="action-buttons" style="margin-top: 10px;" id="step-4-container">
     <button class="btn btn-wa" onclick="shareMasterGridDirectly()" id="btn-wa" disabled>💬 4️⃣ Kirim Grid Ultra HD ke WhatsApp</button>
   </div>
 
-  <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+  <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
 
   <!-- Kotak Statistik & Grid 20 Toko -->
   <div class="stats-container">
@@ -376,11 +379,10 @@ select {
     <div id="grid-visual-20" class="grid-20-preview"></div>
   </div>
 
-  <!-- Tombol Hapus Hasil Upload -->
   <button class="btn btn-danger" onclick="resetSemuaGridRealtime()">🗑️ Reset / Hapus Semua Hasil Upload Hari Ini</button>
 </div>
 
-<!-- Overlay Panduan Interaktif -->
+<!-- Overlay Panduan -->
 <div id="tour-overlay">
   <div class="tour-card">
     <div class="tour-title" id="tour-title">Judul Panduan</div>
@@ -409,6 +411,28 @@ const listTokoData = [
 ];
 
 let globalSelectedFiles = [];
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById("btn-install-app").style.display = "flex";
+});
+
+function installAplikasi() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User menginstal aplikasi');
+      }
+      deferredPrompt = null;
+      document.getElementById("btn-install-app").style.display = "none";
+    });
+  } else {
+    alert("Untuk menginstal di iPhone/iPad, ketuk tombol 'Bagikan' di Safari lalu pilih 'Tambahkan ke Layar Utama'.");
+  }
+}
 
 window.addEventListener("DOMContentLoaded", () => {
   const savedToko = localStorage.getItem("last_selected_toko");
@@ -417,12 +441,11 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("foto-kamera").disabled = false;
     document.getElementById("foto-galeri").disabled = false;
   }
-  
   sinkronisasiDataGlobal();
 });
 
 function sinkronisasiDataGlobal() {
-  tampilStatus("⏳ Menyinkronkan data online dari server...", "info");
+  tampilStatus("⏳ Menyinkronkan data antar perangkat...", "info");
   const script = document.createElement("script");
   script.src = `${API}?callback=terimaDataCloud`;
   document.body.appendChild(script);
@@ -446,7 +469,7 @@ window.terimaDataCloud = function(result) {
     });
 
     renderGridVisual();
-    tampilStatus("✅ Sinkronisasi online berhasil!", "success");
+    tampilStatus("✅ Sinkronisasi antar device berhasil!", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
   } else {
     renderGridVisual();
@@ -462,12 +485,12 @@ function validasiPilihToko() {
   if (!val) {
     inputKamera.disabled = true;
     inputGaleri.disabled = true;
-    tampilStatus("⚠️ PERHATIAN: Silakan pilih Nama Toko terlebih dahulu!", "error");
+    tampilStatus("⚠️ Silakan pilih Nama Toko terlebih dahulu!", "error");
   } else {
     inputKamera.disabled = false;
     inputGaleri.disabled = false;
     localStorage.setItem("last_selected_toko", val);
-    tampilStatus("✅ Toko terpilih. Silakan gunakan tombol Kamera atau Galeri.", "success");
+    tampilStatus("✅ Toko terpilih. Silakan gunakan Kamera atau Galeri.", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
 }
@@ -480,7 +503,7 @@ function prosesPilihFoto(inputElement) {
   preview.innerHTML = "";
 
   if (!tokoVal) {
-    tampilStatus("❌ ERROR: Pilih Toko terlebih dahulu di Langkah 1!", "error");
+    tampilStatus("❌ ERROR: Pilih Toko terlebih dahulu!", "error");
     inputElement.value = "";
     return;
   }
@@ -494,7 +517,7 @@ function prosesPilihFoto(inputElement) {
   if (files.length > 6) {
     btnUpload.disabled = true;
     fileInfo.textContent = "";
-    tampilStatus("❌ Peringatan: Maksimal hanya boleh 6 foto!", "error");
+    tampilStatus("❌ Maksimal hanya boleh 6 foto!", "error");
     inputElement.value = "";
     return;
   }
@@ -543,10 +566,10 @@ async function resetSemuaGridRealtime() {
 
 let currentStep = 0;
 const tourSteps = [
-  { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Wajib pilih toko terlebih dahulu!" },
-  { element: "step-2-container", title: "Langkah 2: Ambil Foto 📷", text: "Pilih langsung dari Kamera atau Galeri perangkat." },
-  { element: "step-3-container", title: "Langkah 3: Upload Kilat ⚡", text: "Mengirim foto secara online ke Cloud Google Sheets." },
-  { element: "step-4-container", title: "Langkah 4: Kirim ke WhatsApp 💬", text: "Bagikan rekap grid laporan ke WhatsApp." }
+  { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Wajib pilih toko sebelum mengambil foto." },
+  { element: "step-2-container", title: "Langkah 2: Ambil Foto 📷", text: "Pilih langsung dari Kamera atau Galeri HP." },
+  { element: "step-3-container", title: "Langkah 3: Upload Kilat ⚡", text: "Mengirim data secara real-time ke Cloud pusat." },
+  { element: "step-4-container", title: "Langkah 4: Kirim WhatsApp 💬", text: "Bagikan rekap grid gambar HD ke grup WhatsApp." }
 ];
 
 function mulaiPanduan() {
@@ -668,7 +691,7 @@ function renderGridVisual() {
     const card = document.createElement("div");
     card.className = "toko-card";
 
-    let imgWrapperHtml = `<div style="height:55px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; font-size:8px; color:#aaa;">No Foto</div>`;
+    let imgWrapperHtml = `<div style="height:50px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; font-size:7.5px; color:#aaa;">No Foto</div>`;
     let statusText = `<span style="color:#faad14;">Belum</span>`;
 
     if (dataUpload.status === "Sukses") {
@@ -677,10 +700,10 @@ function renderGridVisual() {
       if (dataUpload.collageImg) {
         imgWrapperHtml = `<img src="${dataUpload.collageImg}" alt="Kolase">`;
       }
-      statusText = `LENGKAP • ${dataUpload.jumlah} Foto`;
+      statusText = `OK • ${dataUpload.jumlah} Foto`;
       rekapTeksWA += `✅ *${toko.id}. ${toko.kode}/${toko.nama}* (${dataUpload.jumlah} Foto)\n`;
     } else {
-      rekapTeksWA += `⏳ *${toko.id}. ${toko.kode}/${toko.nama}*: Belum Kirim\n`;
+      rekapTeksWA += `⏳ *${toko.id}. ${toko.kode}/${toko.nama}*: Belum\n`;
     }
 
     card.innerHTML = `
@@ -713,7 +736,6 @@ function renderGridVisual() {
     `📦 Sudah Kirim : ${totalSudah}\n` +
     `❌ Belum Kirim : ${20 - totalSudah}\n` +
     `✅ Lengkap : ${totalSudah}\n` +
-    `⚠️ Belum Sesuai : 0\n` +
     `📷 Total Foto : ${totalFoto}\n` +
     `📈 Progress : ${progress}%\n\n` +
     `━━━━━━━━━━━━━━━\n` +
@@ -796,7 +818,7 @@ function gambarKotakKosongUltra(ctx, toko, x, y, itemWidth) {
 async function shareMasterGridDirectly() {
   const btnWa = document.getElementById("btn-wa");
   if (btnWa.disabled) {
-    tampilStatus("❌ PEMBERITAHUAN: Selesaikan minimal 1 upload toko terlebih dahulu.", "error");
+    tampilStatus("❌ Selesaikan minimal 1 upload toko terlebih dahulu.", "error");
     return;
   }
 
@@ -841,11 +863,11 @@ async function kirimFoto() {
   const tombol = document.getElementById("btn-upload");
 
   if (!tokoVal) { 
-    tampilStatus("❌ PERINGATAN: Pilih Toko terlebih dahulu.", "error"); 
+    tampilStatus("❌ Pilih Toko terlebih dahulu.", "error"); 
     return; 
   }
   if (!files || files.length < 1 || files.length > 6) { 
-    tampilStatus("❌ PERINGATAN: Pilih minimal 1 dan maksimal 6 foto.", "error"); 
+    tampilStatus("❌ Pilih minimal 1 dan maksimal 6 foto.", "error"); 
     return; 
   }
 
@@ -855,7 +877,7 @@ async function kirimFoto() {
 
   let base64Collection = [];
   for (const file of files) {
-    const base64Compressed = await kompresDanUbahKeBase64(file, 500, 0.55);
+    const base64Compressed = await kompresDanUbahKeBase64(file, 480, 0.5);
     base64Collection.push(`data:image/jpeg;base64,${base64Compressed}`);
   }
 
@@ -869,7 +891,6 @@ async function kirimFoto() {
     listLink: ""
   };
 
-  // Simpan ke local storage HP terlebih dahulu agar langsung muncul
   localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
     status: "Sukses",
     jumlah: files.length,
@@ -878,7 +899,6 @@ async function kirimFoto() {
   }));
 
   try {
-    // Kirim menggunakan metode POST (no-cors) agar tidak pernah mentok
     await fetch(API, {
       method: "POST",
       mode: "no-cors",

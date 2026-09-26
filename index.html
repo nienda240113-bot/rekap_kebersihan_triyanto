@@ -433,12 +433,10 @@ async function sinkronisasiDataServer() {
     const response = await fetch(API);
     const result = await response.json();
     if (result.status === "success" && result.data) {
-      // Kosongkan cache lokal toko dulu agar yang sudah dihapus di server ikut terhapus di lokal
       listTokoData.forEach(toko => {
         localStorage.removeItem(`upload_${toko.kode}`);
       });
 
-      // Timpa dengan data terbaru dari Google Sheets pusat
       result.data.forEach(item => {
         if (item.kodeToko && item.collageImg) {
           localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
@@ -561,18 +559,19 @@ function tutupPanduan() {
   document.getElementById("tour-overlay").style.display = "none";
 }
 
+// FUNGSI KOLASE THUMBNAIL DENGAN UKURAN OPTIMAL (RINGAN & AMAN DARI ERROR)
 async function buatKolaseThumbnail(base64List) {
   return new Promise((resolve) => {
     if (!base64List || base64List.length === 0) { resolve(""); return; }
     const canvas = document.createElement("canvas");
-    canvas.width = 900; 
-    canvas.height = 900;
+    canvas.width = 450; 
+    canvas.height = 450;
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
+    ctx.imageSmoothingQuality = 'medium';
 
     ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, 900, 900);
+    ctx.fillRect(0, 0, 450, 450);
 
     let loadedCount = 0;
     const imgObjects = [];
@@ -584,8 +583,8 @@ async function buatKolaseThumbnail(base64List) {
         imgObjects[idx] = img;
         loadedCount++;
         if (loadedCount === base64List.length) {
-          gambarKeCanvasUltra(ctx, imgObjects);
-          resolve(canvas.toDataURL("image/jpeg", 0.92));
+          gambarKeCanvasKecil(ctx, imgObjects);
+          resolve(canvas.toDataURL("image/jpeg", 0.8));
         }
       };
       img.onerror = () => {
@@ -596,23 +595,24 @@ async function buatKolaseThumbnail(base64List) {
   });
 }
 
-function gambarKeCanvasUltra(ctx, imgs) {
-  const len = imgs.filter(Boolean).length;
+function gambarKeCanvasKecil(ctx, imgs) {
+  const validImgs = imgs.filter(Boolean);
+  const len = validImgs.length;
   if (len === 1) {
-    ctx.drawImage(imgs[0], 0, 0, 900, 900);
+    ctx.drawImage(validImgs[0], 0, 0, 450, 450);
   } else if (len === 2) {
-    ctx.drawImage(imgs[0], 0, 0, 450, 900);
-    ctx.drawImage(imgs[1], 450, 0, 450, 900);
+    ctx.drawImage(validImgs[0], 0, 0, 225, 450);
+    ctx.drawImage(validImgs[1], 225, 0, 225, 450);
   } else if (len <= 4) {
-    let w = 450, h = 450;
-    imgs.forEach((img, i) => {
+    let w = 225, h = 225;
+    validImgs.forEach((img, i) => {
       let x = (i % 2) * w;
       let y = Math.floor(i / 2) * h;
       ctx.drawImage(img, x, y, w, h);
     });
   } else {
-    let w = 300, h = 300;
-    imgs.forEach((img, i) => {
+    let w = 150, h = 150;
+    validImgs.forEach((img, i) => {
       if (i < 9) {
         let x = (i % 3) * w;
         let y = Math.floor(i / 3) * h;
@@ -819,74 +819,58 @@ async function kirimFoto() {
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
-  tampilStatus(`⚡ Memproses & Mengupload ${files.length} Foto secara Kilat...`, "info");
+  tampilStatus(`⚡ Memproses & Mengupload ${files.length} Foto ke Server...`, "info");
 
   let base64Collection = [];
-  let listLinkDrive = [];
-  let sukses = 0, gagal = 0;
+  let sukses = 0;
 
-  const uploadPromises = Array.from(files).map(async (file, i) => {
-    try {
-      const base64Compressed = await kompresDanUbahKeBase64(file, 1400, 0.82);
-      base64Collection.push(`data:image/jpeg;base64,${base64Compressed}`);
+  for (const file of files) {
+    const base64Compressed = await kompresDanUbahKeBase64(file, 1000, 0.75);
+    base64Collection.push(`data:image/jpeg;base64,${base64Compressed}`);
+  }
 
-      const listLinkStr = listLinkDrive.join(",");
-      const collageDataUrl = await buatKolaseThumbnail(base64Collection);
+  const finalCollage = await buatKolaseThumbnail(base64Collection);
 
-      const payload = {
-        kodeToko: kodeToko,
-        namaToko: namaToko,
-        namaFile: `${kodeToko}_${Date.now()}_${i}_${file.name}`,
-        mimeType: "image/jpeg",
-        foto: base64Compressed,
-        jumlahFoto: files.length,
-        listLink: listLinkStr,
-        collageImg: collageDataUrl
-      };
+  const payload = {
+    kodeToko: kodeToko,
+    namaToko: namaToko,
+    jumlahFoto: files.length,
+    collageImg: finalCollage,
+    listLink: ""
+  };
 
-      const response = await fetch(API, {
-        method: "POST",
-        body: JSON.stringify(payload)
-      });
+  try {
+    const response = await fetch(API, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
 
-      const textRes = await response.text();
-      let hasil = JSON.parse(textRes);
+    const textRes = await response.text();
+    let hasil = JSON.parse(textRes);
 
-      if (hasil.status === "success") {
-        sukses++;
-        if (hasil.link) listLinkDrive.push(hasil.link);
-      } else {
-        gagal++;
-      }
-    } catch (error) {
-      console.error(error);
-      gagal++;
+    if (hasil.status === "success") {
+      tampilStatus(`✅ Sukses! Data toko berhasil dikirim ke server pusat.`, "success");
+      
+      localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
+        status: "Sukses",
+        jumlah: files.length,
+        collageImg: finalCollage,
+        links: []
+      }));
+
+      renderGridVisual();
+
+      document.getElementById("foto").value = "";
+      document.getElementById("preview-upload").innerHTML = "";
+      document.getElementById("btn-upload").disabled = true;
+    } else {
+      tampilStatus(`❌ Gagal menyimpan ke server: ${hasil.message || 'Error'}`, "error");
     }
-  });
-
-  await Promise.all(uploadPromises);
-  tombol.disabled = false;
-
-  if (gagal === 0) {
-    tampilStatus(`✅ Sukses! ${sukses} Foto berhasil di-upload ke server pusat.`, "success");
-    
-    const finalCollage = await buatKolaseThumbnail(base64Collection);
-    
-    // Simpan permanen di localStorage perangkat
-    localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
-      status: "Sukses",
-      jumlah: sukses,
-      collageImg: finalCollage,
-      links: listLinkDrive
-    }));
-
-    renderGridVisual();
-
-    document.getElementById("foto").value = "";
-    document.getElementById("preview-upload").innerHTML = "";
-    document.getElementById("btn-upload").disabled = true;
-  } else {
-    tampilStatus(`⚠️ Berhasil: ${sukses} | Gagal: ${gagal}`, "error");
+  } catch (error) {
+    console.error(error);
+    tampilStatus(`❌ Gagal koneksi ke server. Periksa jaringan Anda.`, "error");
+  } finally {
+    tombol.disabled = false;
   }
 }
 
@@ -907,7 +891,7 @@ function kompresDanUbahKeBase64(file, maxWidth, quality) {
         canvas.width = width; canvas.height = height;
         const ctx = canvas.getContext("2d");
         ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
+        ctx.imageSmoothingQuality = 'medium';
         ctx.drawImage(img, 0, 0, width, height);
         resolve(canvas.toDataURL("image/jpeg", quality).split(",")[1]);
       };

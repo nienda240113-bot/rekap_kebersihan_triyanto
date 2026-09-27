@@ -287,7 +287,6 @@ select {
   position: relative;
 }
 .btn-primary { background: var(--primary); }
-.btn-sync { background: #faad14; font-size: 11.5px; padding: 8px; margin-bottom: 8px; width: 100%; }
 .btn-wa { background: var(--whatsapp); font-size: 13.5px; padding: 13px; }
 .btn-wa:hover { background: var(--whatsapp-hover); }
 .btn-danger { background: var(--danger); font-size: 11.5px; padding: 11px; margin-top: 15px; width: 100%; }
@@ -350,9 +349,6 @@ select {
     <div style="font-size: 11px; color: #555; margin: 3px 0;">Sudah waktunya mengirim rekap laporan harian ke grup WhatsApp!</div>
     <button class="btn btn-wa" style="font-size: 11.5px; padding: 8px; width: 100%; margin-top: 5px;" onclick="shareMasterGridDirectly()">💬 Kirim Sekarang ke WhatsApp</button>
   </div>
-
-  <!-- Tombol Sinkronisasi / Cek Cloud -->
-  <button class="btn btn-sync" onclick="sinkronisasiDataGlobal(true)">🔄 SINKRONISASI DATA HARI INI</button>
 
   <!-- Navigasi Tab -->
   <div class="tab-menu">
@@ -518,7 +514,8 @@ window.addEventListener("DOMContentLoaded", () => {
   cekWaktuSoreReminder();
   setInterval(cekWaktuSoreReminder, 60000);
 
-  sinkronisasiDataGlobal(false);
+  // Otomatis sinkronisasi senyap saat pertama kali link dibuka / di-refresh
+  sinkronisasiDataOtomatisSilent();
 });
 
 function cekWaktuSoreReminder() {
@@ -537,19 +534,17 @@ function gantiTab(tabName, el) {
   el.classList.add('active');
 }
 
-function sinkronisasiDataGlobal(isManual = false) {
-  if (isManual) tampilStatus("⏳ Menyinkronkan data dengan Cloud Pusat...", "info");
-  
+function sinkronisasiDataOtomatisSilent() {
   const oldScript = document.getElementById("jsonp-sync-script");
   if (oldScript) oldScript.remove();
 
   const script = document.createElement("script");
   script.id = "jsonp-sync-script";
-  script.src = `${API}?callback=terimaDataCloud&t=${Date.now()}`;
+  script.src = `${API}?callback=terimaDataCloudSilent&t=${Date.now()}`;
   document.body.appendChild(script);
 }
 
-window.terimaDataCloud = function(result) {
+window.terimaDataCloudSilent = function(result) {
   if (result && result.status === "success" && result.data) {
     result.data.forEach(item => {
       if (item.kodeToko && item.collageImg) {
@@ -560,21 +555,9 @@ window.terimaDataCloud = function(result) {
         }));
       }
     });
-
-    renderGridVisual();
-    updateDashboardStats();
-    if (document.getElementById("status").style.display === "block") {
-      tampilStatus("✅ Sinkronisasi Berhasil!", "success");
-      setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
-    }
-  } else {
-    renderGridVisual();
-    updateDashboardStats();
-    if (document.getElementById("status").style.display === "block") {
-      tampilStatus("⚠️ Data Cloud Pusat Sinkron.", "info");
-      setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
-    }
   }
+  renderGridVisual();
+  updateDashboardStats();
 };
 
 function validasiPilihToko() {
@@ -786,7 +769,7 @@ function updateDashboardStats() {
   document.getElementById("dash-detail-stats").innerHTML = `
     <b>Toko Selesai:</b> ${totalSudah} Toko<br>
     <b>Toko Tertunda:</b> ${20 - totalSudah} Toko<br>
-    <b>Penyimpanan Lokal & Cloud:</b> <span style="color:#52c41a; font-weight:bold;">Aman & Tersinkron</span>
+    <b>Cloud Sync:</b> <span style="color:#52c41a; font-weight:bold;">Otomatis Aktif</span>
   `;
 }
 
@@ -884,7 +867,7 @@ async function kirimFoto() {
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
-  tampilStatus(`⚡ Mengirim & Menyimpan Data Hari Ini...`, "info");
+  tampilStatus(`⚡ Mengirim & Menyimpan Data ke Cloud...`, "info");
 
   let base64Collection = [];
   for (const file of files) {
@@ -922,7 +905,7 @@ async function kirimFoto() {
   }
 
   tombol.disabled = false;
-  tampilStatus(`✅ Sukses! Data tersimpan dan aman di HP & Cloud Pusat.`, "success");
+  tampilStatus(`✅ Sukses! Data tersimpan otomatis di Cloud Pusat.`, "success");
   
   renderGridVisual();
   updateDashboardStats();

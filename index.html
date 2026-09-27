@@ -55,6 +55,23 @@ h3.title {
   text-align: center;
 }
 
+/* Banner Pengingat Jam 15.00 */
+#reminder-banner {
+  display: none;
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+  text-align: center;
+  animation: pulse-border 1.5s infinite;
+}
+@keyframes pulse-border {
+  0% { border-color: #ffe58f; }
+  50% { border-color: #faad14; }
+  100% { border-color: #ffe58f; }
+}
+
 /* Navigasi Tab Menu */
 .tab-menu {
   display: grid;
@@ -158,7 +175,7 @@ h3.title {
 
 /* Form Input Standar */
 label { display: block; font-weight: bold; margin-top: 8px; margin-bottom: 3px; font-size: 11.5px; }
-select, textarea {
+select {
   width: 100%;
   padding: 9px;
   box-sizing: border-box;
@@ -168,7 +185,6 @@ select, textarea {
   background: #fafafa;
   font-family: inherit;
 }
-textarea { resize: vertical; height: 50px; }
 
 /* Tombol Pilihan Kamera & Galeri */
 .upload-buttons-group {
@@ -328,6 +344,13 @@ textarea { resize: vertical; height: 50px; }
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
   <div class="sub-desc" id="info-tanggal-hari-ini">Memuat Tanggal...</div>
 
+  <!-- Banner Pengingat Jam 15.00 WIB -->
+  <div id="reminder-banner">
+    <div style="font-size: 12px; font-weight: bold; color: #d46b08;">⏰ WAKTU LAPORAN SORE (≥ 15.00 WIB)</div>
+    <div style="font-size: 11px; color: #555; margin: 3px 0;">Sudah waktunya mengirim rekap laporan harian ke grup WhatsApp!</div>
+    <button class="btn btn-wa" style="font-size: 11.5px; padding: 8px; width: 100%; margin-top: 5px;" onclick="shareMasterGridDirectly()">💬 Kirim Sekarang ke WhatsApp</button>
+  </div>
+
   <!-- Tombol Sinkronisasi / Cek Cloud -->
   <button class="btn btn-sync" onclick="sinkronisasiDataGlobal(true)">🔄 SINKRONISASI DATA HARI INI</button>
 
@@ -383,19 +406,14 @@ textarea { resize: vertical; height: 50px; }
 
     <div id="preview-upload"></div>
 
-    <div style="margin-top: 8px;">
-      <label for="catatan-toko">3️⃣ Catatan Temuan / Kendala Toko (Opsional)</label>
-      <textarea id="catatan-toko" placeholder="Contoh: Stok barang aman, lampu sorot rak depan perlu diganti..."></textarea>
-    </div>
-
     <div id="status"></div>
 
     <div id="step-3-container">
-      <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:10px;" disabled>⚡ 4️⃣ UPLOAD KILAT KE CLOUD PUSAT</button>
+      <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:10px;" disabled>⚡ 3️⃣ UPLOAD KILAT KE CLOUD PUSAT</button>
     </div>
 
     <div class="action-buttons" style="margin-top: 10px;" id="step-4-container">
-      <button class="btn btn-wa" onclick="shareMasterGridDirectly()" id="btn-wa" disabled>💬 5️⃣ Kirim Grid Ultra HD ke WhatsApp</button>
+      <button class="btn btn-wa" onclick="shareMasterGridDirectly()" id="btn-wa" disabled>💬 4️⃣ Kirim Grid Ultra HD ke WhatsApp</button>
     </div>
   </div>
 
@@ -449,7 +467,6 @@ let globalSelectedFiles = [];
 let currentGPS = "Mencari GPS...";
 let deferredPrompt;
 
-// Format Tanggal Hari Ini (YYYY-MM-DD) untuk Validasi Ganti Hari
 function getTanggalHariIniString() {
   const d = new Date();
   const year = d.getFullYear();
@@ -477,10 +494,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const tanggalHariIni = getTanggalHariIniString();
   document.getElementById("info-tanggal-hari-ini").textContent = `Tanggal Aktif: ${new Date().toLocaleDateString("id-ID", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}`;
 
-  // Cek apakah tanggal di HP sudah berganti hari dibanding hari terakhir simpan
   const savedDate = localStorage.getItem("app_active_date");
   if (savedDate !== tanggalHariIni) {
-    // Jika sudah ganti hari, bersihkan data lokal agar fresh untuk hari baru
     listTokoData.forEach(toko => { localStorage.removeItem(`upload_${toko.kode}`); });
     localStorage.setItem("app_active_date", tanggalHariIni);
   }
@@ -500,9 +515,20 @@ window.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  // Tarik data dari Cloud saat halaman dimuat
+  cekWaktuSoreReminder();
+  setInterval(cekWaktuSoreReminder, 60000);
+
   sinkronisasiDataGlobal(false);
 });
+
+function cekWaktuSoreReminder() {
+  const jamSekarang = new Date().getHours();
+  if (jamSekarang >= 15) {
+    document.getElementById("reminder-banner").style.display = "block";
+  } else {
+    document.getElementById("reminder-banner").style.display = "none";
+  }
+}
 
 function gantiTab(tabName, el) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -530,8 +556,7 @@ window.terimaDataCloud = function(result) {
         localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
           status: "Sukses",
           jumlah: parseInt(item.jumlah) || 1,
-          collageImg: item.collageImg,
-          catatan: item.catatan || ""
+          collageImg: item.collageImg
         }));
       }
     });
@@ -704,7 +729,7 @@ function renderGridVisual() {
   let rekapTeksWA = "";
 
   listTokoData.forEach(toko => {
-    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum", jumlah: 0, collageImg: "", catatan: "" };
+    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { status: "Belum", jumlah: 0, collageImg: "" };
 
     const card = document.createElement("div");
     card.className = "toko-card";
@@ -717,7 +742,7 @@ function renderGridVisual() {
       totalFoto += dataUpload.jumlah;
       if (dataUpload.collageImg) { imgWrapperHtml = `<img src="${dataUpload.collageImg}" alt="Kolase">`; }
       statusText = `OK • ${dataUpload.jumlah} Foto`;
-      rekapTeksWA += `✅ *${toko.id}. ${toko.kode}/${toko.nama}* (${dataUpload.jumlah} Foto)${dataUpload.catatan ? '\n   └ Catatan: ' + dataUpload.catatan : ''}\n`;
+      rekapTeksWA += `✅ *${toko.id}. ${toko.kode}/${toko.nama}* (${dataUpload.jumlah} Foto)\n`;
     } else {
       rekapTeksWA += `⏳ *${toko.id}. ${toko.kode}/${toko.nama}*: Belum\n`;
     }
@@ -852,7 +877,6 @@ function downloadMasterGridFallback(dataUrl) {
 async function kirimFoto() {
   const tokoVal = document.getElementById("toko").value;
   const files = globalSelectedFiles;
-  const catatan = document.getElementById("catatan-toko").value;
   const tombol = document.getElementById("btn-upload");
 
   if (!tokoVal) { tampilStatus("❌ Pilih Toko terlebih dahulu.", "error"); return; }
@@ -875,20 +899,17 @@ async function kirimFoto() {
     namaToko: namaToko,
     jumlahFoto: files.length,
     collageImg: finalCollage,
-    catatan: catatan,
+    catatan: "",
     gps: currentGPS
   };
 
-  // Simpan ke memori lokal HP agar tidak hilang saat di-refresh hari ini
   localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
     status: "Sukses",
     jumlah: files.length,
-    collageImg: finalCollage,
-    catatan: catatan
+    collageImg: finalCollage
   }));
   localStorage.setItem("app_active_date", getTanggalHariIniString());
 
-  // Kirim online ke Google Sheets pusat
   try {
     await fetch(API, {
       method: "POST",
@@ -906,7 +927,6 @@ async function kirimFoto() {
   renderGridVisual();
   updateDashboardStats();
 
-  document.getElementById("catatan-toko").value = "";
   document.getElementById("file-info").textContent = "";
   document.getElementById("preview-upload").innerHTML = "";
   document.getElementById("btn-upload").disabled = true;

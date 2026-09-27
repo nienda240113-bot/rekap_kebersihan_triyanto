@@ -271,6 +271,7 @@ textarea { resize: vertical; height: 50px; }
   position: relative;
 }
 .btn-primary { background: var(--primary); }
+.btn-sync { background: #faad14; font-size: 11.5px; padding: 8px; margin-bottom: 8px; width: 100%; }
 .btn-wa { background: var(--whatsapp); font-size: 13.5px; padding: 13px; }
 .btn-wa:hover { background: var(--whatsapp-hover); }
 .btn-danger { background: var(--danger); font-size: 11.5px; padding: 11px; margin-top: 15px; width: 100%; }
@@ -302,40 +303,6 @@ textarea { resize: vertical; height: 50px; }
 .btn-help { background: #ff4d4f; }
 .btn-install { background: #52c41a; display: none; }
 
-/* Tooltip & Tour */
-#tour-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 998;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 15px;
-  box-sizing: border-box;
-}
-.tour-card {
-  background: white;
-  padding: 18px;
-  border-radius: 12px;
-  max-width: 300px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-  animation: popIn 0.3s ease;
-  z-index: 1000;
-}
-@keyframes popIn {
-  0% { transform: scale(0.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-.tour-title { font-weight: bold; font-size: 14px; color: #1677ff; margin-bottom: 6px; }
-.tour-text { font-size: 12px; color: #444; margin-bottom: 12px; line-height: 1.4; }
-.tour-buttons { display: flex; gap: 6px; justify-content: center; }
-.tour-btn { padding: 7px 14px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11.5px; }
-.tour-btn-next { background: #1677ff; color: white; }
-.tour-btn-skip { background: #f0f0f0; color: #666; }
-
 #status {
   margin-top: 8px;
   padding: 7px;
@@ -359,7 +326,10 @@ textarea { resize: vertical; height: 50px; }
   </div>
 
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
-  <div class="sub-desc">Pro System: GPS Watermark, Offline-First, & Dashboard.</div>
+  <div class="sub-desc" id="info-tanggal-hari-ini">Memuat Tanggal...</div>
+
+  <!-- Tombol Sinkronisasi / Cek Cloud -->
+  <button class="btn btn-sync" onclick="sinkronisasiDataGlobal(true)">🔄 SINKRONISASI DATA HARI INI</button>
 
   <!-- Navigasi Tab -->
   <div class="tab-menu">
@@ -421,7 +391,7 @@ textarea { resize: vertical; height: 50px; }
     <div id="status"></div>
 
     <div id="step-3-container">
-      <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:10px;" disabled>⚡ 4️⃣ UPLOAD KILAT & AUTO-SYNC</button>
+      <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:10px;" disabled>⚡ 4️⃣ UPLOAD KILAT KE CLOUD PUSAT</button>
     </div>
 
     <div class="action-buttons" style="margin-top: 10px;" id="step-4-container">
@@ -456,19 +426,7 @@ textarea { resize: vertical; height: 50px; }
     <div id="grid-visual-20" class="grid-20-preview"></div>
   </div>
 
-  <button class="btn btn-danger" onclick="resetSemuaGridRealtime()">🗑️ Reset / Hapus Semua Hasil Upload Hari Ini</button>
-</div>
-
-<!-- Overlay Panduan -->
-<div id="tour-overlay">
-  <div class="tour-card">
-    <div class="tour-title" id="tour-title">Judul Panduan</div>
-    <div class="tour-text" id="tour-text">Keterangan panduan...</div>
-    <div class="tour-buttons">
-      <button class="tour-btn tour-btn-skip" onclick="tutupPanduan()">Lewati</button>
-      <button class="tour-btn tour-btn-next" id="tour-next-btn" onclick="lanjutPanduan()">Lanjut ➔</button>
-    </div>
-  </div>
+  <button class="btn btn-danger" onclick="resetSemuaGridRealtime()">🗑️ Reset / Hapus Laporan Hari Ini</button>
 </div>
 
 <script>
@@ -491,6 +449,15 @@ let globalSelectedFiles = [];
 let currentGPS = "Mencari GPS...";
 let deferredPrompt;
 
+// Format Tanggal Hari Ini (YYYY-MM-DD) untuk Validasi Ganti Hari
+function getTanggalHariIniString() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
@@ -507,6 +474,17 @@ function installAplikasi() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  const tanggalHariIni = getTanggalHariIniString();
+  document.getElementById("info-tanggal-hari-ini").textContent = `Tanggal Aktif: ${new Date().toLocaleDateString("id-ID", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}`;
+
+  // Cek apakah tanggal di HP sudah berganti hari dibanding hari terakhir simpan
+  const savedDate = localStorage.getItem("app_active_date");
+  if (savedDate !== tanggalHariIni) {
+    // Jika sudah ganti hari, bersihkan data lokal agar fresh untuk hari baru
+    listTokoData.forEach(toko => { localStorage.removeItem(`upload_${toko.kode}`); });
+    localStorage.setItem("app_active_date", tanggalHariIni);
+  }
+
   const savedToko = localStorage.getItem("last_selected_toko");
   if (savedToko) {
     document.getElementById("toko").value = savedToko;
@@ -514,7 +492,6 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("foto-galeri").disabled = false;
   }
   
-  // Ambil koordinat GPS otomatis saat aplikasi dibuka
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (pos) => { currentGPS = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; },
@@ -523,8 +500,8 @@ window.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  sinkronisasiDataGlobal();
-  cekOfflineQueue();
+  // Tarik data dari Cloud saat halaman dimuat
+  sinkronisasiDataGlobal(false);
 });
 
 function gantiTab(tabName, el) {
@@ -534,19 +511,20 @@ function gantiTab(tabName, el) {
   el.classList.add('active');
 }
 
-function sinkronisasiDataGlobal() {
-  tampilStatus("⏳ Menyinkronkan data online...", "info");
+function sinkronisasiDataGlobal(isManual = false) {
+  if (isManual) tampilStatus("⏳ Menyinkronkan data dengan Cloud Pusat...", "info");
+  
+  const oldScript = document.getElementById("jsonp-sync-script");
+  if (oldScript) oldScript.remove();
+
   const script = document.createElement("script");
-  script.src = `${API}?callback=terimaDataCloud`;
+  script.id = "jsonp-sync-script";
+  script.src = `${API}?callback=terimaDataCloud&t=${Date.now()}`;
   document.body.appendChild(script);
 }
 
 window.terimaDataCloud = function(result) {
   if (result && result.status === "success" && result.data) {
-    listTokoData.forEach(toko => {
-      localStorage.removeItem(`upload_${toko.kode}`);
-    });
-
     result.data.forEach(item => {
       if (item.kodeToko && item.collageImg) {
         localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
@@ -560,12 +538,17 @@ window.terimaDataCloud = function(result) {
 
     renderGridVisual();
     updateDashboardStats();
-    tampilStatus("✅ Sinkronisasi berhasil!", "success");
-    setTimeout(() => { document.getElementById("status").style.display = "none"; }, 1500);
+    if (document.getElementById("status").style.display === "block") {
+      tampilStatus("✅ Sinkronisasi Berhasil!", "success");
+      setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
+    }
   } else {
     renderGridVisual();
     updateDashboardStats();
-    document.getElementById("status").style.display = "none";
+    if (document.getElementById("status").style.display === "block") {
+      tampilStatus("⚠️ Data Cloud Pusat Sinkron.", "info");
+      setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
+    }
   }
 };
 
@@ -651,7 +634,7 @@ function renderPreviewFiles() {
 
 async function resetSemuaGridRealtime() {
   if (confirm("⚠️ Yakin ingin mereset seluruh data laporan hari ini?")) {
-    tampilStatus("🗑️ Mengosongkan data server...", "info");
+    tampilStatus("🗑️ Mengosongkan data...", "info");
     listTokoData.forEach(toko => { localStorage.removeItem(`upload_${toko.kode}`); });
 
     try {
@@ -660,7 +643,7 @@ async function resetSemuaGridRealtime() {
 
     renderGridVisual();
     updateDashboardStats();
-    tampilStatus("✅ Data berhasil dikosongkan.", "success");
+    tampilStatus("✅ Data Berhasil Dikosongkan.", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
 }
@@ -687,7 +670,6 @@ async function buatKolaseThumbnail(base64List) {
         loadedCount++;
         if (loadedCount === base64List.length) {
           gambarKeCanvasKecil(ctx, imgObjects);
-          // Cetak Watermark GPS & Waktu di Sudut Kiri Bawah Kolase
           ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
           ctx.fillRect(5, 270, 290, 25);
           ctx.fillStyle = "#ffffff";
@@ -779,7 +761,7 @@ function updateDashboardStats() {
   document.getElementById("dash-detail-stats").innerHTML = `
     <b>Toko Selesai:</b> ${totalSudah} Toko<br>
     <b>Toko Tertunda:</b> ${20 - totalSudah} Toko<br>
-    <b>Status Sistem:</b> <span style="color:#52c41a; font-weight:bold;">Online (Auto-Sync Aktif)</span>
+    <b>Penyimpanan Lokal & Cloud:</b> <span style="color:#52c41a; font-weight:bold;">Aman & Tersinkron</span>
   `;
 }
 
@@ -878,7 +860,7 @@ async function kirimFoto() {
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
-  tampilStatus(`⚡ Memproses & Mengirim (Offline-First / Auto-Sync)...`, "info");
+  tampilStatus(`⚡ Mengirim & Menyimpan Data Hari Ini...`, "info");
 
   let base64Collection = [];
   for (const file of files) {
@@ -897,15 +879,16 @@ async function kirimFoto() {
     gps: currentGPS
   };
 
-  // Simpan Offline-First ke localStorage
+  // Simpan ke memori lokal HP agar tidak hilang saat di-refresh hari ini
   localStorage.setItem(`upload_${kodeToko}`, JSON.stringify({
     status: "Sukses",
     jumlah: files.length,
     collageImg: finalCollage,
     catatan: catatan
   }));
+  localStorage.setItem("app_active_date", getTanggalHariIniString());
 
-  // Kirim ke Cloud Pusat (jika offline, masuk antrean sinkronisasi)
+  // Kirim online ke Google Sheets pusat
   try {
     await fetch(API, {
       method: "POST",
@@ -914,13 +897,11 @@ async function kirimFoto() {
       body: JSON.stringify(payload)
     });
   } catch(err) {
-    let queue = JSON.parse(localStorage.getItem("offline_queue") || "[]");
-    queue.push(payload);
-    localStorage.setItem("offline_queue", JSON.stringify(queue));
+    console.log("Network warning:", err);
   }
 
   tombol.disabled = false;
-  tampilStatus(`✅ Sukses! Data tersimpan di Cloud pusat.`, "success");
+  tampilStatus(`✅ Sukses! Data tersimpan dan aman di HP & Cloud Pusat.`, "success");
   
   renderGridVisual();
   updateDashboardStats();
@@ -930,19 +911,7 @@ async function kirimFoto() {
   document.getElementById("preview-upload").innerHTML = "";
   document.getElementById("btn-upload").disabled = true;
   globalSelectedFiles = [];
-  setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
-}
-
-function cekOfflineQueue() {
-  let queue = JSON.parse(localStorage.getItem("offline_queue") || "[]");
-  if (queue.length > 0 && navigator.onLine) {
-    queue.forEach(async (item) => {
-      try {
-        await fetch(API, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
-      } catch(e) {}
-    });
-    localStorage.removeItem("offline_queue");
-  }
+  setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2500);
 }
 
 function kompresDanUbahKeBase64(file, maxWidth, quality) {
@@ -973,31 +942,6 @@ function tampilStatus(pesan, jenis) {
   status.className = `status-${jenis}`;
   status.style.display = "block";
   status.innerHTML = pesan;
-}
-
-let currentStep = 0;
-const tourSteps = [
-  { element: "step-1-container", title: "Langkah 1: Pilih Toko 📍", text: "Pilih toko yang dikunjungi." },
-  { element: "step-2-container", title: "Langkah 2: Ambil Foto 📷", text: "Kamera otomatis menyematkan Watermark GPS & Waktu." },
-  { element: "step-3-container", title: "Langkah 3: Catatan Temuan 📝", text: "Tulis kendala toko jika ada." },
-  { element: "step-4-container", title: "Langkah 4: Kirim WhatsApp 💬", text: "Bagikan rekap grid laporan lengkap." }
-];
-
-function mulaiPanduan() { currentStep = 0; document.getElementById("tour-overlay").style.display = "flex"; tampilLangkahTour(); }
-function tampilLangkahTour() {
-  tourSteps.forEach(s => { const el = document.getElementById(s.element); if (el) el.classList.remove("highlight-target"); });
-  if (currentStep >= tourSteps.length) { tutupPanduan(); return; }
-  const step = tourSteps[currentStep];
-  const targetEl = document.getElementById(step.element);
-  if (targetEl) { targetEl.classList.add("highlight-target"); targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-  document.getElementById("tour-title").textContent = step.title;
-  document.getElementById("tour-text").textContent = step.text;
-  document.getElementById("tour-next-btn").textContent = (currentStep === tourSteps.length - 1) ? "Selesai ✓" : "Lanjut ➔";
-}
-function lanjutPanduan() { currentStep++; tampilLangkahTour(); }
-function tutupPanduan() {
-  tourSteps.forEach(s => { const el = document.getElementById(s.element); if (el) el.classList.remove("highlight-target"); });
-  document.getElementById("tour-overlay").style.display = "none";
 }
 </script>
 

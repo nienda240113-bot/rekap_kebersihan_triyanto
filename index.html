@@ -55,32 +55,33 @@ h3.title {
   text-align: center;
 }
 
-/* Tombol Sinkronisasi Manual */
+/* Tombol Sinkronisasi Manual (Wajib Ditekan Pertama) */
 .btn-sync-manual {
-  background: #e6f4ff;
-  border: 1px solid #91caff;
-  color: #0958d9;
-  font-size: 11px;
+  background: #fffbe6;
+  border: 2px solid #faad14;
+  color: #d46b08;
+  font-size: 12px;
   font-weight: bold;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
   cursor: pointer;
   display: block;
   width: 100%;
   margin-bottom: 10px;
   text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
-.btn-sync-manual:hover { background: #bae0ff; }
+.btn-sync-manual:hover { background: #fff1b8; }
 
 /* Banner Panduan Urutan Aktif */
 #guidance-banner {
-  background: #f6ffed;
-  border: 1px solid #b7eb8f;
+  background: #fff2f0;
+  border: 1px solid #ffccc7;
   border-radius: 8px;
   padding: 8px 10px;
   margin-bottom: 10px;
   font-size: 11.5px;
-  color: #389e0d;
+  color: #cf1322;
   font-weight: bold;
   text-align: center;
 }
@@ -360,11 +361,11 @@ select {
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
   <div class="sub-desc" id="info-tanggal-hari-ini">Memuat Tanggal...</div>
 
-  <!-- Tombol Sinkronisasi Data Manual -->
-  <button class="btn-sync-manual" onclick="sinkronisasiDataManual()">🔄 Tarik Data Toko dari Cloud Pusat</button>
+  <!-- Tombol Sinkronisasi Utama (Wajib Ditekan Pertama Kali) -->
+  <button id="btn-tarik-cloud" class="btn-sync-manual" onclick="sinkronisasiDataManual()">📥 1️⃣ Wajib Tekan: Tarik Data Toko dari Cloud Pusat</button>
 
-  <!-- Banner Panduan Urutan Kerja -->
-  <div id="guidance-banner">📍 Menunggu sinkronisasi data...</div>
+  <!-- Banner Panduan Urutan Aktif -->
+  <div id="guidance-banner">⚠️ Harap tekan tombol 'Tarik Data Toko dari Cloud Pusat' di atas terlebih dahulu untuk membuka aplikasi!</div>
 
   <!-- Banner Waktu Sore -->
   <div id="sore-banner">
@@ -377,12 +378,12 @@ select {
     <button class="tab-btn" onclick="gantiTab('dashboard', this)">📊 Dashboard & Grafik</button>
   </div>
 
-  <!-- TAB 1: INPUT LAPORAN -->
+  <!-- TAB 1: INPUT LAPORAN (Dikunci Awal) -->
   <div id="tab-input" class="tab-content active">
     <div id="step-1-container">
       <label for="toko">1️⃣ Pilih Toko untuk Upload Foto</label>
-      <select id="toko" onchange="validasiPilihToko()">
-        <option value="">-- Pilih Toko Terlebih Dahulu --</option>
+      <select id="toko" onchange="validasiPilihToko()" disabled>
+        <option value="">-- Harap Tarik Data Terlebih Dahulu --</option>
         <option value="C624|RWBT">1. C624 / RWBT</option>
         <option value="C560|RAJ">2. C560 / RAJ</option>
         <option value="CH81|CDKS">3. CH81 / CDKS</option>
@@ -410,11 +411,11 @@ select {
       <label>2️⃣ Pilih Foto (GPS Watermark Otomatis, Maks 6)</label>
       <div class="upload-buttons-group">
         <div class="file-upload-wrapper">
-          <div class="btn-custom-option btn-camera">📷 Buka Kamera</div>
+          <div class="btn-custom-option btn-camera" style="opacity: 0.6;" id="lbl-kamera">📷 Buka Kamera</div>
           <input type="file" id="foto-kamera" accept="image/*" capture="environment" disabled onchange="tambahFotoAkumulasi(this)">
         </div>
         <div class="file-upload-wrapper">
-          <div class="btn-custom-option btn-gallery">🖼️ Pilih Galeri</div>
+          <div class="btn-custom-option btn-gallery" style="opacity: 0.6;" id="lbl-galeri">🖼️ Pilih Galeri</div>
           <input type="file" id="foto-galeri" accept="image/*" multiple disabled onchange="tambahFotoAkumulasi(this)">
         </div>
       </div>
@@ -434,7 +435,7 @@ select {
   <div id="tab-dashboard" class="tab-content">
     <h4 style="font-size: 13px; margin: 5px 0 10px 0; text-align: center; color: #1677ff;">📈 Dashboard Kinerja Kunjungan Area</h4>
     <div style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 8px; padding: 12px; font-size: 12px; text-align: center;">
-      <p id="dash-info-text" style="margin: 5px 0 10px 0; font-weight: bold;">Memuat statistik kunjungan...</p>
+      <p id="dash-info-text" style="margin: 5px 0 10px 0; font-weight: bold;">Data terkunci. Harap tarik data dari cloud terlebih dahulu.</p>
       <div style="background: #e8e8e8; border-radius: 6px; overflow: hidden; height: 16px; width: 100%; margin-bottom: 8px;">
         <div id="dash-progress-bar" style="background: #52c41a; height: 100%; width: 0%; transition: width 0.5s;"></div>
       </div>
@@ -457,7 +458,7 @@ select {
     <div id="grid-visual-20" class="grid-20-preview"></div>
   </div>
 
-  <button class="btn btn-danger" onclick="resetSemuaGridRealtime()">🗑️ Reset / Hapus Laporan Hari Ini</button>
+  <button class="btn btn-danger" onclick="resetSemuaGridRealtime()" id="btn-reset" disabled>🗑️ Reset / Hapus Laporan Hari Ini</button>
 </div>
 
 <script>
@@ -478,6 +479,7 @@ const listTokoData = [
 
 let globalSelectedFiles = [];
 let currentGPS = "Mencari GPS...";
+let isDataLoaded = false;
 let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -511,11 +513,13 @@ window.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  sinkronisasiDataManual();
+  // Render tampilan awal kosong & terkunci
+  renderGridVisual();
+  updateDashboardStats();
 });
 
 function sinkronisasiDataManual() {
-  tampilStatus("🔄 Menarik data dari Cloud pusat...", "info");
+  tampilStatus("🔄 Sedang menarik data dari Cloud Pusat...", "info");
   const oldScript = document.getElementById("jsonp-sync-script");
   if (oldScript) oldScript.remove();
 
@@ -536,15 +540,43 @@ window.terimaDataCloudManual = function(result) {
         }));
       }
     });
+
+    // Tandai data sudah ditarik dan buka kunci aplikasi
+    isDataLoaded = true;
+    bukaKunciAplikasi();
+
     renderGridVisual();
     updateDashboardStats();
     arahkanKeTokoBerikutnya();
-    tampilStatus("✅ Data Berhasil Disinkronkan!", "success");
-    setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
+    tampilStatus("✅ Data Berhasil Ditarik! Aplikasi Siap Digunakan.", "success");
+    setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2500);
   } else {
-    tampilStatus("⚠️ Gagal menarik data. Cek koneksi.", "error");
+    tampilStatus("⚠️ Gagal menarik data dari server. Silakan coba lagi.", "error");
   }
 };
+
+function bukaKunciAplikasi() {
+  // Ubah tombol tarik data menjadi hijau tanda sudah aktif
+  const btnTarik = document.getElementById("btn-tarik-cloud");
+  btnTarik.style.background = "#f6ffed";
+  btnTarik.style.borderColor = "#b7eb8f";
+  btnTarik.style.color = "#389e0d";
+  btnTarik.innerHTML = "✅ Data Cloud Pusat Sudah Sinkron (Ketuk untuk Refresh)";
+
+  // Buka kunci select toko & tombol reset
+  document.getElementById("toko").removeAttribute("disabled");
+  document.getElementById("btn-reset").removeAttribute("disabled");
+
+  // Pulihkan opasitas tombol kamera/galeri
+  document.getElementById("lbl-kamera").style.opacity = "1";
+  document.getElementById("lbl-galeri").style.opacity = "1";
+
+  // Ubah banner panduan
+  document.getElementById("guidance-banner").style.background = "#f6ffed";
+  document.getElementById("guidance-banner5") // skip
+  document.getElementById("guidance-banner").style.borderColor = "#b7eb8f";
+  document.getElementById("guidance-banner").style.color = "#389e0d";
+}
 
 function gantiTab(tabName, el) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -554,6 +586,7 @@ function gantiTab(tabName, el) {
 }
 
 function arahkanKeTokoBerikutnya() {
+  if (!isDataLoaded) return;
   let tokoBerikutnya = null;
   let labelPanduan = "";
 
@@ -582,6 +615,7 @@ function arahkanKeTokoBerikutnya() {
 }
 
 function validasiPilihToko() {
+  if (!isDataLoaded) return;
   const val = document.getElementById("toko").value;
   const inputKamera = document.getElementById("foto-kamera");
   const inputGaleri = document.getElementById("foto-galeri");
@@ -597,6 +631,12 @@ function validasiPilihToko() {
 }
 
 function tambahFotoAkumulasi(inputElement) {
+  if (!isDataLoaded) {
+    tampilStatus("⚠️ Harap Tarik Data Cloud Terlebih Dahulu!", "error");
+    inputElement.value = "";
+    return;
+  }
+
   const tokoVal = document.getElementById("toko").value;
   if (!tokoVal) {
     tampilStatus("❌ Pilih Toko terlebih dahulu!", "error");
@@ -659,6 +699,7 @@ function renderPreviewFiles() {
 }
 
 async function resetSemuaGridRealtime() {
+  if (!isDataLoaded) return;
   if (confirm("⚠️ Yakin ingin mereset seluruh data laporan hari ini?")) {
     tampilStatus("🗑️ Mengosongkan data...", "info");
     listTokoData.forEach(toko => { localStorage.removeItem(`upload_${toko.kode}`); });
@@ -782,11 +823,13 @@ function updateDashboardStats() {
   let totalSudah = parseInt(document.getElementById("st-sudah").textContent) || 0;
   let progress = Math.round((totalSudah / 20) * 100);
   document.getElementById("dash-progress-bar").style.width = `${progress}%`;
-  document.getElementById("dash-info-text").textContent = `Progress Kinerja Hari Ini: ${progress}% (${totalSudah} dari 20 Toko)`;
+  document.getElementById("dash-info-text").textContent = isDataLoaded ? 
+    `Progress Kinerja Hari Ini: ${progress}% (${totalSudah} dari 20 Toko)` : 
+    `🔒 Data terkunci. Wajib menekan tombol 'Tarik Data Toko dari Cloud Pusat' di atas.`;
   document.getElementById("dash-detail-stats").innerHTML = `
     <b>Toko Selesai:</b> ${totalSudah} Toko<br>
     <b>Toko Tertunda:</b> ${20 - totalSudah} Toko<br>
-    <b>Cloud Real-Time Sync:</b> <span style="color:#52c41a; font-weight:bold;">Aktif & Sinkron</span>
+    <b>Status Cloud Pusat:</b> <span style="color:${isDataLoaded ? '#52c41a' : '#ff4d4f'}; font-weight:bold;">${isDataLoaded ? 'Terhubung & Sinkron' : 'Belum Ditarik'}</span>
   `;
 }
 
@@ -859,17 +902,14 @@ function gambarKotakKosongUltra(ctx, toko, x, y, itemWidth) {
 async function shareMasterGridDirectly() {
   tampilStatus("⏳ Merakit Master Grid Ultra HD & Teks Rekap...", "info");
   
-  // 1. Otomatis Salin Teks Rekap ke Clipboard
   try {
     await navigator.clipboard.writeText(window.teksLaporanFinal || "");
   } catch(e) { console.log("Clipboard error:", e); }
 
-  // 2. Buat Gambar Grid Foto HD
   const dataUrl = await buatMasterGridImageUltraHD();
   const blob = await (await fetch(dataUrl)).blob();
   const file = new File([blob], `MASTER_GRID_AREA_${Date.now()}.jpg`, { type: "image/jpeg" });
 
-  // 3. Coba bagikan file gambar dan teks secara bersamaan via Web Share API
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
       await navigator.share({ 
@@ -884,7 +924,6 @@ async function shareMasterGridDirectly() {
     }
   }
 
-  // Fallback jika browser tidak mendukung direct share file
   const blobUrl = URL.createObjectURL(blob);
   const win = window.open();
   if (win) {
@@ -904,6 +943,11 @@ async function shareMasterGridDirectly() {
 }
 
 async function kirimFotoDanBagikanWhatsApp() {
+  if (!isDataLoaded) {
+    tampilStatus("❌ Wajib Tarik Data Cloud Terlebih Dahulu!", "error");
+    return;
+  }
+
   const tokoVal = document.getElementById("toko").value;
   const files = globalSelectedFiles;
   const tombol = document.getElementById("btn-upload");

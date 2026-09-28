@@ -51,19 +51,36 @@ h3.title {
 .sub-desc {
   font-size: 11px;
   color: #666;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   text-align: center;
 }
 
-/* Banner Panduan Urutan Aktif */
-#guidance-banner {
+/* Tombol Sinkronisasi Data Manual */
+.btn-sync-manual {
   background: #e6f4ff;
   border: 1px solid #91caff;
+  color: #0958d9;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.btn-sync-manual:hover { background: #bae0ff; }
+
+/* Banner Panduan Urutan Aktif */
+#guidance-banner {
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
   border-radius: 8px;
   padding: 8px 10px;
   margin-bottom: 10px;
   font-size: 11.5px;
-  color: #0958d9;
+  color: #389e0d;
   font-weight: bold;
   text-align: center;
 }
@@ -77,12 +94,6 @@ h3.title {
   padding: 10px;
   margin-bottom: 12px;
   text-align: center;
-  animation: pulse-border 1.5s infinite;
-}
-@keyframes pulse-border {
-  0% { border-color: #ffe58f; }
-  50% { border-color: #faad14; }
-  100% { border-color: #ffe58f; }
 }
 
 /* Navigasi Tab Menu */
@@ -277,12 +288,6 @@ select {
 }
 
 /* Tombol Aksi */
-.action-buttons {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
-  margin-top: 12px;
-}
 .btn {
   padding: 11px;
   border: 0;
@@ -353,8 +358,11 @@ select {
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
   <div class="sub-desc" id="info-tanggal-hari-ini">Memuat Tanggal...</div>
 
+  <!-- Tombol Sinkronisasi Data Manual -->
+  <button class="btn-sync-manual" onclick="sinkronisasiDataManual()">🔄 Tarik Data Toko dari Cloud Pusat</button>
+
   <!-- Banner Panduan Urutan Kerja -->
-  <div id="guidance-banner">📍 Menyinkronkan data real-time dari Cloud Pusat...</div>
+  <div id="guidance-banner">📍 Menunggu sinkronisasi data...</div>
 
   <!-- Banner Pengingat Jam 15.00 -->
   <div id="reminder-banner">
@@ -472,14 +480,6 @@ let globalSelectedFiles = [];
 let currentGPS = "Mencari GPS...";
 let deferredPrompt;
 
-function getTanggalHariIniString() {
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
@@ -496,14 +496,7 @@ function installAplikasi() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  const tanggalHariIni = getTanggalHariIniString();
   document.getElementById("info-tanggal-hari-ini").textContent = `Tanggal Aktif: ${new Date().toLocaleDateString("id-ID", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}`;
-
-  const savedDate = localStorage.getItem("app_active_date");
-  if (savedDate !== tanggalHariIni) {
-    listTokoData.forEach(toko => { localStorage.removeItem(`upload_${toko.kode}`); });
-    localStorage.setItem("app_active_date", tanggalHariIni);
-  }
   
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
@@ -516,9 +509,41 @@ window.addEventListener("DOMContentLoaded", () => {
   cekWaktuSoreReminder();
   setInterval(cekWaktuSoreReminder, 60000);
 
-  // Tarik data real-time otomatis dari Cloud Pusat
-  sinkronisasiDataOtomatisSilent();
+  // Tarik data otomatis saat dibuka
+  sinkronisasiDataManual();
 });
+
+function sinkronisasiDataManual() {
+  tampilStatus("🔄 Menarik data dari Cloud pusat...", "info");
+  const oldScript = document.getElementById("jsonp-sync-script");
+  if (oldScript) oldScript.remove();
+
+  const script = document.createElement("script");
+  script.id = "jsonp-sync-script";
+  script.src = `${API}?callback=terimaDataCloudManual&t=${Date.now()}`;
+  document.body.appendChild(script);
+}
+
+window.terimaDataCloudManual = function(result) {
+  if (result && result.status === "success" && result.data) {
+    result.data.forEach(item => {
+      if (item.kodeToko && item.collageImg) {
+        localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
+          status: "Sukses",
+          jumlah: parseInt(item.jumlah) || 1,
+          collageImg: item.collageImg
+        }));
+      }
+    });
+    renderGridVisual();
+    updateDashboardStats();
+    arahkanKeTokoBerikutnya();
+    tampilStatus("✅ Data Berhasil Disinkronkan!", "success");
+    setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
+  } else {
+    tampilStatus("⚠️ Gagal menarik data. Cek koneksi.", "error");
+  }
+};
 
 function cekWaktuSoreReminder() {
   const jamSekarang = new Date().getHours();
@@ -535,33 +560,6 @@ function gantiTab(tabName, el) {
   document.getElementById(`tab-${tabName}`).classList.add('active');
   el.classList.add('active');
 }
-
-function sinkronisasiDataOtomatisSilent() {
-  const oldScript = document.getElementById("jsonp-sync-script");
-  if (oldScript) oldScript.remove();
-
-  const script = document.createElement("script");
-  script.id = "jsonp-sync-script";
-  script.src = `${API}?callback=terimaDataCloudSilent&t=${Date.now()}`;
-  document.body.appendChild(script);
-}
-
-window.terimaDataCloudSilent = function(result) {
-  if (result && result.status === "success" && result.data) {
-    result.data.forEach(item => {
-      if (item.kodeToko && item.collageImg) {
-        localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
-          status: "Sukses",
-          jumlah: parseInt(item.jumlah) || 1,
-          collageImg: item.collageImg
-        }));
-      }
-    });
-  }
-  renderGridVisual();
-  updateDashboardStats();
-  arahkanKeTokoBerikutnya();
-};
 
 function arahkanKeTokoBerikutnya() {
   let tokoBerikutnya = null;
@@ -800,93 +798,9 @@ function updateDashboardStats() {
   `;
 }
 
-async function buatMasterGridImageUltraHD() {
-  return new Promise((resolve) => {
-    const canvas = document.createElement("canvas");
-    const cols = 5; const rows = 4;
-    const itemWidth = 800; const itemHeight = 920;
-    
-    canvas.width = cols * itemWidth;
-    canvas.height = rows * itemHeight;
-    const ctx = canvas.getContext("2d");
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    let loaded = 0;
-    listTokoData.forEach((toko, index) => {
-      const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { collageImg: "" };
-      const x = (index % cols) * itemWidth;
-      const y = Math.floor(index / cols) * itemHeight;
-
-      if (dataUpload.collageImg) {
-        const img = new Image();
-        img.src = dataUpload.collageImg;
-        img.onload = () => {
-          ctx.drawImage(img, x + 20, y + 20, itemWidth - 40, itemWidth - 40);
-          ctx.fillStyle = "#f9f9f9";
-          ctx.fillRect(x + 20, y + itemWidth, itemWidth - 40, 95);
-          ctx.strokeStyle = "#bbb"; ctx.lineWidth = 4;
-          ctx.strokeRect(x + 20, y + 20, itemWidth - 40, itemWidth + 90);
-
-          ctx.fillStyle = "#000"; ctx.font = "bold 42px Arial"; ctx.textAlign = "center";
-          ctx.fillText(`${toko.id}. ${toko.kode}/${toko.nama}`, x + (itemWidth / 2), y + itemWidth + 62);
-
-          loaded++;
-          if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
-        };
-        img.onerror = () => { gambarKotakKosongUltra(ctx, toko, x, y, itemWidth); loaded++; if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9)); };
-      } else {
-        gambarKotakKosongUltra(ctx, toko, x, y, itemWidth);
-        loaded++;
-        if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
-      }
-    });
-  });
-}
-
-function gambarKotakKosongUltra(ctx, toko, x, y, itemWidth) {
-  ctx.fillStyle = "#f2f2f2";
-  ctx.fillRect(x + 20, y + 20, itemWidth - 40, itemWidth - 40);
-  ctx.strokeStyle = "#bbb"; ctx.lineWidth = 4;
-  ctx.strokeRect(x + 20, y + 20, itemWidth - 40, itemWidth + 90);
-
-  ctx.fillStyle = "#777"; ctx.font = "36px Arial"; ctx.textAlign = "center";
-  ctx.fillText("Belum Ada Foto", x + (itemWidth / 2), y + (itemWidth / 2));
-
-  ctx.fillStyle = "#000"; ctx.font = "bold 42px Arial";
-  ctx.fillText(`${toko.id}. ${toko.kode}/${toko.nama}`, x + (itemWidth / 2), y + itemWidth + 62);
-}
-
-async function shareMasterGridDirectly() {
-  tampilStatus("⏳ Merakit Master Grid Ultra HD...", "info");
-  const dataUrl = await buatMasterGridImageUltraHD();
-  const blob = await (await fetch(dataUrl)).blob();
-  const file = new File([blob], `MASTER_GRID_AREA_${Date.now()}.jpg`, { type: "image/jpeg" });
-
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({ 
-        title: 'MASTER GRID DAILY ACTIVITY', 
-        text: window.teksLaporanFinal || '', 
-        files: [file] 
-      });
-      tampilStatus("✅ Berhasil mengirim grid & teks ke WhatsApp!", "success");
-    } catch (err) { 
-      if (err.name !== 'AbortError') downloadMasterGridFallback(dataUrl); 
-    }
-  } else { 
-    downloadMasterGridFallback(dataUrl); 
-  }
-}
-
-function downloadMasterGridFallback(dataUrl) {
-  const a = document.createElement("a");
-  a.href = dataUrl; a.download = `MASTER_GRID_AREA_${Date.now()}.jpg`;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  tampilStatus("⚠️ Gambar terunduh otomatis.", "success");
+function shareMasterGridDirectly() {
+  const encodedText = encodeURIComponent(window.teksLaporanFinal || "Laporan Daily Activity");
+  window.location.href = `https://api.whatsapp.com/send?text=${encodedText}`;
 }
 
 async function kirimFotoDanBagikanWhatsApp() {
@@ -899,7 +813,7 @@ async function kirimFotoDanBagikanWhatsApp() {
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
-  tampilStatus(`⚡ Menyimpan ke Cloud & Menyiapkan Kiriman WhatsApp...`, "info");
+  tampilStatus(`⚡ Menyimpan ke Cloud & Membuka WhatsApp...`, "info");
 
   let base64Collection = [];
   for (const file of files) {
@@ -923,7 +837,6 @@ async function kirimFotoDanBagikanWhatsApp() {
     jumlah: files.length,
     collageImg: finalCollage
   }));
-  localStorage.setItem("app_active_date", getTanggalHariIniString());
 
   try {
     await fetch(API, {
@@ -945,10 +858,11 @@ async function kirimFotoDanBagikanWhatsApp() {
   document.getElementById("btn-upload").disabled = true;
   globalSelectedFiles = [];
 
-  tampilStatus(`✅ Sukses! Membuka WhatsApp dengan Gambar & Teks...`, "success");
+  tampilStatus(`✅ Sukses! Mengalihkan ke WhatsApp...`, "success");
 
-  // Otomatis langsung memicu Share Master Grid + Teks Laporan ke WhatsApp
-  await shareMasterGridDirectly();
+  setTimeout(() => {
+    shareMasterGridDirectly();
+  }, 500);
 
   arahkanKeTokoBerikutnya();
 }

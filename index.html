@@ -55,6 +55,19 @@ h3.title {
   text-align: center;
 }
 
+/* Banner Panduan Urutan Aktif */
+#guidance-banner {
+  background: #e6f4ff;
+  border: 1px solid #91caff;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  font-size: 11.5px;
+  color: #0958d9;
+  font-weight: bold;
+  text-align: center;
+}
+
 /* Banner Pengingat Jam 15.00 */
 #reminder-banner {
   display: none;
@@ -286,9 +299,8 @@ select {
   color: white;
   position: relative;
 }
-.btn-primary { background: var(--primary); }
-.btn-wa { background: var(--whatsapp); font-size: 13.5px; padding: 13px; }
-.btn-wa:hover { background: var(--whatsapp-hover); }
+.btn-primary { background: var(--whatsapp); font-size: 13px; padding: 13px; }
+.btn-primary:hover { background: var(--whatsapp-hover); }
 .btn-danger { background: var(--danger); font-size: 11.5px; padding: 11px; margin-top: 15px; width: 100%; }
 .btn-danger:hover { background: var(--danger-hover); }
 .btn:disabled { background: #d9d9d9 !important; cursor: not-allowed; color: #888; }
@@ -343,11 +355,14 @@ select {
   <h3 class="title">📱 APLIKASI DAILY ACTIVITY AREA TRIYANTO 2O26</h3>
   <div class="sub-desc" id="info-tanggal-hari-ini">Memuat Tanggal...</div>
 
+  <!-- Banner Panduan Urutan Kerja -->
+  <div id="guidance-banner">📍 Panduan Urutan: Mengarahkan ke Toko Berikutnya...</div>
+
   <!-- Banner Pengingat Jam 15.00 WIB -->
   <div id="reminder-banner">
     <div style="font-size: 12px; font-weight: bold; color: #d46b08;">⏰ WAKTU LAPORAN SORE (≥ 15.00 WIB)</div>
     <div style="font-size: 11px; color: #555; margin: 3px 0;">Sudah waktunya mengirim rekap laporan harian ke grup WhatsApp!</div>
-    <button class="btn btn-wa" style="font-size: 11.5px; padding: 8px; width: 100%; margin-top: 5px;" onclick="shareMasterGridDirectly()">💬 Kirim Sekarang ke WhatsApp</button>
+    <button class="btn btn-primary" style="font-size: 11.5px; padding: 8px; width: 100%; margin-top: 5px;" onclick="shareMasterGridDirectly()">💬 Kirim Rekap ke WhatsApp</button>
   </div>
 
   <!-- Navigasi Tab -->
@@ -405,11 +420,7 @@ select {
     <div id="status"></div>
 
     <div id="step-3-container">
-      <button class="btn btn-primary" onclick="kirimFoto()" id="btn-upload" style="width:100%; margin-top:10px;" disabled>⚡ 3️⃣ UPLOAD KILAT KE CLOUD PUSAT</button>
-    </div>
-
-    <div class="action-buttons" style="margin-top: 10px;" id="step-4-container">
-      <button class="btn btn-wa" onclick="shareMasterGridDirectly()" id="btn-wa" disabled>💬 4️⃣ Kirim Grid Ultra HD ke WhatsApp</button>
+      <button class="btn btn-primary" onclick="kirimFotoDanBagikanWhatsApp()" id="btn-upload" style="width:100%; margin-top:10px;" disabled>⚡ 3️⃣ UPLOAD KILAT & KIRIM KE WHATSAPP</button>
     </div>
   </div>
 
@@ -495,13 +506,6 @@ window.addEventListener("DOMContentLoaded", () => {
     listTokoData.forEach(toko => { localStorage.removeItem(`upload_${toko.kode}`); });
     localStorage.setItem("app_active_date", tanggalHariIni);
   }
-
-  const savedToko = localStorage.getItem("last_selected_toko");
-  if (savedToko) {
-    document.getElementById("toko").value = savedToko;
-    document.getElementById("foto-kamera").disabled = false;
-    document.getElementById("foto-galeri").disabled = false;
-  }
   
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
@@ -513,8 +517,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   cekWaktuSoreReminder();
   setInterval(cekWaktuSoreReminder, 60000);
-
-  // Otomatis sinkronisasi senyap saat pertama kali link dibuka / di-refresh
   sinkronisasiDataOtomatisSilent();
 });
 
@@ -558,7 +560,36 @@ window.terimaDataCloudSilent = function(result) {
   }
   renderGridVisual();
   updateDashboardStats();
+  arahkanKeTokoBerikutnya();
 };
+
+function arahkanKeTokoBerikutnya() {
+  let tokoBerikutnya = null;
+  let labelPanduan = "";
+
+  for (let i = 0; i < listTokoData.length; i++) {
+    const toko = listTokoData[i];
+    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`));
+    if (!dataUpload || dataUpload.status !== "Sukses") {
+      tokoBerikutnya = `${toko.kode}|${toko.nama}`;
+      labelPanduan = `📍 Urutan Kerja Aktif: Silakan kerjakan <b>(${toko.id}) ${toko.kode} / ${toko.nama}</b>`;
+      break;
+    }
+  }
+
+  const selectToko = document.getElementById("toko");
+  const banner = document.getElementById("guidance-banner");
+
+  if (tokoBerikutnya) {
+    selectToko.value = tokoBerikutnya;
+    validasiPilihToko();
+    banner.innerHTML = labelPanduan;
+  } else {
+    selectToko.value = "";
+    validasiPilihToko();
+    banner.innerHTML = `🎉 <b>Semua 20 Toko Selesai Dikerjakan!</b>`;
+  }
+}
 
 function validasiPilihToko() {
   const val = document.getElementById("toko").value;
@@ -568,13 +599,10 @@ function validasiPilihToko() {
   if (!val) {
     inputKamera.disabled = true;
     inputGaleri.disabled = true;
-    tampilStatus("⚠️ Pilih Nama Toko terlebih dahulu!", "error");
   } else {
     inputKamera.disabled = false;
     inputGaleri.disabled = false;
     localStorage.setItem("last_selected_toko", val);
-    tampilStatus("✅ Toko terpilih. Silakan ambil foto.", "success");
-    setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
 }
 
@@ -651,6 +679,7 @@ async function resetSemuaGridRealtime() {
 
     renderGridVisual();
     updateDashboardStats();
+    arahkanKeTokoBerikutnya();
     tampilStatus("✅ Data Berhasil Dikosongkan.", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
@@ -741,8 +770,6 @@ function renderGridVisual() {
   });
 
   const progress = Math.round((totalSudah / 20) * 100);
-  document.getElementById("btn-wa").disabled = (totalSudah === 0);
-
   document.getElementById("st-total").textContent = "20";
   document.getElementById("st-sudah").textContent = totalSudah;
   document.getElementById("st-belum").textContent = 20 - totalSudah;
@@ -769,7 +796,7 @@ function updateDashboardStats() {
   document.getElementById("dash-detail-stats").innerHTML = `
     <b>Toko Selesai:</b> ${totalSudah} Toko<br>
     <b>Toko Tertunda:</b> ${20 - totalSudah} Toko<br>
-    <b>Cloud Sync:</b> <span style="color:#52c41a; font-weight:bold;">Otomatis Aktif</span>
+    <b>Auto Share WhatsApp:</b> <span style="color:#52c41a; font-weight:bold;">Aktif (1-Tap)</span>
   `;
 }
 
@@ -834,9 +861,6 @@ function gambarKotakKosongUltra(ctx, toko, x, y, itemWidth) {
 }
 
 async function shareMasterGridDirectly() {
-  const btnWa = document.getElementById("btn-wa");
-  if (btnWa.disabled) { tampilStatus("❌ Selesaikan minimal 1 upload toko.", "error"); return; }
-
   tampilStatus("⏳ Merakit Master Grid Ultra HD...", "info");
   const dataUrl = await buatMasterGridImageUltraHD();
   const blob = await (await fetch(dataUrl)).blob();
@@ -857,7 +881,7 @@ function downloadMasterGridFallback(dataUrl) {
   tampilStatus("⚠️ Gambar terunduh otomatis.", "success");
 }
 
-async function kirimFoto() {
+async function kirimFotoDanBagikanWhatsApp() {
   const tokoVal = document.getElementById("toko").value;
   const files = globalSelectedFiles;
   const tombol = document.getElementById("btn-upload");
@@ -867,7 +891,7 @@ async function kirimFoto() {
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
-  tampilStatus(`⚡ Mengirim & Menyimpan Data ke Cloud...`, "info");
+  tampilStatus(`⚡ Menyimpan ke Cloud & Menyiapkan WhatsApp...`, "info");
 
   let base64Collection = [];
   for (const file of files) {
@@ -905,8 +929,6 @@ async function kirimFoto() {
   }
 
   tombol.disabled = false;
-  tampilStatus(`✅ Sukses! Data tersimpan otomatis di Cloud Pusat.`, "success");
-  
   renderGridVisual();
   updateDashboardStats();
 
@@ -914,7 +936,12 @@ async function kirimFoto() {
   document.getElementById("preview-upload").innerHTML = "";
   document.getElementById("btn-upload").disabled = true;
   globalSelectedFiles = [];
-  setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2500);
+
+  // Otomatis langsung pemicu share ke WhatsApp / Master Grid setelah upload sukses
+  await shareMasterGridDirectly();
+
+  // Lanjut otomatis ke toko berikutnya
+  arahkanKeTokoBerikutnya();
 }
 
 function kompresDanUbahKeBase64(file, maxWidth, quality) {

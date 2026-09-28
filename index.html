@@ -85,15 +85,17 @@ h3.title {
   text-align: center;
 }
 
-/* Banner Pengingat Jam 15.00 */
-#reminder-banner {
-  display: none;
+/* Banner Waktu Sore */
+#sore-banner {
   background: #fffbe6;
   border: 1px solid #ffe58f;
   border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 12px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  color: #d46b08;
   text-align: center;
+  display: none;
 }
 
 /* Navigasi Tab Menu */
@@ -364,11 +366,9 @@ select {
   <!-- Banner Panduan Urutan Kerja -->
   <div id="guidance-banner">📍 Menunggu sinkronisasi data...</div>
 
-  <!-- Banner Pengingat Jam 15.00 -->
-  <div id="reminder-banner">
-    <div style="font-size: 12px; font-weight: bold; color: #d46b08;">⏰ WAKTU LAPORAN SORE (≥ 15.00 WIB)</div>
-    <div style="font-size: 11px; color: #555; margin: 3px 0;">Sudah waktunya mengirim rekap laporan harian ke grup WhatsApp!</div>
-    <button class="btn btn-primary" style="font-size: 11.5px; padding: 8px; width: 100%; margin-top: 5px;" onclick="shareMasterGridDirectly()">💬 Kirim Rekap ke WhatsApp</button>
+  <!-- Banner Waktu Sore (Informasi Saja, Tanpa Tombol Terpisah) -->
+  <div id="sore-banner">
+    ⏰ <b>Waktu Laporan Sore (≥ 15.00 WIB)</b><br>Tombol 'Upload Kilat' di bawah otomatis merakit dan mengirim rekap ke WhatsApp!
   </div>
 
   <!-- Navigasi Tab -->
@@ -498,6 +498,11 @@ function installAplikasi() {
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("info-tanggal-hari-ini").textContent = `Tanggal Aktif: ${new Date().toLocaleDateString("id-ID", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}`;
   
+  const currentHour = new Date().getHours();
+  if (currentHour >= 15) {
+    document.getElementById("sore-banner").style.display = "block";
+  }
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (pos) => { currentGPS = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; },
@@ -505,9 +510,6 @@ window.addEventListener("DOMContentLoaded", () => {
       { timeout: 10000 }
     );
   }
-
-  cekWaktuSoreReminder();
-  setInterval(cekWaktuSoreReminder, 60000);
 
   sinkronisasiDataManual();
 });
@@ -543,15 +545,6 @@ window.terimaDataCloudManual = function(result) {
     tampilStatus("⚠️ Gagal menarik data. Cek koneksi.", "error");
   }
 };
-
-function cekWaktuSoreReminder() {
-  const jamSekarang = new Date().getHours();
-  if (jamSekarang >= 15) {
-    document.getElementById("reminder-banner").style.display = "block";
-  } else {
-    document.getElementById("reminder-banner").style.display = "none";
-  }
-}
 
 function gantiTab(tabName, el) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));

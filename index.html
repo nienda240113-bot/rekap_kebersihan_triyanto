@@ -797,10 +797,92 @@ function updateDashboardStats() {
   `;
 }
 
-function shareMasterGridDirectly() {
-  // Langsung buka WhatsApp tanpa mendownload file gambar ke perangkat (menggunakan teks format URL)
-  const encodedText = encodeURIComponent(window.teksLaporanFinal || "Laporan Daily Activity Area Triyanto");
-  window.location.href = `https://api.whatsapp.com/send?text=${encodedText}`;
+async function buatMasterGridImageUltraHD() {
+  return new Promise((resolve) => {
+    const canvas = document.createElement("canvas");
+    const cols = 5; const rows = 4;
+    const itemWidth = 800; const itemHeight = 920;
+    
+    canvas.width = cols * itemWidth;
+    canvas.height = rows * itemHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    let loaded = 0;
+    listTokoData.forEach((toko, index) => {
+      const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`)) || { collageImg: "" };
+      const x = (index % cols) * itemWidth;
+      const y = Math.floor(index / cols) * itemHeight;
+
+      if (dataUpload.collageImg) {
+        const img = new Image();
+        img.src = dataUpload.collageImg;
+        img.onload = () => {
+          ctx.drawImage(img, x + 20, y + 20, itemWidth - 40, itemWidth - 40);
+          ctx.fillStyle = "#f9f9f9";
+          ctx.fillRect(x + 20, y + itemWidth, itemWidth - 40, 95);
+          ctx.strokeStyle = "#bbb"; ctx.lineWidth = 4;
+          ctx.strokeRect(x + 20, y + 20, itemWidth - 40, itemWidth + 90);
+
+          ctx.fillStyle = "#000"; ctx.font = "bold 42px Arial"; ctx.textAlign = "center";
+          ctx.fillText(`${toko.id}. ${toko.kode}/${toko.nama}`, x + (itemWidth / 2), y + itemWidth + 62);
+
+          loaded++;
+          if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
+        };
+        img.onerror = () => { gambarKotakKosongUltra(ctx, toko, x, y, itemWidth); loaded++; if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9)); };
+      } else {
+        gambarKotakKosongUltra(ctx, toko, x, y, itemWidth);
+        loaded++;
+        if (loaded === 20) resolve(canvas.toDataURL("image/jpeg", 0.9));
+      }
+    });
+  });
+}
+
+function gambarKotakKosongUltra(ctx, toko, x, y, itemWidth) {
+  ctx.fillStyle = "#f2f2f2";
+  ctx.fillRect(x + 20, y + 20, itemWidth - 40, itemWidth - 40);
+  ctx.strokeStyle = "#bbb"; ctx.lineWidth = 4;
+  ctx.strokeRect(x + 20, y + 20, itemWidth - 40, itemWidth + 90);
+
+  ctx.fillStyle = "#777"; ctx.font = "36px Arial"; ctx.textAlign = "center";
+  ctx.fillText("Belum Ada Foto", x + (itemWidth / 2), y + (itemWidth / 2));
+
+  ctx.fillStyle = "#000"; ctx.font = "bold 42px Arial";
+  ctx.fillText(`${toko.id}. ${toko.kode}/${toko.nama}`, x + (itemWidth / 2), y + itemWidth + 62);
+}
+
+async function shareMasterGridDirectly() {
+  tampilStatus("⏳ Merakit Master Grid Ultra HD...", "info");
+  const dataUrl = await buatMasterGridImageUltraHD();
+  const blob = await (await fetch(dataUrl)).blob();
+  const file = new File([blob], `MASTER_GRID_AREA_${Date.now()}.jpg`, { type: "image/jpeg" });
+
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ 
+        title: 'MASTER GRID DAILY ACTIVITY', 
+        text: window.teksLaporanFinal || '', 
+        files: [file] 
+      });
+      tampilStatus("✅ Berhasil membagikan laporan ke WhatsApp!", "success");
+    } catch (err) { 
+      if (err.name !== 'AbortError') {
+        // Jika share dibatalkan atau gagal, gunakan teks WA langsung agar tetap terkirim tanpa download
+        const encodedText = encodeURIComponent(window.teksLaporanFinal || "Laporan Daily Activity");
+        window.location.href = `https://api.whatsapp.com/send?text=${encodedText}`;
+      }
+    }
+  } else { 
+    // Jika perangkat tidak mendukung share file, arahkan ke WhatsApp via teks rekap lengkap
+    const encodedText = encodeURIComponent(window.teksLaporanFinal || "Laporan Daily Activity");
+    window.location.href = `https://api.whatsapp.com/send?text=${encodedText}`;
+  }
 }
 
 async function kirimFotoDanBagikanWhatsApp() {
@@ -813,7 +895,7 @@ async function kirimFotoDanBagikanWhatsApp() {
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
-  tampilStatus(`⚡ Menyimpan ke Cloud & Membuka WhatsApp...`, "info");
+  tampilStatus(`⚡ Menyimpan ke Cloud & Menyiapkan Kiriman WhatsApp...`, "info");
 
   let base64Collection = [];
   for (const file of files) {
@@ -858,12 +940,9 @@ async function kirimFotoDanBagikanWhatsApp() {
   document.getElementById("btn-upload").disabled = true;
   globalSelectedFiles = [];
 
-  tampilStatus(`✅ Sukses! Mengalihkan ke WhatsApp...`, "success");
+  tampilStatus(`✅ Sukses! Membuka WhatsApp...`, "success");
 
-  setTimeout(() => {
-    shareMasterGridDirectly();
-  }, 500);
-
+  await shareMasterGridDirectly();
   arahkanKeTokoBerikutnya();
 }
 

@@ -366,9 +366,9 @@ select {
   <!-- Banner Panduan Urutan Kerja -->
   <div id="guidance-banner">📍 Menunggu sinkronisasi data...</div>
 
-  <!-- Banner Waktu Sore (Informasi Saja, Tanpa Tombol Terpisah) -->
+  <!-- Banner Waktu Sore -->
   <div id="sore-banner">
-    ⏰ <b>Waktu Laporan Sore (≥ 15.00 WIB)</b><br>Tombol 'Upload Kilat' di bawah otomatis merakit dan mengirim rekap ke WhatsApp!
+    ⏰ <b>Waktu Laporan Sore (≥ 15.00 WIB)</b><br>Tombol 'Upload Kilat' di bawah otomatis merakit teks rekap & gambar grid ke WhatsApp!
   </div>
 
   <!-- Navigasi Tab -->
@@ -775,7 +775,7 @@ function renderGridVisual() {
     `📷 Total Foto : ${totalFoto}\n` +
     `📈 Progress : ${progress}%\n\n` +
     `━━━━━━━━━━━━━━━\n` +
-    `*DAFTAR 20 TOKO*\n` + rekapTeksWA;
+    `*DAFTAR 20 TOKO*\n` + rekapTeksWA + `\n#SEMANGAT #GASSSPOLL`;
 }
 
 function updateDashboardStats() {
@@ -857,11 +857,19 @@ function gambarKotakKosongUltra(ctx, toko, x, y, itemWidth) {
 }
 
 async function shareMasterGridDirectly() {
-  tampilStatus("⏳ Merakit Master Grid Ultra HD Lengkap...", "info");
+  tampilStatus("⏳ Merakit Master Grid Ultra HD & Teks Rekap...", "info");
+  
+  // 1. Otomatis Salin Teks Rekap ke Clipboard
+  try {
+    await navigator.clipboard.writeText(window.teksLaporanFinal || "");
+  } catch(e) { console.log("Clipboard error:", e); }
+
+  // 2. Buat Gambar Grid Foto HD
   const dataUrl = await buatMasterGridImageUltraHD();
   const blob = await (await fetch(dataUrl)).blob();
   const file = new File([blob], `MASTER_GRID_AREA_${Date.now()}.jpg`, { type: "image/jpeg" });
 
+  // 3. Coba bagikan file gambar dan teks secara bersamaan via Web Share API
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
       await navigator.share({ 
@@ -869,25 +877,22 @@ async function shareMasterGridDirectly() {
         text: window.teksLaporanFinal || '', 
         files: [file] 
       });
-      tampilStatus("✅ Berhasil membagikan laporan ke WhatsApp!", "success");
+      tampilStatus("✅ Berhasil membagikan laporan & grid ke WhatsApp!", "success");
       return;
     } catch (err) { 
       if (err.name === 'AbortError') return;
     }
   }
 
-  try {
-    await navigator.clipboard.writeText(window.teksLaporanFinal || "");
-  } catch(e) { console.log(e); }
-
+  // Fallback jika browser tidak mendukung direct share file
   const blobUrl = URL.createObjectURL(blob);
   const win = window.open();
   if (win) {
     win.document.write(`
       <html><head><title>Master Grid Rekap Area</title></head>
       <body style="background:#222; color:#fff; text-align:center; font-family:sans-serif; padding:20px;">
-        <h3>📱 Master Grid 20 Toko Siap Dikirim</h3>
-        <p style="font-size:14px; color:#ffc107;">Tekan & tahan gambar di bawah, pilih <b>'Bagikan'</b> atau <b>'Simpan'</b> ke WhatsApp.<br>(Teks laporan sudah otomatis tersalin ke Clipboard Anda!)</p>
+        <h3>📱 Master Grid 20 Toko & Teks Rekap Siap Dikirim</h3>
+        <p style="font-size:14px; color:#ffc107;">✨ Teks rekap sudah <b>otomatis disalin ke Clipboard</b>.<br>Tekan & tahan gambar di bawah, pilih <b>'Bagikan'</b> atau <b>'Simpan'</b> ke WhatsApp.</p>
         <img src="${blobUrl}" style="max-width:100%; height:auto; border-radius:8px; border:2px solid #fff;" alt="Master Grid"/>
         <br><br>
         <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(window.teksLaporanFinal || '')}" style="background:#25d366; color:#fff; padding:12px 24px; text-decoration:none; font-weight:bold; border-radius:6px; display:inline-block; font-size:16px;">💬 Buka WhatsApp Sekarang</a>
@@ -908,7 +913,7 @@ async function kirimFotoDanBagikanWhatsApp() {
 
   const [kodeToko, namaToko] = tokoVal.split("|");
   tombol.disabled = true;
-  tampilStatus(`⚡ Menyimpan ke Cloud Pusat & Merakit Gambar...`, "info");
+  tampilStatus(`⚡ Menyimpan ke Cloud Pusat & Merakit Laporan...`, "info");
 
   let base64Collection = [];
   for (const file of files) {
@@ -953,7 +958,7 @@ async function kirimFotoDanBagikanWhatsApp() {
   document.getElementById("btn-upload").disabled = true;
   globalSelectedFiles = [];
 
-  tampilStatus(`✅ Sukses Tersimpan di Cloud! Membuka WhatsApp...`, "success");
+  tampilStatus(`✅ Sukses! Membuka Teks & Grid WhatsApp...`, "success");
 
   await shareMasterGridDirectly();
   arahkanKeTokoBerikutnya();

@@ -55,7 +55,7 @@ h3.title {
   text-align: center;
 }
 
-/* Tombol Sinkronisasi Utama & Bagikan Cepat */
+/* Tombol Sinkronisasi Utama */
 .btn-sync-manual {
   background: #fffbe6;
   border: 2px solid #faad14;
@@ -67,19 +67,20 @@ h3.title {
   cursor: pointer;
   display: block;
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   text-align: center;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 .btn-sync-manual:hover { background: #fff1b8; }
 
+/* Tombol Cepat Bagikan Rekap Global */
 .btn-share-global {
   background: #e6f4ff;
   border: 1px solid #91caff;
   color: #0958d9;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: bold;
-  padding: 8px 12px;
+  padding: 12px;
   border-radius: 8px;
   cursor: pointer;
   display: flex;
@@ -87,7 +88,7 @@ h3.title {
   justify-content: center;
   gap: 6px;
   width: 100%;
-  margin-bottom: 10px;
+  margin-top: 10px;
   text-align: center;
 }
 .btn-share-global:hover { background: #bae0ff; }
@@ -383,9 +384,6 @@ select {
   <!-- Tombol Sinkronisasi Utama (Wajib Ditekan Pertama Kali) -->
   <button id="btn-tarik-cloud" class="btn-sync-manual" onclick="sinkronisasiDataManual()">📥 1️⃣ Wajib Tekan: Tarik Data Toko dari Cloud Pusat</button>
 
-  <!-- Tombol Cepat Bagikan Rekap ke WhatsApp dari Device Mana Saja -->
-  <button class="btn-share-global" onclick="shareMasterGridDirectly()" id="btn-global-share" disabled>📤 Kirim / Bagikan Rekap 20 Toko ke WhatsApp</button>
-
   <!-- Banner Panduan Urutan Aktif -->
   <div id="guidance-banner">⚠️ Harap tekan tombol 'Tarik Data Toko dari Cloud Pusat' di atas terlebih dahulu untuk membuka aplikasi!</div>
 
@@ -450,6 +448,9 @@ select {
 
     <div id="step-3-container">
       <button class="btn btn-primary" onclick="kirimFotoDanBagikanWhatsApp()" id="btn-upload" style="width:100%; margin-top:10px;" disabled>⚡ 3️⃣ UPLOAD KILAT & KIRIM KE WHATSAPP</button>
+      
+      <!-- Tombol Kirim/Bagikan Rekap 20 Toko Tepat di Bawah Tombol Upload Kilat -->
+      <button class="btn-share-global" onclick="shareMasterGridDirectly()" id="btn-global-share" disabled>📤 Kirim / Bagikan Rekap 20 Toko ke WhatsApp</button>
     </div>
   </div>
 
@@ -538,7 +539,7 @@ window.addEventListener("DOMContentLoaded", () => {
   renderGridVisual();
   updateDashboardStats();
 
-  // FITUR AUTO-SYNC DIPERCEPAT JADI SETIAP 5 DETIK AGAR SUPER REAL-TIME DI SEMUA DEVICE
+  // Auto-Sync 5 detik agar super real-time di semua device
   setInterval(() => {
     if (isDataLoaded) {
       console.log("🔄 Auto-Sync 5 detik berjalan...");

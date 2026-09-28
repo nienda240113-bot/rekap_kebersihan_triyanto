@@ -55,7 +55,7 @@ h3.title {
   text-align: center;
 }
 
-/* Tombol Sinkronisasi Manual (Wajib Ditekan Pertama) */
+/* Tombol Sinkronisasi Utama (Wajib Ditekan Pertama) */
 .btn-sync-manual {
   background: #fffbe6;
   border: 2px solid #faad14;
@@ -462,6 +462,7 @@ select {
 </div>
 
 <script>
+// URL Google Apps Script yang baru
 const API = "https://script.google.com/macros/s/AKfycbziJIW5OliFsGpVlVaojRXp64BK2_SA3jvi6guPifx3sQFUndA7mhEuHsyp_GVcx-ec/exec";
 
 const listTokoData = [
@@ -513,9 +514,22 @@ window.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  // Render tampilan awal kosong & terkunci
   renderGridVisual();
   updateDashboardStats();
+
+  // FITUR AUTO-SYNC (Polling otomatis setiap 15 detik agar sinkron real-time di semua device)
+  setInterval(() => {
+    if (isDataLoaded) {
+      console.log("🔄 Sinkronisasi latar belakang otomatis...");
+      const oldScript = document.getElementById("jsonp-sync-script");
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement("script");
+      script.id = "jsonp-sync-script";
+      script.src = `${API}?callback=terimaDataCloudManual&t=${Date.now()}`;
+      document.body.appendChild(script);
+    }
+  }, 15000);
 });
 
 function sinkronisasiDataManual() {
@@ -531,6 +545,8 @@ function sinkronisasiDataManual() {
 
 window.terimaDataCloudManual = function(result) {
   if (result && result.status === "success" && result.data) {
+    listTokoData.forEach(toko => { localStorage.removeItem(`upload_${toko.kode}`); });
+
     result.data.forEach(item => {
       if (item.kodeToko && item.collageImg) {
         localStorage.setItem(`upload_${item.kodeToko}`, JSON.stringify({
@@ -541,41 +557,36 @@ window.terimaDataCloudManual = function(result) {
       }
     });
 
-    // Tandai data sudah ditarik dan buka kunci aplikasi
     isDataLoaded = true;
     bukaKunciAplikasi();
 
     renderGridVisual();
     updateDashboardStats();
     arahkanKeTokoBerikutnya();
-    tampilStatus("✅ Data Berhasil Ditarik! Aplikasi Siap Digunakan.", "success");
+    tampilStatus("✅ Data Berhasil Disinkronkan Real-Time!", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2500);
   } else {
-    tampilStatus("⚠️ Gagal menarik data dari server. Silakan coba lagi.", "error");
+    tampilStatus("⚠️ Gagal menarik data dari server. Cek koneksi.", "error");
   }
 };
 
 function bukaKunciAplikasi() {
-  // Ubah tombol tarik data menjadi hijau tanda sudah aktif
   const btnTarik = document.getElementById("btn-tarik-cloud");
   btnTarik.style.background = "#f6ffed";
   btnTarik.style.borderColor = "#b7eb8f";
   btnTarik.style.color = "#389e0d";
-  btnTarik.innerHTML = "✅ Data Cloud Pusat Sudah Sinkron (Ketuk untuk Refresh)";
+  btnTarik.innerHTML = "✅ Data Cloud Pusat Sinkron (Ketuk untuk Refresh)";
 
-  // Buka kunci select toko & tombol reset
   document.getElementById("toko").removeAttribute("disabled");
   document.getElementById("btn-reset").removeAttribute("disabled");
 
-  // Pulihkan opasitas tombol kamera/galeri
   document.getElementById("lbl-kamera").style.opacity = "1";
   document.getElementById("lbl-galeri").style.opacity = "1";
 
-  // Ubah banner panduan
-  document.getElementById("guidance-banner").style.background = "#f6ffed";
-  document.getElementById("guidance-banner5") // skip
-  document.getElementById("guidance-banner").style.borderColor = "#b7eb8f";
-  document.getElementById("guidance-banner").style.color = "#389e0d";
+  const banner = document.getElementById("guidance-banner");
+  banner.style.background = "#f6ffed";
+  banner.style.borderColor = "#b7eb8f";
+  banner.style.color = "#389e0d";
 }
 
 function gantiTab(tabName, el) {
@@ -632,7 +643,7 @@ function validasiPilihToko() {
 
 function tambahFotoAkumulasi(inputElement) {
   if (!isDataLoaded) {
-    tampilStatus("⚠️ Harap Tarik Data Cloud Terlebih Dahulu!", "error");
+    tampilStatus("⚠️ Wajib Tarik Data Cloud Terlebih Dahulu!", "error");
     inputElement.value = "";
     return;
   }
@@ -829,7 +840,7 @@ function updateDashboardStats() {
   document.getElementById("dash-detail-stats").innerHTML = `
     <b>Toko Selesai:</b> ${totalSudah} Toko<br>
     <b>Toko Tertunda:</b> ${20 - totalSudah} Toko<br>
-    <b>Status Cloud Pusat:</b> <span style="color:${isDataLoaded ? '#52c41a' : '#ff4d4f'}; font-weight:bold;">${isDataLoaded ? 'Terhubung & Sinkron' : 'Belum Ditarik'}</span>
+    <b>Status Cloud Pusat:</b> <span style="color:${isDataLoaded ? '#52c41a' : '#ff4d4f'}; font-weight:bold;">${isDataLoaded ? 'Terhubung & Sinkron (Auto-Sync 15s)' : 'Belum Ditarik'}</span>
   `;
 }
 

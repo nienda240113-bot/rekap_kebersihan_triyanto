@@ -863,6 +863,7 @@ async function shareMasterGridDirectly() {
   const blob = await (await fetch(dataUrl)).blob();
   const file = new File([blob], `MASTER_GRID_AREA_${Date.now()}.jpg`, { type: "image/jpeg" });
 
+  // Cek apakah perangkat mendukung Web Share API untuk file gambar
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
       await navigator.share({ 
@@ -871,16 +872,37 @@ async function shareMasterGridDirectly() {
         files: [file] 
       });
       tampilStatus("✅ Berhasil membagikan laporan ke WhatsApp!", "success");
+      return;
     } catch (err) { 
-      if (err.name !== 'AbortError') {
-        // Jika share dibatalkan atau gagal, gunakan teks WA langsung agar tetap terkirim tanpa download
-        const encodedText = encodeURIComponent(window.teksLaporanFinal || "Laporan Daily Activity");
-        window.location.href = `https://api.whatsapp.com/send?text=${encodedText}`;
-      }
+      if (err.name === 'AbortError') return; // User membatalkan share
     }
-  } else { 
-    // Jika perangkat tidak mendukung share file, arahkan ke WhatsApp via teks rekap lengkap
-    const encodedText = encodeURIComponent(window.teksLaporanFinal || "Laporan Daily Activity");
+  }
+
+  // JIKA WEB SHARE TIDAK DIDUKUNG / DIBATALKAN: Gunakan fitur salin teks otomatis + arahkan langsung ke WhatsApp
+  try {
+    await navigator.clipboard.writeText(window.teksLaporanFinal || "");
+    alert("📋 Teks laporan otomatis disalin ke Clipboard!\n\nSilakan 'PASTE / TEMPEL' teks laporan tersebut di WhatsApp setelah melampirkan gambar Master Grid.");
+  } catch(e) {
+    console.log("Clipboard error:", e);
+  }
+
+  // Simpan gambar grid sementara ke object URL untuk ditampilkan agar bisa dibagikan dengan mudah
+  const blobUrl = URL.createObjectURL(blob);
+  const win = window.open();
+  if (win) {
+    win.document.write(`
+      <html><head><title>Master Grid Rekap Area</title></head>
+      <body style="background:#222; color:#fff; text-align:center; font-family:sans-serif; padding:20px;">
+        <h3>📱 Master Grid Siap Dikirim ke WhatsApp</h3>
+        <p style="font-size:14px; color:#ffc107;">Tekan dan tahan gambar di bawah ini lalu pilih <b>'Bagikan Gambar'</b> atau <b>'Simpan'</b> untuk dikirim ke WhatsApp.</p>
+        <img src="${blobUrl}" style="max-width:100%; height:auto; border-radius:8px; border:2px solid #fff;" alt="Master Grid"/>
+        <br><br>
+        <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(window.teksLaporanFinal || '')}" style="background:#25d366; color:#fff; padding:12px 24px; text-decoration:none; font-weight:bold; border-radius:6px; display:inline-block; font-size:16px;">💬 Buka WhatsApp Sekarang</a>
+      </body></html>
+    `);
+  } else {
+    // Fallback terakhir jika popup diblokir
+    const encodedText = encodeURIComponent(window.teksLaporanFinal || "");
     window.location.href = `https://api.whatsapp.com/send?text=${encodedText}`;
   }
 }
@@ -940,7 +962,7 @@ async function kirimFotoDanBagikanWhatsApp() {
   document.getElementById("btn-upload").disabled = true;
   globalSelectedFiles = [];
 
-  tampilStatus(`✅ Sukses! Membuka WhatsApp...`, "success");
+  tampilStatus(`✅ Sukses! Memproses Master Grid...`, "success");
 
   await shareMasterGridDirectly();
   arahkanKeTokoBerikutnya();

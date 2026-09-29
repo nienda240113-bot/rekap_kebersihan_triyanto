@@ -93,7 +93,7 @@ h3.title {
 }
 .btn-share-global:hover { background: #bae0ff; }
 
-/* Banner Panduan Urutan Aktif */
+/* Banner Panduan Disederhanakan */
 #guidance-banner {
   background: #fff2f0;
   border: 1px solid #ffccc7;
@@ -384,8 +384,8 @@ select {
   <!-- Tombol Sinkronisasi Utama (Wajib Ditekan Pertama Kali) -->
   <button id="btn-tarik-cloud" class="btn-sync-manual" onclick="sinkronisasiDataManual()">📥 1️⃣ Wajib Tekan: Tarik Data Toko dari Cloud Pusat</button>
 
-  <!-- Banner Panduan Urutan Aktif -->
-  <div id="guidance-banner">⚠️ Harap tekan tombol 'Tarik Data Toko dari Cloud Pusat' di atas terlebih dahulu untuk membuka aplikasi!</div>
+  <!-- Banner Panduan Sederhana -->
+  <div id="guidance-banner">⚠️ Harap tekan tombol 'Tarik Data Toko dari Cloud Pusat' di atas terlebih dahulu!</div>
 
   <!-- Banner Waktu Sore -->
   <div id="sore-banner">
@@ -449,7 +449,7 @@ select {
     <div id="step-3-container">
       <button class="btn btn-primary" onclick="kirimFotoDanBagikanWhatsApp()" id="btn-upload" style="width:100%; margin-top:10px;" disabled>⚡ 3️⃣ UPLOAD KILAT & KIRIM KE WHATSAPP</button>
       
-      <!-- Tombol Kirim/Bagikan Rekap 20 Toko Tepat di Bawah Tombol Upload Kilat -->
+      <!-- Tombol Kirim/Bagikan Rekap 20 Toko di Bawah Tombol Upload Kilat -->
       <button class="btn-share-global" onclick="shareMasterGridDirectly()" id="btn-global-share" disabled>📤 Kirim / Bagikan Rekap 20 Toko ke WhatsApp</button>
     </div>
   </div>
@@ -584,7 +584,6 @@ window.terimaDataCloudManual = function(result) {
 
     renderGridVisual();
     updateDashboardStats();
-    arahkanKeTokoBerikutnya();
     tampilStatus("✅ Data Berhasil Disinkronkan Real-Time!", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   } else {
@@ -610,6 +609,7 @@ function bukaKunciAplikasi() {
   banner.style.background = "#f6ffed";
   banner.style.borderColor = "#b7eb8f";
   banner.style.color = "#389e0d";
+  banner.innerHTML = "✅ <b>Aplikasi Terbuka & Siap Digunakan Secara Real-Time</b>";
 }
 
 function gantiTab(tabName, el) {
@@ -617,35 +617,6 @@ function gantiTab(tabName, el) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(`tab-${tabName}`).classList.add('active');
   el.classList.add('active');
-}
-
-function arahkanKeTokoBerikutnya() {
-  if (!isDataLoaded) return;
-  let tokoBerikutnya = null;
-  let labelPanduan = "";
-
-  for (let i = 0; i < listTokoData.length; i++) {
-    const toko = listTokoData[i];
-    const dataUpload = JSON.parse(localStorage.getItem(`upload_${toko.kode}`));
-    if (!dataUpload || dataUpload.status !== "Sukses") {
-      tokoBerikutnya = `${toko.kode}|${toko.nama}`;
-      labelPanduan = `📍 Urutan Kerja Aktif: Silakan kerjakan <b>(${toko.id}) ${toko.kode} / ${toko.nama}</b>`;
-      break;
-    }
-  }
-
-  const selectToko = document.getElementById("toko");
-  const banner = document.getElementById("guidance-banner");
-
-  if (tokoBerikutnya) {
-    selectToko.value = tokoBerikutnya;
-    validasiPilihToko();
-    banner.innerHTML = labelPanduan;
-  } else {
-    selectToko.value = "";
-    validasiPilihToko();
-    banner.innerHTML = `🎉 <b>Semua 20 Toko Selesai Dikerjakan!</b>`;
-  }
 }
 
 function validasiPilihToko() {
@@ -744,7 +715,6 @@ async function resetSemuaGridRealtime() {
 
     renderGridVisual();
     updateDashboardStats();
-    arahkanKeTokoBerikutnya();
     tampilStatus("✅ Data Berhasil Dikosongkan.", "success");
     setTimeout(() => { document.getElementById("status").style.display = "none"; }, 2000);
   }
@@ -1044,7 +1014,6 @@ async function kirimFotoDanBagikanWhatsApp() {
   tampilStatus(`✅ Sukses! Membuka Teks & Grid WhatsApp...`, "success");
 
   await shareMasterGridDirectly();
-  arahkanKeTokoBerikutnya();
 }
 
 function kompresDanUbahKeBase64(file, maxWidth, quality) {
